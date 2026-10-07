@@ -321,6 +321,19 @@ Progress uses an anonymous private credential retained by this browser, plus a l
 
 Echo Lives retains its original device-local save, thirty-six events, 108 choices, six forms, reincarnation, and optional awakening ending.
 
+## PixelForge / PhiCade runtime bridge
+
+The canonical source now includes the first narrow **SPARK Runtime Bridge v1**
+adapter for the real Descent engine. It starts a fixed-seed Spark in **The
+Threshold** and exposes only bounded MOVE, DASH and PULSE actions through the
+PixelForge Runtime Bridge v1 method surface. It does not read or write campaign,
+Sideways, keepsake, Memory Arcade, legacy, co-op or server saves.
+
+Run the focused proof with `npm run test:runtime-bridge` or
+`npm run check:runtime-bridge`.
+
+See [SPARK Runtime Bridge v1](docs/runtime-bridge-v1.md).
+
 ## Source and verification
 
 The first canonical repository import is frozen in [SPARK v0.17.0 Canonical Architecture Baseline](docs/canonical-architecture-v0.17.0.md), including current runtime, save, Memory Arcade, online, PixelForge, PhiCade and future Unreal boundaries.
