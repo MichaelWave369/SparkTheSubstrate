@@ -228,5 +228,8 @@ test("wire observation contains no undefined values", () => {
   assertJsonWire(observation);
   assert.ok(Array.isArray(observation.state.exits));
   for (const exit of observation.state.exits)
-    assert.notEqual(exit.requires, undefined);
+    assert.ok(
+      !Object.hasOwn(exit, "requires") || exit.requires !== undefined,
+      "optional exit.requires must be omitted rather than emitted as undefined",
+    );
 });
