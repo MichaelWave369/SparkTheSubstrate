@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: MichaelWave369/parallax-pixelforge
-          ref: dbb89db999ca57ca5288d5b2522b54182b324ec8
+          ref: c893858ea5680c000f7ae89e50ce350c7e1baf10
           path: _pixelforge
       - uses: actions/setup-node@v4
         with:
