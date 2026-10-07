@@ -1,0 +1,49 @@
+name: PhiCade Rung 47 SPARK Phi-Bot
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/phicade-rung47-phibot.yml"
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    name: runtime / Phi-Bot -> PhiCade -> PixelForge -> SPARK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pinned SPARK bridge source
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _spark
+
+      - name: Checkout pinned PixelForge v5.34
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/parallax-pixelforge
+          ref: 8790c3b00b5184136fb8fa6a2fbdabe834eeca22
+          path: _pixelforge
+
+      - name: Checkout PhiCade Rung 47 candidate
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/PhiCade
+          ref: b53689a3913b0077b4b5e3f0bc18e0d7d74073f8
+          path: _phicade
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Run SPARK Phi-Bot qualification
+        working-directory: _phicade
+        run: bash ./scripts/qualify-spark-phibot.sh "$GITHUB_WORKSPACE/_pixelforge" "$GITHUB_WORKSPACE/_spark"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phicade-spark-phibot-rung47
+          path: _phicade/artifacts/phicade-pixelforge-spark-phibot-qualification.json
+          if-no-files-found: error
