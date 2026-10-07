@@ -108,12 +108,13 @@ jobs:
         run: |
           mkdir -p "_isolated/$SAFE"
           curl -fsS http://127.0.0.1:11434/api/tags > "_isolated/$SAFE/before-tags.json"
-          curl -fsS \
+          payload="$(printf '{"model":"%s","verbose":false}' "$MODEL")"
+          curl -sS \
             -X POST \
             -H 'Content-Type: application/json' \
-            -d "{"model":"$MODEL","verbose":false}" \
+            --data-binary "$payload" \
             http://127.0.0.1:11434/api/show \
-            > "_isolated/$SAFE/before-show.json"
+            > "_isolated/$SAFE/before-show.json" || true
 
       - name: Run five-turn governed playtest
         env:
@@ -140,12 +141,13 @@ jobs:
           SAFE: ${{ matrix.safe }}
         run: |
           curl -fsS http://127.0.0.1:11434/api/tags > "_isolated/$SAFE/after-tags.json"
-          curl -fsS \
+          payload="$(printf '{"model":"%s","verbose":false}' "$MODEL")"
+          curl -sS \
             -X POST \
             -H 'Content-Type: application/json' \
-            -d "{"model":"$MODEL","verbose":false}" \
+            --data-binary "$payload" \
             http://127.0.0.1:11434/api/show \
-            > "_isolated/$SAFE/after-show.json"
+            > "_isolated/$SAFE/after-show.json" || true
 
       - name: Classify isolated result
         if: always()
@@ -168,7 +170,13 @@ jobs:
               path = root / name
               if not path.exists():
                   return None
-              return json.loads(path.read_text())
+              text = path.read_text(errors="replace").strip()
+              if not text:
+                  return None
+              try:
+                  return json.loads(text)
+              except json.JSONDecodeError:
+                  return None
 
           def digest_from_tags(payload):
               if not payload:
@@ -244,6 +252,10 @@ jobs:
               "failureLogTail": [] if playtest_pass else log_tail,
           }
 
+          ollama_log = Path(f"/tmp/ollama-{safe}.log")
+          if ollama_log.exists():
+              (root / "ollama.log").write_bytes(ollama_log.read_bytes())
+
           (root / "isolated-result.json").write_text(json.dumps(result, indent=2) + "\n")
           print(json.dumps(result, indent=2))
           PY
@@ -253,9 +265,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rung51-${{ matrix.safe }}
-          path: |
-            _isolated/${{ matrix.safe }}/**
-            /tmp/ollama-${{ matrix.safe }}.log
+          path: _isolated/${{ matrix.safe }}/**
           if-no-files-found: warn
 
   aggregate:
