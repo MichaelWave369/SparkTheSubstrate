@@ -1,0 +1,123 @@
+name: PhiCade Rung 49 Hosted Ollama SPARK Playtest
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/phicade-rung49-hosted-ollama.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playtest:
+    name: runtime / hosted Ollama -> PhiCade -> PixelForge -> SPARK
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout workflow repository
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned SPARK bridge source
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _spark
+
+      - name: Checkout pinned PixelForge v5.34
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/parallax-pixelforge
+          ref: 8790c3b00b5184136fb8fa6a2fbdabe834eeca22
+          path: _pixelforge
+
+      - name: Checkout pinned PhiCade Rung 48
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/PhiCade
+          ref: 36df30d7d61df23711711f0a26af09d2b344ccd0
+          path: _phicade
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Tauri build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama --version
+
+      - name: Start Ollama
+        run: |
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              echo "Ollama is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/ollama.log || true
+          echo "Ollama did not become ready" >&2
+          exit 1
+
+      - name: Pull hosted acceptance model
+        run: |
+          ollama pull qwen2.5:0.5b-instruct
+          ollama list
+
+      - name: Run real hosted model SPARK playtest
+        working-directory: _phicade
+        run: |
+          bash ./scripts/qualify-spark-ollama.sh \
+            "$GITHUB_WORKSPACE/_pixelforge" \
+            "$GITHUB_WORKSPACE/_spark" \
+            "qwen2.5:0.5b-instruct" \
+            5
+
+      - name: Show receipt summary
+        if: success()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("_phicade/artifacts/phicade-spark-ollama-playtest.json")
+          data = json.loads(path.read_text())
+          print("schema:", data.get("schema"))
+          print("status:", data.get("recordStatus"))
+          print("model:", data.get("model"))
+          print("modelDigest:", data.get("modelDigest"))
+          print("turns:", data.get("requestedTurns"))
+          print("executedActions:", data.get("executedActions"))
+          print("initialRuntimeHash:", data.get("initialRuntimeHash"))
+          print("finalRuntimeHash:", data.get("finalRuntimeHash"))
+          PY
+
+      - name: Preserve hosted model evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phicade-spark-hosted-ollama-rung49
+          path: |
+            _phicade/artifacts/phicade-spark-ollama-playtest.json
+            /tmp/ollama.log
+          if-no-files-found: warn
