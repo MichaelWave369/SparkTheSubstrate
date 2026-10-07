@@ -46,8 +46,9 @@ test("Threshold adapter starts from the real SPARK Descent state", () => {
   assert.equal(observation.state.phase, "playing");
   assert.equal(observation.state.player.x, 480);
   assert.equal(observation.state.player.y, 390);
-  assert.equal(observation.state.player.hp, 100);
-  assert.equal(observation.state.player.maxHp, 100);
+  // Fresh Descent equips the starter Bark Ward, which adds +12 health.
+  assert.equal(observation.state.player.hp, 112);
+  assert.equal(observation.state.player.maxHp, 112);
 });
 
 test("MOVE advances the real action-engine player and emits a semantic event", () => {
