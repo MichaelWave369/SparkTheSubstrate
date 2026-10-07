@@ -15,6 +15,46 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function toWireJson(value, path = "value", seen = new Set()) {
+  if (value === undefined) return undefined;
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return value;
+
+  if (typeof value === "number") {
+    if (!Number.isFinite(value))
+      throw new TypeError(path + " must contain only finite numbers");
+    return value;
+  }
+
+  if (typeof value !== "object")
+    throw new TypeError(path + " contains non-JSON value of type " + typeof value);
+
+  if (seen.has(value))
+    throw new TypeError(path + " contains a circular reference");
+  seen.add(value);
+
+  let result;
+  if (Array.isArray(value)) {
+    result = value.map((item, index) => {
+      const safe = toWireJson(item, path + "[" + index + "]", seen);
+      return safe === undefined ? null : safe;
+    });
+  } else {
+    const proto = Object.getPrototypeOf(value);
+    if (proto !== Object.prototype && proto !== null)
+      throw new TypeError(path + " must contain plain objects only");
+
+    result = {};
+    for (const [key, item] of Object.entries(value)) {
+      const safe = toWireJson(item, path + "." + key, seen);
+      if (safe !== undefined) result[key] = safe;
+    }
+  }
+
+  seen.delete(value);
+  return result;
+}
+
 function finiteUnit(value, label) {
   if (!Number.isFinite(value) || value < -1 || value > 1)
     throw new TypeError(label + " must be finite and between -1 and 1");
@@ -49,14 +89,14 @@ function assertTick(tick) {
 }
 
 function observation(run, meta, tick) {
-  return {
+  return toWireJson({
     schemaVersion: 1,
     mode: "descent",
     bridgeScope: "threshold",
     tick,
     allowedActions: [...ACTIONS],
     state: observeRun(run, meta),
-  };
+  }, "observation");
 }
 
 /**

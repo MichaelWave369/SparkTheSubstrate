@@ -1,0 +1,39 @@
+name: PixelForge v5.34 Cross-Repo Qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/pixelforge-v534-crossrepo.yml"
+  workflow_dispatch:
+
+jobs:
+  qualify:
+    name: runtime / private SPARK through PixelForge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pinned SPARK
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _spark
+      - name: Checkout pinned PixelForge v5.34 candidate
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/parallax-pixelforge
+          ref: fdc76d3bbedd43fe57e05b99e5376d6dce83bb38
+          path: _pixelforge
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate PixelForge v5.34 candidate
+        working-directory: _pixelforge
+        run: npm run validate:v5.34
+      - name: Qualify canonical SPARK through PixelForge
+        working-directory: _pixelforge
+        run: node scripts/qualify_spark_runtime.mjs --spark-root "$GITHUB_WORKSPACE/_spark"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: private-spark-pixelforge-v534-qualification
+          path: _pixelforge/artifacts/spark-runtime-qualification.json
+          if-no-files-found: error
