@@ -323,6 +323,8 @@ Echo Lives retains its original device-local save, thirty-six events, 108 choice
 
 ## Source and verification
 
+The first canonical repository import is frozen in [SPARK v0.17.0 Canonical Architecture Baseline](docs/canonical-architecture-v0.17.0.md), including current runtime, save, Memory Arcade, online, PixelForge, PhiCade and future Unreal boundaries.
+
 Static source and generated WebP atlases live under `public/`; image-generation prompts are under `art/`, `art-prompts-v12.md`, and `art-prompts-v128.json`. The v0.12.8 assets are `public/duel-strikes-v128.webp`, `public/duel-kicks-v128.webp` and `public/duel-stages-v128.webp`; the two 1254×1254 pose atlases retain generated transparency, and the six-stage atlas is 1672×941. Format conversion used lossless WebP for the poses and quality 92 WebP for stages; no raster repainting was performed. Floor and boss atlases use six cells, equipment twelve, and `duel-fighters-v12.webp` nine side-view bodies in a transparent three-by-three atlas. Reduced-motion preferences suppress nonessential effects.
 
 The Vinext starter provides the Worker and Sites build plugin. `build/sites-worker.ts` dispatches the room/progress APIs to `server/`. `.openai/hosting.json` retains the original project ID and D1 binding `DB`. Existing Drizzle migrations remain immutable.
