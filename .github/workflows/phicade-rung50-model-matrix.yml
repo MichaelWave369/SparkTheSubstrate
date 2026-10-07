@@ -1,0 +1,271 @@
+name: PhiCade Rung 50 Hosted Model Matrix
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/phicade-rung50-model-matrix.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    name: runtime / hosted model matrix on identical SPARK policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    steps:
+      - name: Checkout workflow repository
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned SPARK bridge source
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _spark
+
+      - name: Checkout pinned PixelForge v5.34
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/parallax-pixelforge
+          ref: 8790c3b00b5184136fb8fa6a2fbdabe834eeca22
+          path: _pixelforge
+
+      - name: Checkout pinned PhiCade Rung 48
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/PhiCade
+          ref: 36df30d7d61df23711711f0a26af09d2b344ccd0
+          path: _phicade
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Tauri build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama --version
+
+      - name: Start Ollama
+        run: |
+          nohup ollama serve > /tmp/ollama-rung50.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              echo "Ollama is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/ollama-rung50.log || true
+          echo "Ollama did not become ready" >&2
+          exit 1
+
+      - name: Pull comparison models
+        run: |
+          ollama pull qwen2.5:0.5b-instruct
+          ollama pull gemma3:1b
+          ollama pull llama3.2:1b
+          ollama list
+
+      - name: Build SPARK semantic playtest harness once
+        working-directory: _phicade
+        run: cargo build --manifest-path src-tauri/Cargo.toml --example qualify_spark_ollama
+
+      - name: Run identical five-turn model trials
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p "$GITHUB_WORKSPACE/_matrix/receipts"
+          mkdir -p "$GITHUB_WORKSPACE/_matrix/logs"
+          mkdir -p "$GITHUB_WORKSPACE/_matrix/status"
+
+          BIN="$GITHUB_WORKSPACE/_phicade/target/debug/examples/qualify_spark_ollama"
+
+          run_model() {
+            local model="$1"
+            local safe="$2"
+            local receipt="$GITHUB_WORKSPACE/_matrix/receipts/$safe.json"
+            local log="$GITHUB_WORKSPACE/_matrix/logs/$safe.log"
+            local status="$GITHUB_WORKSPACE/_matrix/status/$safe.txt"
+
+            echo
+            echo "=== MODEL: $model ==="
+            set +e
+            "$BIN" \
+              --pixelforge-root "$GITHUB_WORKSPACE/_pixelforge" \
+              --spark-root "$GITHUB_WORKSPACE/_spark" \
+              --model "$model" \
+              --turns 5 \
+              --out "$receipt" \
+              >"$log" 2>&1
+            code=$?
+            set -e
+            echo "$code" > "$status"
+            cat "$log"
+            echo "=== RESULT: $model exit=$code ==="
+          }
+
+          run_model "qwen2.5:0.5b-instruct" "qwen2.5-0.5b-instruct"
+          run_model "gemma3:1b" "gemma3-1b"
+          run_model "llama3.2:1b" "llama3.2-1b"
+
+      - name: Build model-matrix evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("_matrix")
+          models = [
+              ("qwen2.5:0.5b-instruct", "qwen2.5-0.5b-instruct"),
+              ("gemma3:1b", "gemma3-1b"),
+              ("llama3.2:1b", "llama3.2-1b"),
+          ]
+
+          rows = []
+          for model, safe in models:
+              status_path = root / "status" / f"{safe}.txt"
+              log_path = root / "logs" / f"{safe}.log"
+              receipt_path = root / "receipts" / f"{safe}.json"
+
+              code = int(status_path.read_text().strip()) if status_path.exists() else 999
+              record = json.loads(receipt_path.read_text()) if receipt_path.exists() else None
+              passed = bool(record and code == 0 and record.get("recordStatus") == "PASS")
+
+              durations = []
+              eval_counts = []
+              if record:
+                  for turn in record.get("turns", []):
+                      duration = turn.get("providerTotalDurationNs")
+                      if isinstance(duration, int):
+                          durations.append(duration)
+                      count = turn.get("providerEvalCount")
+                      if isinstance(count, int):
+                          eval_counts.append(count)
+
+              log_tail = []
+              if not passed and log_path.exists():
+                  log_tail = log_path.read_text(errors="replace").splitlines()[-20:]
+
+              rows.append({
+                  "model": model,
+                  "result": "PASS" if passed else "FAIL",
+                  "exitCode": code,
+                  "modelDigest": record.get("modelDigest") if record else None,
+                  "requestedTurns": record.get("requestedTurns") if record else 5,
+                  "executedActions": record.get("executedActions") if record else 0,
+                  "semanticEventCount": len(record.get("semanticEvents", [])) if record else 0,
+                  "averageProviderTurnSeconds": (
+                      round(sum(durations) / len(durations) / 1_000_000_000, 4)
+                      if durations else None
+                  ),
+                  "totalEvalCount": sum(eval_counts) if eval_counts else None,
+                  "initialRuntimeHash": record.get("initialRuntimeHash") if record else None,
+                  "finalRuntimeHash": record.get("finalRuntimeHash") if record else None,
+                  "runtimeHashChanged": (
+                      record.get("initialRuntimeHash") != record.get("finalRuntimeHash")
+                      if record else False
+                  ),
+                  "failureLogTail": log_tail,
+              })
+
+          control = rows[0]
+          matrix = {
+              "schema": "spark.hosted-model-matrix.v1",
+              "recordStatus": "PASS" if control["result"] == "PASS" else "FAIL",
+              "purpose": "architecture-and-policy comparison; not a gameplay-quality ranking",
+              "controlModel": "qwen2.5:0.5b-instruct",
+              "controlPassed": control["result"] == "PASS",
+              "turnBudgetPerModel": 5,
+              "sameSeedPolicy": True,
+              "sameGrantPolicy": True,
+              "sameSemanticObservationPolicy": True,
+              "sourcePins": {
+                  "spark": "fae7879820bef63a550fea486b2defbc3cee5304",
+                  "pixelforge": "8790c3b00b5184136fb8fa6a2fbdabe834eeca22",
+                  "phicade": "36df30d7d61df23711711f0a26af09d2b344ccd0",
+              },
+              "models": rows,
+          }
+
+          (root / "hosted-model-matrix.json").write_text(
+              json.dumps(matrix, indent=2) + "\n"
+          )
+
+          def cell(value):
+              return "—" if value is None else str(value)
+
+          lines = [
+              "# Rung 50 Hosted Model Matrix",
+              "",
+              "This is an architecture/policy comparison, not a gameplay-quality ranking.",
+              "",
+              "| Model | Result | Actions | Events | Avg provider turn (s) | Eval count | State changed |",
+              "| --- | --- | ---: | ---: | ---: | ---: | --- |",
+          ]
+          for row in rows:
+              lines.append(
+                  "| {model} | {result} | {actions} | {events} | {seconds} | {evals} | {changed} |".format(
+                      model=row["model"],
+                      result=row["result"],
+                      actions=row["executedActions"],
+                      events=row["semanticEventCount"],
+                      seconds=cell(row["averageProviderTurnSeconds"]),
+                      evals=cell(row["totalEvalCount"]),
+                      changed="yes" if row["runtimeHashChanged"] else "no",
+                  )
+              )
+
+          lines += [
+              "",
+              "All models use the same pinned source revisions, five-turn budget, SPARK default deterministic seed, PhiCade grant, and semantic observation policy.",
+              "",
+          ]
+          (root / "hosted-model-matrix.md").write_text("\n".join(lines))
+
+          print((root / "hosted-model-matrix.md").read_text())
+          PY
+
+      - name: Publish matrix to job summary
+        run: cat _matrix/hosted-model-matrix.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Require known-good control model
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          matrix = json.loads(Path("_matrix/hosted-model-matrix.json").read_text())
+          if not matrix["controlPassed"]:
+              raise SystemExit("Rung 49 control model failed; model matrix is not trustworthy")
+          print("Control model PASS. Comparison evidence is valid.")
+          PY
+
+      - name: Preserve model-matrix evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phicade-spark-hosted-model-matrix-rung50
+          path: |
+            _matrix/**
+            /tmp/ollama-rung50.log
+          if-no-files-found: warn
