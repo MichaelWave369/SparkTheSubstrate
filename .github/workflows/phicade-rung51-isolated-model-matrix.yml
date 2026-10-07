@@ -1,0 +1,372 @@
+name: PhiCade Rung 51 Isolated Model Identity Matrix
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/phicade-rung51-isolated-model-matrix.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-model:
+    name: isolated / ${{ matrix.model }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model: qwen2.5:0.5b-instruct
+            safe: qwen2.5-0.5b-instruct
+            control: true
+          - model: gemma3:1b
+            safe: gemma3-1b
+            control: false
+          - model: llama3.2:1b
+            safe: llama3.2-1b
+            control: false
+
+    steps:
+      - name: Checkout workflow repository
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned SPARK bridge source
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _spark
+
+      - name: Checkout pinned PixelForge v5.34
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/parallax-pixelforge
+          ref: 8790c3b00b5184136fb8fa6a2fbdabe834eeca22
+          path: _pixelforge
+
+      - name: Checkout pinned PhiCade Rung 48
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/PhiCade
+          ref: 36df30d7d61df23711711f0a26af09d2b344ccd0
+          path: _phicade
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama --version
+
+      - name: Start isolated Ollama
+        run: |
+          nohup ollama serve > "/tmp/ollama-${{ matrix.safe }}.log" 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              echo "Ollama is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "/tmp/ollama-${{ matrix.safe }}.log" || true
+          echo "Ollama did not become ready" >&2
+          exit 1
+
+      - name: Pull only this model
+        run: |
+          ollama pull "${{ matrix.model }}"
+          ollama list
+
+      - name: Build SPARK semantic playtest harness
+        working-directory: _phicade
+        run: cargo build --manifest-path src-tauri/Cargo.toml --example qualify_spark_ollama
+
+      - name: Capture pre-run identity
+        env:
+          MODEL: ${{ matrix.model }}
+          SAFE: ${{ matrix.safe }}
+        run: |
+          mkdir -p "_isolated/$SAFE"
+          curl -fsS http://127.0.0.1:11434/api/tags > "_isolated/$SAFE/before-tags.json"
+          curl -fsS \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -d "{"model":"$MODEL","verbose":false}" \
+            http://127.0.0.1:11434/api/show \
+            > "_isolated/$SAFE/before-show.json"
+
+      - name: Run five-turn governed playtest
+        env:
+          MODEL: ${{ matrix.model }}
+          SAFE: ${{ matrix.safe }}
+        run: |
+          set +e
+          "$GITHUB_WORKSPACE/_phicade/target/debug/examples/qualify_spark_ollama" \
+            --pixelforge-root "$GITHUB_WORKSPACE/_pixelforge" \
+            --spark-root "$GITHUB_WORKSPACE/_spark" \
+            --model "$MODEL" \
+            --turns 5 \
+            --out "$GITHUB_WORKSPACE/_isolated/$SAFE/playtest.json" \
+            > "$GITHUB_WORKSPACE/_isolated/$SAFE/playtest.log" 2>&1
+          code=$?
+          set -e
+          echo "$code" > "$GITHUB_WORKSPACE/_isolated/$SAFE/exit-code.txt"
+          cat "$GITHUB_WORKSPACE/_isolated/$SAFE/playtest.log"
+
+      - name: Capture post-run identity
+        if: always()
+        env:
+          MODEL: ${{ matrix.model }}
+          SAFE: ${{ matrix.safe }}
+        run: |
+          curl -fsS http://127.0.0.1:11434/api/tags > "_isolated/$SAFE/after-tags.json"
+          curl -fsS \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -d "{"model":"$MODEL","verbose":false}" \
+            http://127.0.0.1:11434/api/show \
+            > "_isolated/$SAFE/after-show.json"
+
+      - name: Classify isolated result
+        if: always()
+        env:
+          MODEL: ${{ matrix.model }}
+          SAFE: ${{ matrix.safe }}
+          CONTROL: ${{ matrix.control }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          model = os.environ["MODEL"]
+          safe = os.environ["SAFE"]
+          control = os.environ["CONTROL"].lower() == "true"
+          root = Path("_isolated") / safe
+
+          def load_json(name):
+              path = root / name
+              if not path.exists():
+                  return None
+              return json.loads(path.read_text())
+
+          def digest_from_tags(payload):
+              if not payload:
+                  return None
+              for item in payload.get("models", []):
+                  if item.get("name") == model or item.get("model") == model:
+                      return item.get("digest")
+              return None
+
+          before_tags = load_json("before-tags.json")
+          after_tags = load_json("after-tags.json")
+          before_show = load_json("before-show.json")
+          after_show = load_json("after-show.json")
+          receipt = load_json("playtest.json")
+
+          exit_path = root / "exit-code.txt"
+          exit_code = int(exit_path.read_text().strip()) if exit_path.exists() else 999
+          before_digest = digest_from_tags(before_tags)
+          after_digest = digest_from_tags(after_tags)
+          digest_stable = bool(before_digest and after_digest and before_digest == after_digest)
+
+          playtest_pass = bool(
+              exit_code == 0 and
+              receipt and
+              receipt.get("recordStatus") == "PASS"
+          )
+
+          if not before_digest or not after_digest:
+              classification = "IDENTITY_UNRESOLVED"
+          elif not digest_stable:
+              classification = "IDENTITY_DRIFT"
+          elif playtest_pass:
+              classification = "PASS_STABLE"
+          else:
+              classification = "PLAYTEST_FAIL_STABLE_IDENTITY"
+
+          def show_fingerprint(payload):
+              if not payload:
+                  return None
+              details = payload.get("details") or {}
+              return {
+                  "capabilities": payload.get("capabilities", []),
+                  "family": details.get("family"),
+                  "parameterSize": details.get("parameter_size"),
+                  "quantizationLevel": details.get("quantization_level"),
+              }
+
+          log_tail = []
+          log_path = root / "playtest.log"
+          if log_path.exists():
+              log_tail = log_path.read_text(errors="replace").splitlines()[-30:]
+
+          result = {
+              "schema": "spark.isolated-model-trial.v1",
+              "model": model,
+              "control": control,
+              "classification": classification,
+              "exitCode": exit_code,
+              "beforeDigest": before_digest,
+              "afterDigest": after_digest,
+              "digestStable": digest_stable,
+              "beforeShow": show_fingerprint(before_show),
+              "afterShow": show_fingerprint(after_show),
+              "playtestPassed": playtest_pass,
+              "executedActions": receipt.get("executedActions") if receipt else 0,
+              "requestedTurns": receipt.get("requestedTurns") if receipt else 5,
+              "initialRuntimeHash": receipt.get("initialRuntimeHash") if receipt else None,
+              "finalRuntimeHash": receipt.get("finalRuntimeHash") if receipt else None,
+              "runtimeHashChanged": (
+                  receipt.get("initialRuntimeHash") != receipt.get("finalRuntimeHash")
+                  if receipt else False
+              ),
+              "failureLogTail": [] if playtest_pass else log_tail,
+          }
+
+          (root / "isolated-result.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Preserve isolated evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rung51-${{ matrix.safe }}
+          path: |
+            _isolated/${{ matrix.safe }}/**
+            /tmp/ollama-${{ matrix.safe }}.log
+          if-no-files-found: warn
+
+  aggregate:
+    name: evidence / aggregate isolated model matrix
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [isolated-model]
+
+    steps:
+      - name: Download isolated evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rung51-*
+          path: _rung51
+          merge-multiple: false
+
+      - name: Build Rung 51 matrix
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("_rung51")
+          results = []
+          for path in sorted(root.glob("rung51-*/isolated-result.json")):
+              results.append(json.loads(path.read_text()))
+
+          if not results:
+              raise SystemExit("No isolated model results were recovered")
+
+          control = next(
+              (item for item in results if item.get("control")),
+              None
+          )
+
+          matrix = {
+              "schema": "spark.isolated-model-identity-matrix.v1",
+              "recordStatus": (
+                  "PASS"
+                  if control and control.get("classification") == "PASS_STABLE"
+                  else "FAIL"
+              ),
+              "purpose": "separate model identity stability from gameplay behavior",
+              "sameSourcePins": True,
+              "sameTurnBudget": True,
+              "sameSeedPolicy": True,
+              "sameGrantPolicy": True,
+              "sameSemanticObservationPolicy": True,
+              "sourcePins": {
+                  "spark": "fae7879820bef63a550fea486b2defbc3cee5304",
+                  "pixelforge": "8790c3b00b5184136fb8fa6a2fbdabe834eeca22",
+                  "phicade": "36df30d7d61df23711711f0a26af09d2b344ccd0",
+              },
+              "models": results,
+          }
+
+          Path("rung51-model-identity-matrix.json").write_text(
+              json.dumps(matrix, indent=2) + "\n"
+          )
+
+          lines = [
+              "# Rung 51 Isolated Model Identity Matrix",
+              "",
+              "Each model ran in its own fresh hosted runner and Ollama instance.",
+              "",
+              "| Model | Classification | Digest stable | Playtest | Actions | State changed |",
+              "| --- | --- | --- | --- | ---: | --- |",
+          ]
+          for item in results:
+              lines.append(
+                  "| {model} | {classification} | {stable} | {playtest} | {actions} | {changed} |".format(
+                      model=item["model"],
+                      classification=item["classification"],
+                      stable="yes" if item["digestStable"] else "no",
+                      playtest="PASS" if item["playtestPassed"] else "FAIL",
+                      actions=item["executedActions"],
+                      changed="yes" if item["runtimeHashChanged"] else "no",
+                  )
+              )
+
+          lines += [
+              "",
+              "Classification separates identity drift from gameplay-policy failure.",
+              "The Qwen control must remain PASS_STABLE for the matrix environment to be accepted.",
+              "",
+          ]
+
+          Path("rung51-model-identity-matrix.md").write_text("\n".join(lines))
+          print(Path("rung51-model-identity-matrix.md").read_text())
+          PY
+
+      - name: Publish Rung 51 summary
+        run: cat rung51-model-identity-matrix.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Require stable known-good control
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          matrix = json.loads(Path("rung51-model-identity-matrix.json").read_text())
+          if matrix["recordStatus"] != "PASS":
+              raise SystemExit("Known-good control is not PASS_STABLE")
+          print("Known-good control PASS_STABLE. Identity matrix accepted.")
+          PY
+
+      - name: Preserve aggregated matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phicade-spark-isolated-model-identity-matrix-rung51
+          path: |
+            rung51-model-identity-matrix.json
+            rung51-model-identity-matrix.md
+          if-no-files-found: error
