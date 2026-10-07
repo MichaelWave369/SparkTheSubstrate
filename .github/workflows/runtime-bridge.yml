@@ -1,0 +1,33 @@
+name: SPARK Runtime Bridge
+
+on:
+  pull_request:
+    paths:
+      - "runtime/**"
+      - "tests/runtime-bridge.test.mjs"
+      - "scripts/check-runtime-bridge.mjs"
+      - "docs/runtime-bridge-v1.md"
+      - "package.json"
+      - ".github/workflows/runtime-bridge.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "runtime/**"
+      - "tests/runtime-bridge.test.mjs"
+      - "scripts/check-runtime-bridge.mjs"
+      - "docs/runtime-bridge-v1.md"
+      - "package.json"
+      - ".github/workflows/runtime-bridge.yml"
+
+jobs:
+  threshold:
+    name: runtime / SPARK Threshold bridge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run test:runtime-bridge
+      - run: npm run check:runtime-bridge
