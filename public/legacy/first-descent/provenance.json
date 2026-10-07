@@ -1,0 +1,87 @@
+{
+  "id": "first-descent",
+  "title": "First Descent",
+  "version": "0.2.0",
+  "authenticity": "authentic",
+  "commit": "eeca7f3bf167a1880bbd4d15c6d4d4211a4c94e2",
+  "sourceRoot": "dist",
+  "sourceBytes": 1525796,
+  "sources": [
+    {
+      "file": "dist/action-engine.js",
+      "frozen": "source/action-engine.js",
+      "sha256": "eb362dca45872a2404532cdc602ee7ef2bdb8f83d057fb1c1876822de21b1231",
+      "bytes": 24418
+    },
+    {
+      "file": "dist/app.js",
+      "frozen": "source/app.js",
+      "sha256": "76941c7ab120c0c742aa91c9a1a0b5bbb2c730fe690aa3f62e668c9647021161",
+      "bytes": 23346
+    },
+    {
+      "file": "dist/arena.webp",
+      "frozen": "arena.webp",
+      "sha256": "bd96d0234ed50588427ca95680d02f69ea9aacda2e9ea66e1c298eda1223d96f",
+      "bytes": 374538
+    },
+    {
+      "file": "dist/descent.css",
+      "frozen": "source/descent.css",
+      "sha256": "331e7cd285a15e255d02f77d06d308a59c47997abb8b7af7e99b584dc6041b7e",
+      "bytes": 19428
+    },
+    {
+      "file": "dist/descent.js",
+      "frozen": "source/descent.js",
+      "sha256": "daf03690928da2fd52310e28a564ffff48d4a6519051e3def7df8b831da4be8b",
+      "bytes": 29061
+    },
+    {
+      "file": "dist/echo-lives.html",
+      "frozen": "source/echo-lives.html",
+      "sha256": "aacbb0ebe8407a1272950a37c2ab6f745e5744b5683734d95a72ea377f42e77b",
+      "bytes": 3247
+    },
+    {
+      "file": "dist/engine.js",
+      "frozen": "source/engine.js",
+      "sha256": "10b0695fd2d45819305cab2e827be81d1ffb47d662d49d63fcd6a7340e49b137",
+      "bytes": 38877
+    },
+    {
+      "file": "dist/index.html",
+      "frozen": "source/index.html",
+      "sha256": "c84f517531d41ee30f96e4c1dc6313cac9b1b01fd226c16161b2b114824edde3",
+      "bytes": 7624
+    },
+    {
+      "file": "dist/sprites.webp",
+      "frozen": "sprites.webp",
+      "sha256": "b135c33825552dc4d08451fdb47560bcf33e2ad065c97e1a7ad2c0a83359ac96",
+      "bytes": 449602
+    },
+    {
+      "file": "dist/style.css",
+      "frozen": "source/style.css",
+      "sha256": "a761c160d09d284556a3dfe663b9ecfb36893ae83106ca3b0047c79748959faf",
+      "bytes": 24829
+    },
+    {
+      "file": "dist/worlds.webp",
+      "frozen": "worlds.webp",
+      "sha256": "0a633014211194e85e2d77548d22b297adfe290646082d2fb69a8cd23d1488d0",
+      "bytes": 530826
+    }
+  ],
+  "wrapper": "opaque sandbox; classic bundle; inert source until storage handshake; CSP script hashes; device bridge",
+  "bundler": "esbuild 0.28.0",
+  "bundleSha256": "5064312b49280d007913c4d1507853519285481eb4124495ecf18a124e5f676f",
+  "runtimeSha256": "416ec27950f16b5952f904a05af04bd4197edf27de0bd70fa896a4f53ddcd1c5",
+  "htmlSha256": "6a9b45ad8a1c88e81be5e65be1cec202f657353964bff05dd917a72380969873",
+  "removed": "external font imports only; system fallbacks remain",
+  "bytes": {
+    "html": 139190,
+    "bundle": 99783
+  }
+}

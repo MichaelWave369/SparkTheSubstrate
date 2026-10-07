@@ -1,0 +1,51 @@
+{
+  "id": "echo-lives",
+  "title": "Echo Lives",
+  "version": "0.1.0",
+  "authenticity": "authentic",
+  "commit": "798613099d38c3a9de7f098ff4d5a617c4e8c048",
+  "sourceRoot": "dist",
+  "sourceBytes": 621073,
+  "sources": [
+    {
+      "file": "dist/app.js",
+      "frozen": "source/app.js",
+      "sha256": "d8b3ab5ae93c280611afe56b85c8965ca7a6f9fa17215d965e2af06c921b13d9",
+      "bytes": 23294
+    },
+    {
+      "file": "dist/engine.js",
+      "frozen": "source/engine.js",
+      "sha256": "10b0695fd2d45819305cab2e827be81d1ffb47d662d49d63fcd6a7340e49b137",
+      "bytes": 38877
+    },
+    {
+      "file": "dist/index.html",
+      "frozen": "source/index.html",
+      "sha256": "aacbb0ebe8407a1272950a37c2ab6f745e5744b5683734d95a72ea377f42e77b",
+      "bytes": 3247
+    },
+    {
+      "file": "dist/style.css",
+      "frozen": "source/style.css",
+      "sha256": "a761c160d09d284556a3dfe663b9ecfb36893ae83106ca3b0047c79748959faf",
+      "bytes": 24829
+    },
+    {
+      "file": "dist/worlds.webp",
+      "frozen": "worlds.webp",
+      "sha256": "0a633014211194e85e2d77548d22b297adfe290646082d2fb69a8cd23d1488d0",
+      "bytes": 530826
+    }
+  ],
+  "wrapper": "opaque sandbox; classic bundle; inert source until storage handshake; CSP script hashes; device bridge",
+  "bundler": "esbuild 0.28.0",
+  "bundleSha256": "8fa9e398bade866f99ce8c7f95f57aae65f7eb0d87108c93775af4617629f7fa",
+  "runtimeSha256": "416ec27950f16b5952f904a05af04bd4197edf27de0bd70fa896a4f53ddcd1c5",
+  "htmlSha256": "21c471b79e7404dcfcad694e7b219de89151db8ea32f8f5067b808e5da1d31a1",
+  "removed": "external font imports only; system fallbacks remain",
+  "bytes": {
+    "html": 107947,
+    "bundle": 67477
+  }
+}

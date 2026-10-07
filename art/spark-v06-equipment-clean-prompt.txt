@@ -1,0 +1,10 @@
+Use case: precise-object-edit.
+Edit target: the attached existing twelve-equipment transparent atlas. This is a targeted layout repair, not new artwork.
+
+Preserve ALL TWELVE existing equipment designs, original colors, materials, painterly dark fantasy style, details, orientation and exact row-major order. Keep the same 4-column by 3-row equal SQUARE grid and 4:3 canvas aspect ratio, ideally the existing 1448 by 1086 pixels. Order stays: Tideblade, Coral Mail, Thorn Staff, Grove Mantle / Cinder Maul, Furnace Plate, Night Fangs, Veil Garb / Orbit Prism, Astral Aegis, First Light, Dawn Shell. Night Fangs remains one paired-dagger equipment icon in its own cell.
+
+CHANGE ONLY SIZE, POSITION, AND TRANSPARENT GUTTERS: reconstruct each complete existing item including its full blade tips, staff ends, hammer handle, prism tips, orb mounting, ribbons, armor edges and glow, then uniformly scale it down and center it inside its own cell. The ENTIRE item and all glow must fit inside the CENTRAL 70% of the cell in both width and height. Every cell must have at least 15% of its width as genuinely transparent clear padding on EACH of its four sides. On a 362-pixel cell, this means at least 55 pixels of entirely transparent padding left, right, top and bottom, and a maximum complete icon width/height of 252 pixels. Favor slightly smaller icons if necessary for completely safe margins.
+
+Remove any neighboring-item fragments and all background haze. There must be NO tips, glowing rays, handles, edges, haze or fragments in the gutters, touching slice boundaries, or crossing into neighboring cells. Full border bands and every horizontal/vertical slice boundary must have alpha zero. Restore any previously clipped small tip as part of its own complete original item, then keep that whole icon inside its central 70% area.
+
+Output true transparent alpha PNG. Exactly twelve complete original equipment icons, same order and identity; no new icons, removals, variants, redesigns, wearers, people or replacement equipment. No floor, scenery, backgrounds, shadows, checkerboard, gridlines, frames, labels, letters, words, numbers, UI, HUD, logos or watermarks.

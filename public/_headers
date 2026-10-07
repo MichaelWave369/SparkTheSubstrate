@@ -1,0 +1,12 @@
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/*.js
+  Cache-Control: no-cache
+/*.css
+  Cache-Control: no-cache
+/legacy/*
+  Cache-Control: no-cache
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff

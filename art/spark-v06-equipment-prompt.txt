@@ -1,0 +1,24 @@
+Use case: stylized-concept.
+Asset type: original functional transparent twelve-equipment icon atlas for the painterly gothic action RPG Spark v0.6.
+
+Create ONE PNG at exactly 1536 by 1152 pixels, overall 4:3 landscape aspect ratio. The layout is EXACTLY FOUR columns by THREE rows of TWELVE equally sized 384 by 384 square cells. Each cell contains ONE centered complete isolated physical equipment icon. True transparent alpha background, not rendered black, white, colored haze or checkerboard. No labels, captions, UI slot backgrounds, grid lines, frames or dividers.
+
+Critical icon spacing: every entire item, including blade tips, handles, straps, ribbons and any glow, fits inside a central approximately 230 by 230 pixel area in its cell, leaving at least 60 pixels of clear transparent margin on every side. Icons are complete and centered; no clipping or overlap between cells.
+
+Style/medium: worn refined hand-painted dark teal-and-antique-gold gothic fantasy game equipment icons. Match Spark's ancient Demiurge world of living stone and machine, finely textured dark metal, crystal, organic wood/leaves and weathered cloth. Strong readable silhouettes at 32–64 pixels display size. Tangible objects viewed from slightly above at a three-quarter angle, no wearer or body inside armor. Restrained luminous accent colors. No external floor shadow or painted background glow.
+
+Exact row-major order, left to right:
+ROW 1, INDEX 0 — TIDEBLADE: one aqua curved sword, compact complete dark silver/antique brass hilt and curved sea-blue crystalline blade with restrained cyan glow.
+ROW 1, INDEX 1 — CORAL MAIL: one blue/coral armor piece, compact empty torso armor with dark blue sea-metal mail and coral-red accents, no wearer.
+ROW 1, INDEX 2 — THORN STAFF: one compact wooden green staff, gnarled dark wood shaft with small emerald leaf/crystal crown and thorn details. Entire staff fits inside its square, shown diagonally if needed.
+ROW 1, INDEX 3 — GROVE MANTLE: one leaf armor mantle, compact empty shoulder-and-torso armor made of layered emerald leaves and dark bark fittings, no wearer.
+ROW 2, INDEX 4 — CINDER MAUL: one brass magma hammer, compact complete short-handled worn brass heavy hammer with contained ember-orange magma seams.
+ROW 2, INDEX 5 — FURNACE PLATE: one bronze plate armor piece, compact empty heavy torso armor with worn furnace-bronze plates and contained amber core accents, no wearer.
+ROW 2, INDEX 6 — NIGHT FANGS: one paired equipment set of two compact violet twin daggers arranged together as a single icon, dark handles and short violet crystal blades, fully inside one cell.
+ROW 2, INDEX 7 — VEIL GARB: one shadow cloak armor piece, compact folded charcoal/violet cloak and small dark armored clasp, no wearer.
+ROW 3, INDEX 8 — ORBIT PRISM: one white-and-blue crystal weapon artifact, compact complete faceted luminous pale-blue and white crystal in a small worn silver/gold weapon mounting, no extra items.
+ROW 3, INDEX 9 — ASTRAL AEGIS: one ivory space armor piece, compact empty ivory/silver torso armor with restrained pale-blue celestial core accents and dark mechanical joints, no wearer.
+ROW 3, INDEX 10 — FIRST LIGHT: one golden light orb weapon artifact, compact intensely luminous gold central orb in a small dark antique-gold physical mounting, contained short luminous rays comfortably inside its cell.
+ROW 3, INDEX 11 — DAWN SHELL: one gold luminous armor piece, compact empty antique-gold torso armor with contained warm golden light in seams, strong shell silhouette, no wearer.
+
+Constraints: exactly twelve unique equipment icons, exact 4-column by 3-row equal square-cell layout, stated order. Each icon is complete, centered and isolated with generous clear transparent margins. True alpha transparency outside objects, no haze background. No text, writing, letters, numbers, labels, captions, UI, HUD, frames, slot backgrounds, grid lines, logos, watermark, floor, scenery, hands, people, wearers, extra items or variants.

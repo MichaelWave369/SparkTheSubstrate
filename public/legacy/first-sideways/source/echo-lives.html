@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101817">
+  <title>Spark: The Substrate</title>
+  <meta name="description" content="A choice-driven reincarnation simulation. Inhabit six forms, change the world, and discover what survives a life.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101817'/%3E%3Cpath d='M16 3L19 13L29 16L19 19L16 29L13 19L3 16L13 13Z' fill='%23f3c37a'/%3E%3C/svg%3E">
+  <link rel="preload" href="worlds.webp" as="image">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js?v=0.13.0"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+  <dialog id="help" aria-labelledby="help-title">
+    <div class="dialog-head"><span class="eyebrow">A FIELD GUIDE</span><button class="icon-button" data-action="close-dialog" aria-label="Close guide">×</button></div>
+    <h2 id="help-title">You are the spark.<br>The body is a season.</h2>
+    <p>The Demiurge built a world of <strong>six layers, six regions, and six sectors</strong>: 216 cells of living matter, machinery, and memory. It calls this arrangement perfect. You get to choose how to live inside it.</p>
+    <div class="guide-list">
+      <p><strong>Make a choice.</strong> Every choice advances time, changes your spark, and leaves a ripple in the world. Read the outcome, then continue.</p>
+      <p><strong>Inhabit a form.</strong> A life lasts up to six decisions, or until its energy runs out. Your karma weights the three forms offered for your next life. No form is a punishment; each has a different way to change the world.</p>
+      <p><strong>Keep what matters.</strong> Karma, awareness, attachment, and the world carry across lives. Your new body starts with fresh energy. Holding too tightly to power clouds awareness.</p>
+      <p><strong>Find the opening.</strong> Between lives, a passage opens when awareness reaches 80, karma reaches +35, attachment is at most 35, world freedom reaches 50, and you have inhabited three different forms. You may leave—or keep living.</p>
+    </div>
+    <p class="dialog-footnote">A fictional cosmology for a game. Your journey is saved on this device.</p>
+  </dialog>
+  <dialog id="reset" aria-labelledby="reset-title">
+    <div class="dialog-head"><span class="eyebrow">ANOTHER BEGINNING</span><button class="icon-button" data-action="close-dialog" aria-label="Close restart dialog">×</button></div>
+    <h2 id="reset-title">Begin a new spark?</h2>
+    <p>This replaces the journey saved on this device, including its memories and changes to the world.</p>
+    <div class="dialog-actions"><button class="secondary-button" data-action="close-dialog">Keep this journey</button><button class="primary-button" data-action="reset-confirm">Begin again</button></div>
+  </dialog>
+  <dialog id="form-detail" aria-labelledby="form-title"></dialog>
+  <noscript><p class="noscript">Enable JavaScript to begin your journey through the substrate.</p></noscript>
+</body>
+</html>

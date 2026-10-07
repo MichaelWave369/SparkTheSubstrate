@@ -1,0 +1,51 @@
+[
+  {
+    "id": "echo-lives",
+    "version": "0.1.0",
+    "commit": "798613099d38c3a9de7f098ff4d5a617c4e8c048",
+    "sourceBytes": 621073,
+    "htmlBytes": 107947
+  },
+  {
+    "id": "first-descent",
+    "version": "0.2.0",
+    "commit": "eeca7f3bf167a1880bbd4d15c6d4d4211a4c94e2",
+    "sourceBytes": 1525796,
+    "htmlBytes": 139190
+  },
+  {
+    "id": "first-duel",
+    "version": "0.12.1",
+    "commit": "e65856cbad5a24df9d292ab896e6bcac1a52aba0",
+    "sourceBytes": 11595665,
+    "htmlBytes": 613465
+  },
+  {
+    "id": "first-sideways",
+    "version": "0.13.0",
+    "commit": "37adc81f6c1ed6211c885e7aac293f7075ba8bca",
+    "sourceBytes": 15323288,
+    "htmlBytes": 778159
+  },
+  {
+    "id": "first-endless",
+    "version": "0.9.0",
+    "commit": "73d7d9bce0683daf075fd706f6cbad6a75790cc7",
+    "sourceBytes": 10112954,
+    "htmlBytes": 493666
+  },
+  {
+    "id": "first-forge",
+    "version": "0.4.0",
+    "commit": "ce6d1fbf8cf5bdc1bbdaddbe6be32f1fb055ea22",
+    "sourceBytes": 3691297,
+    "htmlBytes": 206201
+  },
+  {
+    "id": "first-mastery",
+    "version": "0.7.0",
+    "commit": "4cfd6fa79b8bfd19828f0878182375f6f86a906d",
+    "sourceBytes": 6463963,
+    "htmlBytes": 356677
+  }
+]

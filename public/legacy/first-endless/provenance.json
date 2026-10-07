@@ -1,0 +1,273 @@
+{
+  "id": "first-endless",
+  "title": "First Endless",
+  "version": "0.9.0",
+  "authenticity": "authentic",
+  "commit": "73d7d9bce0683daf075fd706f6cbad6a75790cc7",
+  "sourceRoot": "public",
+  "sourceBytes": 10112954,
+  "sources": [
+    {
+      "file": "public/action-engine.js",
+      "frozen": "source/action-engine.js",
+      "sha256": "84d2f8da6cefd0b2f5ad58f85e7ebc602900f1fa822ab66a8b52abd8be26db84",
+      "bytes": 66474
+    },
+    {
+      "file": "public/app.js",
+      "frozen": "source/app.js",
+      "sha256": "76941c7ab120c0c742aa91c9a1a0b5bbb2c730fe690aa3f62e668c9647021161",
+      "bytes": 23346
+    },
+    {
+      "file": "public/arena.webp",
+      "frozen": "arena.webp",
+      "sha256": "bd96d0234ed50588427ca95680d02f69ea9aacda2e9ea66e1c298eda1223d96f",
+      "bytes": 374538
+    },
+    {
+      "file": "public/combat-view.js",
+      "frozen": "source/combat-view.js",
+      "sha256": "31eebd00deabf07ef0361415fa9dd39308847eaa23c1277451db05644d2f68a3",
+      "bytes": 7394
+    },
+    {
+      "file": "public/descent.css",
+      "frozen": "source/descent.css",
+      "sha256": "32c22473c21434b15a4aa0bb758b9615a3b294c04766f87096efcabf4f1c7bdd",
+      "bytes": 52792
+    },
+    {
+      "file": "public/descent.js",
+      "frozen": "source/descent.js",
+      "sha256": "60d4be7c3207c2dd513e239e7d0145930c0188276c511a51d345e3dd7a401089",
+      "bytes": 110894
+    },
+    {
+      "file": "public/duel-engine.js",
+      "frozen": "source/duel-engine.js",
+      "sha256": "402273a0a272191412f1e1621615fb3848138245cfe04274fa59c23742f45fbd",
+      "bytes": 15955
+    },
+    {
+      "file": "public/duel-view.js",
+      "frozen": "source/duel-view.js",
+      "sha256": "1d501ec38f9d35879cba385f26ab44674a16cafb0589da8fdb2bc1470ce06d4c",
+      "bytes": 27384
+    },
+    {
+      "file": "public/dungeon.js",
+      "frozen": "source/dungeon.js",
+      "sha256": "09072fd7a3871eb4d828be00bccb659d8c5d0a0d58a4c84a54f1e426aaf3b033",
+      "bytes": 5444
+    },
+    {
+      "file": "public/echo-lives.html",
+      "frozen": "source/echo-lives.html",
+      "sha256": "aacbb0ebe8407a1272950a37c2ab6f745e5744b5683734d95a72ea377f42e77b",
+      "bytes": 3247
+    },
+    {
+      "file": "public/enemies-v4.webp",
+      "frozen": "enemies-v4.webp",
+      "sha256": "0c8f36c5505a0d4ca684137886ff09057a7d0eaeb5eeff2f8c3d36e22b53f870",
+      "bytes": 467010
+    },
+    {
+      "file": "public/enemies.webp",
+      "frozen": "enemies.webp",
+      "sha256": "99438c83eb2fa311f22130a85809790edab48abd696adfbb2a4b9cb2fba238a1",
+      "bytes": 350160
+    },
+    {
+      "file": "public/engine.js",
+      "frozen": "source/engine.js",
+      "sha256": "10b0695fd2d45819305cab2e827be81d1ffb47d662d49d63fcd6a7340e49b137",
+      "bytes": 38877
+    },
+    {
+      "file": "public/entry.js",
+      "frozen": "source/entry.js",
+      "sha256": "1906c2a2450dad757dc239da3ae01a913bfb5c0fa28a7486146b8d904b266c5b",
+      "bytes": 2120
+    },
+    {
+      "file": "public/equipment-v6.webp",
+      "frozen": "equipment-v6.webp",
+      "sha256": "50f258245c619063da539b6556c8890a92ba2367fcc0f790051384abac1d6e31",
+      "bytes": 430594
+    },
+    {
+      "file": "public/equipment.js",
+      "frozen": "source/equipment.js",
+      "sha256": "adc451b45bbbdb7552130485656d8c18d290510c6e11ca5858ce409b0891dbe7",
+      "bytes": 7626
+    },
+    {
+      "file": "public/equipment.webp",
+      "frozen": "equipment.webp",
+      "sha256": "101d2f6bf628d9510c3ebf41109d63e3985fd994e71443a9c9b82a20d684cf41",
+      "bytes": 334754
+    },
+    {
+      "file": "public/exploration.js",
+      "frozen": "source/exploration.js",
+      "sha256": "2f53ce55454f38625c20dfcc0e07206305632e784d9ca407da582695d7cedd95",
+      "bytes": 658
+    },
+    {
+      "file": "public/favicon.svg",
+      "frozen": "favicon.svg",
+      "sha256": "e6d2e59b7b5bbb0342e0fb496dfc262decbfe4426bbb7b047aec8d467d1dc6f7",
+      "bytes": 712
+    },
+    {
+      "file": "public/file.svg",
+      "frozen": "file.svg",
+      "sha256": "1e0ae4d1a1ddfa36752988647b731e4abf150c414d069ec83c96fb0aaeff0307",
+      "bytes": 392
+    },
+    {
+      "file": "public/floors-v4.webp",
+      "frozen": "floors-v4.webp",
+      "sha256": "917ff02f2a4b937bf3a26942f9841d90a78565e36317b8a7a543329ec07e9ded",
+      "bytes": 498606
+    },
+    {
+      "file": "public/floors-v5.webp",
+      "frozen": "floors-v5.webp",
+      "sha256": "fd6ecd92830c80398028f8b849e31e340533ada56bf52cd09c5294b3d143a1ff",
+      "bytes": 617530
+    },
+    {
+      "file": "public/floors.webp",
+      "frozen": "floors.webp",
+      "sha256": "c25c47196b30135353221139518aa6075a2c17f3878dd090ed0689a61f977641",
+      "bytes": 455840
+    },
+    {
+      "file": "public/globe.svg",
+      "frozen": "globe.svg",
+      "sha256": "d051a8c47936990a9085693d307bb7cea1bc1b6d7ed956bcbaacf674f4ec96b9",
+      "bytes": 1036
+    },
+    {
+      "file": "public/index.html",
+      "frozen": "source/index.html",
+      "sha256": "6c13b4836a1119735ee96822efabfc0681bebe4c47ad66d0493b5e8910444e04",
+      "bytes": 28256
+    },
+    {
+      "file": "public/mastery.js",
+      "frozen": "source/mastery.js",
+      "sha256": "4a7360ccb52c6a7c80a9d1f38731dbe6a4bf96b231744304234bc9133371867e",
+      "bytes": 7307
+    },
+    {
+      "file": "public/online.js",
+      "frozen": "source/online.js",
+      "sha256": "827a47918f5b214a230626f3b1c18206be59bec5e84d38c5a6be74d6e4edbbe9",
+      "bytes": 3646
+    },
+    {
+      "file": "public/progress.js",
+      "frozen": "source/progress.js",
+      "sha256": "6a475bca5d1fc81e56cfd6152db2727467e28ed7286850e034ac9603b70283b0",
+      "bytes": 3331
+    },
+    {
+      "file": "public/props-v5.webp",
+      "frozen": "props-v5.webp",
+      "sha256": "3d4ec6c81011b94957b7ddb280adf21087dd50527fe76c4ad0c452f86936d3a5",
+      "bytes": 271178
+    },
+    {
+      "file": "public/run-record.js",
+      "frozen": "source/run-record.js",
+      "sha256": "8d3388d5bc5ea988b2b20ba5e87a061488d884cdd1fb3af70e3ea442ac73e7ce",
+      "bytes": 2958
+    },
+    {
+      "file": "public/settings.js",
+      "frozen": "source/settings.js",
+      "sha256": "d770909940578e2ec4d6678dd6f07928a289c024a8b29814fdbace13a6ce1797",
+      "bytes": 5694
+    },
+    {
+      "file": "public/share-run.js",
+      "frozen": "source/share-run.js",
+      "sha256": "f525b4960537491a15f59e0d1e4059c279202988ae95966f0f892052043ff614",
+      "bytes": 2351
+    },
+    {
+      "file": "public/spark-poster-v1.png",
+      "frozen": "spark-poster-v1.png",
+      "sha256": "c291e6bb30dba8643f4406b04d9a4a5f3fa6905b177db266af1a3925611559aa",
+      "bytes": 3534168
+    },
+    {
+      "file": "public/sprites.webp",
+      "frozen": "sprites.webp",
+      "sha256": "b135c33825552dc4d08451fdb47560bcf33e2ad065c97e1a7ad2c0a83359ac96",
+      "bytes": 449602
+    },
+    {
+      "file": "public/story.js",
+      "frozen": "source/story.js",
+      "sha256": "9854764dc5b1c8bf9132cb7c524f69792c27661071cf1d3f1478fbd1a1340663",
+      "bytes": 12458
+    },
+    {
+      "file": "public/style.css",
+      "frozen": "source/style.css",
+      "sha256": "a761c160d09d284556a3dfe663b9ecfb36893ae83106ca3b0047c79748959faf",
+      "bytes": 24829
+    },
+    {
+      "file": "public/window.svg",
+      "frozen": "window.svg",
+      "sha256": "decf1cf7bb22b5c99c4857cfcd5718ce5465c4454166317589c83fc73df74b66",
+      "bytes": 386
+    },
+    {
+      "file": "public/world-bosses-v6.webp",
+      "frozen": "world-bosses-v6.webp",
+      "sha256": "3c2a72d6cd8aaf3787dc7d5866f47fd322b2eae965ca174c06205737fcb0c0f9",
+      "bytes": 643842
+    },
+    {
+      "file": "public/world-floors-v6.webp",
+      "frozen": "world-floors-v6.webp",
+      "sha256": "913c1bbd8b9b8773bc042168be0300c3bdb74b83da4fb557d27a167211e4eff7",
+      "bytes": 676358
+    },
+    {
+      "file": "public/world-story.js",
+      "frozen": "source/world-story.js",
+      "sha256": "e9cf66463419c0be97c729a2a4e320ce4ad47119112a48bfbfdcff3de37b831d",
+      "bytes": 10129
+    },
+    {
+      "file": "public/worlds.js",
+      "frozen": "source/worlds.js",
+      "sha256": "59026d887218175c558e8850c9b4901a8305dc3a9907f94bf95f7efb5bd3c220",
+      "bytes": 12252
+    },
+    {
+      "file": "public/worlds.webp",
+      "frozen": "worlds.webp",
+      "sha256": "0a633014211194e85e2d77548d22b297adfe290646082d2fb69a8cd23d1488d0",
+      "bytes": 530826
+    }
+  ],
+  "wrapper": "opaque sandbox; classic bundle; inert source until storage handshake; CSP script hashes; device bridge",
+  "bundler": "esbuild 0.28.0",
+  "bundleSha256": "fc417c659e4b120e288de6c44f8bc4a2df13ec1c5d6dc46db62603ad8859bb77",
+  "runtimeSha256": "416ec27950f16b5952f904a05af04bd4197edf27de0bd70fa896a4f53ddcd1c5",
+  "htmlSha256": "916f238f879d4dab130d4d90bc697c3da30faa29a04d67345411a56d51465d91",
+  "removed": "external font imports only; system fallbacks remain",
+  "bytes": {
+    "html": 493666,
+    "bundle": 400195
+  }
+}

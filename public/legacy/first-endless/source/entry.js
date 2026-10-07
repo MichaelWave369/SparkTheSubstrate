@@ -1,0 +1,10 @@
+export const INPUT_PROFILES=['pc','controller','mobile'];
+export const PROFILE_LABELS={pc:'PC',controller:'Controller',mobile:'Mobile'};
+const PAD={dash:'A',power:'X',interact:'B',morph:'Y',map:'LB',pause:'Start'};
+const TOUCH={dash:'DASH',power:'POWER',interact:'GATE',morph:'MORPH',map:'MAP',pause:'PAUSE'};
+export function inputHint(profile,action,bindings={}){if(profile==='mobile')return 'Tap '+TOUCH[action];if(profile==='controller')return PAD[action];const key=bindings[action]??({dash:' ',power:'f',interact:'e',morph:'q',map:'m',pause:'escape'}[action]);return key===' '?'Space':key==='escape'?'Escape':String(key).toUpperCase();}
+export function moveHint(profile,bindings={}){return profile==='mobile'?'Drag the stick':profile==='controller'?'Left stick / D-pad':[bindings.up??'w',bindings.left??'a',bindings.down??'s',bindings.right??'d'].map(k=>k.toUpperCase()).join(' / ')+' or arrows';}
+export function profileCopy(profile,bindings={}){return moveHint(profile,bindings)+' · '+['dash','power','interact','morph'].map(action=>inputHint(profile,action,bindings)+' '+({dash:'dash',power:'power',interact:'gate',morph:'vessels'}[action])).join(' · ')+(profile==='mobile'?' · Rotate to landscape.':'');}
+export function adaptPrompt(text,profile,bindings={}){return String(text??'').replace(/(?:Press|press|hold|Hold) (Space|F|E|Q|M)\b/g,(all,key)=>{const action={Space:'dash',F:'power',E:'interact',Q:'morph',M:'map'}[key];return /hold/i.test(all)?(profile==='mobile'?'Hold '+({interact:'GATE',power:'POWER'}[action]??action):'Hold '+inputHint(profile,action,bindings)):inputHint(profile,action,bindings);});}
+export function guideUnlocks(meta,run,rememberedGift=false){return {intro:true,gift:!!(rememberedGift||meta.bestRun?.level>=2||run?.level>=2||meta.lastRun?.level>=2||Object.values(run?.boons??{}).some(Boolean)),death:meta.runs>0,key:(run?.keys??meta.keys??[]).length>0,resonance:(run?.abilities??meta.abilities??[]).includes('morph'),seal:(run?.seals??meta.seals??[]).length>0};}
+export function hasJourney(meta,run){return !!run||meta.runs>0||(meta.keys??[]).length>0||(meta.seals??[]).length>0;}
