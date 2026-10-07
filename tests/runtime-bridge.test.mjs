@@ -192,3 +192,41 @@ test("Threshold v1 refuses a second independent controller", () => {
     /supports one controller/,
   );
 });
+
+
+test("wire observation contains no undefined values", () => {
+  const adapter = createSparkThresholdAdapterV1();
+  register(adapter);
+
+  const observation = adapter.observe("phicade-seat-1");
+
+  function assertJsonWire(value, path = "value", seen = new Set()) {
+    assert.notEqual(value, undefined, path + " must not be undefined");
+    if (value === null || ["string", "boolean"].includes(typeof value)) return;
+    if (typeof value === "number") {
+      assert.ok(Number.isFinite(value), path + " must be finite");
+      return;
+    }
+    assert.equal(typeof value, "object", path + " must be JSON-compatible");
+    assert.ok(!seen.has(value), path + " must not be circular");
+    seen.add(value);
+    if (Array.isArray(value)) {
+      value.forEach((item, index) =>
+        assertJsonWire(item, path + "[" + index + "]", seen),
+      );
+    } else {
+      assert.ok(
+        [Object.prototype, null].includes(Object.getPrototypeOf(value)),
+        path + " must be a plain object",
+      );
+      for (const [key, item] of Object.entries(value))
+        assertJsonWire(item, path + "." + key, seen);
+    }
+    seen.delete(value);
+  }
+
+  assertJsonWire(observation);
+  assert.ok(Array.isArray(observation.state.exits));
+  for (const exit of observation.state.exits)
+    assert.notEqual(exit.requires, undefined);
+});
