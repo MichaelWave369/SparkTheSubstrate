@@ -143,6 +143,12 @@ def audit_pair(task, model, digest, receipt, score):
     buttons = chosen_buttons(turns)
     submissions = submitted_types(turns)
     events = semantic_event_types(turns)
+    rejection_reasons = [
+        event.get("payload", {}).get("reason", "UNSPECIFIED")
+        for turn in turns
+        for event in turn.get("directEvents", [])
+        if event.get("type") == "SPARK_ACTION_REJECTED"
+    ]
     recorded_submissions = [
         turn["submittedIntent"]
         for turn in turns if isinstance(turn.get("submittedIntent"), dict)
@@ -166,6 +172,7 @@ def audit_pair(task, model, digest, receipt, score):
         "chosenButtons": dict(sorted(Counter(buttons).items())),
         "submittedIntents": dict(sorted(Counter(submissions).items())),
         "semanticEvents": dict(sorted(Counter(events).items())),
+        "rejectionReasons": dict(sorted(Counter(rejection_reasons).items())),
         "resultClass": diagnose(task, success, buttons, submissions, events, turns, progress),
         "turns": len(turns),
     }
@@ -202,8 +209,8 @@ def markdown_report(audit):
         "Source: Rung 54 full-scored evidence artifacts from run " + RUN_ID + ".",
         "This report classifies observed actions; it does not infer the model's reasoning.",
         "",
-        "| Model | Task | Trial | Outcome | Class | Buttons | Intents | Events |",
-        "| --- | --- | ---: | --- | --- | --- | --- | --- |",
+        "| Model | Task | Trial | Outcome | Class | Buttons | Intents | Events | Rejection reasons |",
+        "| --- | --- | ---: | --- | --- | --- | --- | --- | --- |",
     ]
     for model in audit["models"]:
         for t in model["trials"]:
@@ -213,7 +220,7 @@ def markdown_report(audit):
                 f"| {model['model']} | {t['taskId']} | {t['repetition']} | "
                 f"{'success' if t['success'] else 'not met'} | {t['resultClass']} | "
                 f"{fmt(t['chosenButtons'])} | {fmt(t['submittedIntents'])} | "
-                f"{fmt(t['semanticEvents'])} |"
+                f"{fmt(t['semanticEvents'])} | {fmt(t['rejectionReasons'])} |"
             )
     lines += [
         "",
