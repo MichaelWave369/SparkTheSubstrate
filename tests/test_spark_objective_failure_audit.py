@@ -73,6 +73,16 @@ class ObjectiveAuditTests(unittest.TestCase):
         result = audit.audit_pair("use-pulse", model, digest, receipt, score)
         self.assertEqual(result["resultClass"], "PULSE_COUNTER_EVENT_MISMATCH")
 
+    def test_explicit_rejection_reasons_are_preserved(self):
+        model, digest, receipt, score = sample(buttons=("DASH_DOWN",))
+        receipt["turns"][0]["directEvents"] = [{
+            "type": "SPARK_ACTION_REJECTED",
+            "payload": {"reason": "DASH_COOLDOWN"},
+        }]
+        result = audit.audit_pair("use-pulse", model, digest, receipt, score)
+        self.assertEqual(result["rejectionReasons"], {"DASH_COOLDOWN": 1})
+        self.assertEqual(result["resultClass"], "PULSE_NOT_PROPOSED")
+
     def test_positive_pulse(self):
         model, digest, receipt, score = sample(buttons=("PULSE",), progress=1, success=True)
         result = audit.audit_pair("use-pulse", model, digest, receipt, score)
