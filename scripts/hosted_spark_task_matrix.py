@@ -320,20 +320,11 @@ def aggregate(args):
             scored = score.get("scored", 0)
             progress = score.get("meanProgress")
             duration = score.get("meanProviderTurnSeconds")
+            progress_label = f"{progress:.4f}" if isinstance(progress, (float, int)) else "—"
+            duration_label = f"{duration:.3f}" if isinstance(duration, (float, int)) else "—"
             lines.append(
                 f"| {model['model']} | {task_id} | {scored}/{REPETITIONS} | "
-                f"{successes}/{REPETITIONS} | "
-                f"{progress:.4f}" if False else ""
-            )
-            lines.pop()
-            lines.append(
-                f"| {model['model']} | {task_id} | {scored}/{REPETITIONS} | "
-                f"{successes}/{REPETITIONS} | "
-                f"{progress:.4f}" if isinstance(progress, (float, int)) else
-                f"| {model['model']} | {task_id} | {scored}/{REPETITIONS} | {successes}/{REPETITIONS} | —"
-            )
-            lines[-1] += (
-                f" | {duration:.3f} |" if isinstance(duration, (float, int)) else " | — |"
+                f"{successes}/{REPETITIONS} | {progress_label} | {duration_label} |"
             )
     lines.extend([
         "",
