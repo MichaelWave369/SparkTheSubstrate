@@ -1,0 +1,71 @@
+name: Rung 55 SPARK Objective Failure Audit
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/rung55-spark-objective-audit.yml"
+      - "scripts/audit_spark_objective_failures.py"
+      - "tests/test_spark_objective_failure_audit.py"
+      - "docs/RUNG55_SPARK_OBJECTIVE_AUDIT.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    name: evidence / distinguish model proposals from engine effects
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout audit source
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify pure audit parser contract
+        run: |
+          python3 -m py_compile scripts/audit_spark_objective_failures.py
+          python3 -m unittest discover -s tests -p 'test_spark_objective_failure_audit.py' -v
+
+      - name: Checkout exact canonical SPARK bridge used in Rung 54
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _qualified_spark
+
+      - name: Verify real engine positive controls independently
+        run: node --test tests/runtime-bridge.test.mjs
+        working-directory: _qualified_spark
+
+      - name: Download all actual Rung 54 model-trial artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rung54-*
+          path: _source_trials
+          merge-multiple: false
+          run-id: 37719857491
+          github-token: ${{ github.token }}
+          repository: MichaelWave369/SparkTheSubstrate
+
+      - name: Audit 12 scored model-action traces
+        run: |
+          python3 scripts/audit_spark_objective_failures.py \
+            --input _source_trials \
+            --output _diagnosis
+
+      - name: Publish Rung 55 evidence summary
+        if: success()
+        run: cat _diagnosis/objective-failure-audit.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve machine-readable diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rung55-spark-objective-failure-audit
+          path: _diagnosis/**
+          if-no-files-found: warn
