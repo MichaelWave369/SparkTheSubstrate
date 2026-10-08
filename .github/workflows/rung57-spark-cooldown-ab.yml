@@ -1,0 +1,198 @@
+name: Rung 57 Cooldown-Aware SPARK A/B Trials
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/rung57-spark-cooldown-ab.yml"
+      - "scripts/compare_spark_cooldown_ab.py"
+      - "tests/test_compare_spark_cooldown_ab.py"
+      - "docs/RUNG57_COOLDOWN_AB_TRIALS.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  contract:
+    name: evidence / task matrix contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen task runner and A/B comparison contract
+        run: |
+          python3 -m py_compile scripts/hosted_spark_task_matrix.py
+          python3 -m py_compile scripts/compare_spark_cooldown_ab.py
+          python3 -m unittest discover -s tests -p "test_hosted_spark_task_matrix.py" -v
+          python3 -m unittest discover -s tests -p "test_compare_spark_cooldown_ab.py" -v
+
+  admitted-model:
+    name: model / ${{ matrix.model }}
+    needs: contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model: qwen2.5:0.5b-instruct
+            safe: qwen2.5-0.5b-instruct
+            digest: a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67
+          - model: llama3.2:1b
+            safe: llama3.2-1b
+            digest: baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878
+
+    steps:
+      - name: Checkout matrix harness
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned SPARK bridge
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/SparkTheSubstrate
+          ref: fae7879820bef63a550fea486b2defbc3cee5304
+          path: _spark
+
+      - name: Checkout pinned PixelForge runtime
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/parallax-pixelforge
+          ref: 8790c3b00b5184136fb8fa6a2fbdabe834eeca22
+          path: _pixelforge
+
+      - name: Checkout exact merged PhiCade Rung 56
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/PhiCade
+          ref: ea1f887addeab0c44500f7f5c044fde4e5daa2c6
+          path: _phicade
+
+      - name: Retrieve actual Rung 51 isolated admission evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: phicade-spark-isolated-model-identity-matrix-rung51
+          run-id: 37673671800
+          github-token: ${{ github.token }}
+          repository: MichaelWave369/SparkTheSubstrate
+          path: _admission_source
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install bounded native dependencies
+        timeout-minutes: 8
+        run: |
+          sudo timeout 180s apt-get update \
+            -o Acquire::Retries=3 \
+            -o Acquire::http::Timeout=20 \
+            -o Acquire::https::Timeout=20
+          sudo timeout 240s apt-get install -y \
+            -o Acquire::Retries=3 \
+            -o Acquire::http::Timeout=20 \
+            -o Acquire::https::Timeout=20 \
+            libwebkit2gtk-4.1-dev \
+            build-essential curl wget file libxdo-dev libssl-dev \
+            libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Build exact PhiCade harness and evidence scorers
+        working-directory: _phicade
+        run: |
+          cargo build --manifest-path src-tauri/Cargo.toml --example qualify_spark_ollama
+          cargo build -p phicade-runtime --example qualify_model_admission --example score_spark_playtest
+
+      - name: Convert Rung 51 evidence into governed admission set
+        run: |
+          mkdir -p "_trials/${{ matrix.safe }}"
+          "$GITHUB_WORKSPACE/_phicade/target/debug/examples/qualify_model_admission" \
+            --input "$GITHUB_WORKSPACE/_admission_source/rung51-model-identity-matrix.json" \
+            --out "$GITHUB_WORKSPACE/_trials/${{ matrix.safe }}/admissions.json"
+
+      - name: Install Ollama on isolated runner
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama --version
+
+      - name: Start isolated Ollama
+        run: |
+          nohup ollama serve > "_trials/${{ matrix.safe }}/ollama.log" 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              echo "Ollama is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "_trials/${{ matrix.safe }}/ollama.log" || true
+          exit 1
+
+      - name: Pull admitted model only
+        run: |
+          ollama pull "${{ matrix.model }}"
+          ollama list
+
+      - name: Run identical frozen tasks twice each
+        run: |
+          python3 scripts/hosted_spark_task_matrix.py run \
+            --model "${{ matrix.model }}" \
+            --digest "${{ matrix.digest }}" \
+            --admissions "$GITHUB_WORKSPACE/_trials/${{ matrix.safe }}/admissions.json" \
+            --phicade "$GITHUB_WORKSPACE/_phicade" \
+            --pixelforge "$GITHUB_WORKSPACE/_pixelforge" \
+            --spark "$GITHUB_WORKSPACE/_spark" \
+            --out "$GITHUB_WORKSPACE/_trials/${{ matrix.safe }}"
+
+      - name: Preserve model task evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rung57-${{ matrix.safe }}
+          path: _trials/${{ matrix.safe }}/**
+          if-no-files-found: warn
+
+  aggregate:
+    name: evidence / compare before-after canonical model actions
+    runs-on: ubuntu-latest
+    needs: [contract, admitted-model]
+    if: always()
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download new Rung 57 trials from this run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rung57-*
+          path: _treatment
+          merge-multiple: false
+
+      - name: Download exact historical Rung 54 trial receipts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 37719857491
+          pattern: rung54-*
+          path: _baseline
+          merge-multiple: false
+          github-token: ${{ github.token }}
+          repository: MichaelWave369/SparkTheSubstrate
+
+      - name: Compare frozen models, tasks, controls, and rejections
+        run: |
+          python3 scripts/compare_spark_cooldown_ab.py \
+            --baseline _baseline \
+            --treatment _treatment \
+            --out _matrix
+
+      - name: Publish before-after evidence
+        if: success()
+        run: cat _matrix/cooldown-aware-ab.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve exact A/B comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rung57-spark-cooldown-ab
+          path: _matrix/**
+          if-no-files-found: warn
