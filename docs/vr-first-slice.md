@@ -136,6 +136,21 @@ Spark regression suite, plus `tests/vr-first-slice.test.mjs` and
 
 **Passing these tests is not a physical headset pass.**
 
+## Quest Browser field test receipts
+
+The web-first [Quest 3 Field Acceptance Lab](QUEST3_FIELD_LAB.md) adds a
+privacy-preserving in-memory report on the VR page. It collects only bounded
+WebXR frame callback intervals, JavaScript render-submission timings, browser
+stereo-view counts and controller-hand detection, with no movement traces,
+game-save data or automatic upload. Players explicitly mark twelve real
+headset tests pass/fail/not tested and download or copy the JSON report
+themselves.
+
+These observations are **not headset FPS, GPU timing, stereo-quality proof,
+controller correctness, or user comfort certification**. The live site must
+still be playtested in an actual Quest 3. A green CI job cannot mark the
+physical testing checklist complete.
+
 ## Required real Quest 3 finish line (not yet signed off)
 
 - [ ] HTTPS site opens and controller permission succeeds in Quest Browser
