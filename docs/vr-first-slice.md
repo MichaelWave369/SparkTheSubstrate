@@ -52,6 +52,36 @@ translation of all original 2D assets, Quest-certified release, or XR co-op.
    The original Spark Descent, Sideways, Vault, Memory Arcade, and online
    credential keys are never read, rewritten or merged by this path.
 
+## New headset navigation and comfort options
+
+Before entering immersive VR, the player may set **Gentle (50%)**,
+**Comfortable (75%, default)** or **Original (100%)** movement speed, a
+30° / 45° / 60° snap-turn angle, and an **Off / Subtle / Strong** peripheral
+comfort mask. These settings cannot raise original Spark movement speed,
+never alter damage or cooldowns, and are saved only in browser-local
+`spark-substrate-immersive-vr-comfort-v1`. The actual Descent/VR campaign
+checkpoint remains a **different** local-storage key.
+
+Use **left Quest Touch Y** or **M on desktop** (or the accessible
+**Show room compass** button) to inspect the current room's canonical
+north/east/south/west exits and the exact gate lock reason. The current
+room simulation stops advancing while the map is displayed, including enemy
+combat. Close the map to return to play. Nothing in the map can override a
+canonical locked gate, fabricate keys, or navigate to an unavailable room.
+
+In XR, the map appears **inside the same head-following HUD** already used
+for combat/choices. A small, optionally darkened peripheral mask renders
+in each stereoscopic viewport, *before* the HUD so route text stays readable.
+This is **not** full Quest comfort certification, teleport locomotion or
+field-of-view calibration: test physical headset behavior before release.
+
+Also addressed a progression-softlock risk: after death/victory is explicitly
+banked into Spark's canonical memory system, the engine remains in the
+terminal phase while offering three reincarnation forms. The browser's
+choice UI now refreshes based on the **offered decision IDs and the banked
+rebirth flag**, not just the unchanged phase string. No earned reward,
+metadata or original save schema is modified.
+
 ## Seven canonical worlds
 
 | World | VR architectural motifs | Real engine content |
@@ -111,8 +141,14 @@ Spark regression suite, plus `tests/vr-first-slice.test.mjs` and
 - [ ] HTTPS site opens and controller permission succeeds in Quest Browser
 - [ ] Correct stereo projection, depth, world scale, floor height and head pose
 - [ ] No nausea at seated/snap-turn comfort baseline; accessible exit
-- [ ] Controllers: movement, dash, power, grip interaction, snap turning,
-      pause/resume and unlocked vessel cycling
+- [ ] Controllers: movement, dash, power, grip interaction, adjustable
+      snap turning, left-Y compass, pause/resume and unlocked vessel cycling
+- [ ] Seated speed settings and Off/Subtle/Strong comfort masks actually
+      render in both eyes without covering route/choice text
+- [ ] Compass pauses real combat while visible and correctly updates
+      nearby locked/open gates without bypassing their requirements
+- [ ] Death/victory memory banking immediately replaces the UI choice with
+      the three legitimate new-life forms, including after reload
 - [ ] Threshold → Glass → Machine gate progression, including blocked gate
       reasons, first real combat and first karma decision
 - [ ] Level-up gifts and Eye continue/finish operate inside the headset
