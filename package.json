@@ -14,7 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "test": "node --test tests/*.test.mjs",
     "test:runtime-bridge": "node --test tests/runtime-bridge.test.mjs",
-    "check:runtime-bridge": "node scripts/check-runtime-bridge.mjs"
+    "check:runtime-bridge": "node scripts/check-runtime-bridge.mjs",
+    "audit:public-history": "node scripts/audit-public-history.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
