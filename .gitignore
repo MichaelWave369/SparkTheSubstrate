@@ -44,3 +44,6 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# Generated static-only Pages staging output (never commit deployment artifacts)
+/.pages-site/
