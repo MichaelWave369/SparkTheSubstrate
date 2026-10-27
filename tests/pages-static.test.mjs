@@ -50,7 +50,7 @@ test('static mode blocks room and cloud network attempts while retaining local s
 });
 test('Memory Arcade original-source receipt URLs remain under GitHub project subpath',()=>{
   const js=source('memory-arcade.js');
-  assert.match(js,/href=\\"legacy\/['"]?\+b\.id/);
+  assert.ok(js.includes(`href="legacy/'+b.id+'/provenance.json`));
   assert.ok(!js.includes('href="/legacy/'));
 });
 test('all current game and VR relative ESM imports have deployed targets',()=>{
