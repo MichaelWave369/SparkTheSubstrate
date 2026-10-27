@@ -8,6 +8,7 @@ on:
       - "tests/vr-first-slice.test.mjs"
       - "tests/vr-full-descent.test.mjs"
       - "tests/vr-navigation-comfort.test.mjs"
+      - "tests/vr-quest-field-lab.test.mjs"
       - "docs/vr-first-slice.md"
       - ".github/workflows/immersive-vr.yml"
   push:
@@ -40,7 +41,8 @@ jobs:
           node --check public/vr/spark-vr-math.js
           node --check public/vr/spark-vr-comfort.js
           node --check public/vr/spark-vr-navigation.js
+          node --check public/vr/spark-vr-diagnostics.js
       - name: Prove all canonical worlds, karma, gifts, vessel morphs and isolated VR saves
-        run: node --test tests/vr-first-slice.test.mjs tests/vr-full-descent.test.mjs tests/vr-navigation-comfort.test.mjs
+        run: node --test tests/vr-first-slice.test.mjs tests/vr-full-descent.test.mjs tests/vr-navigation-comfort.test.mjs tests/vr-quest-field-lab.test.mjs
       - name: Preserve all existing Spark engine and save regressions
         run: npm test
