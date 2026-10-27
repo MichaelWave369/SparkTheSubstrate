@@ -33,6 +33,28 @@ commercial derivatives, MIT is not the appropriate license.
   in `public/`. GitHub Pages alone cannot operate the online co-op or
   server-side campaign backup without a separate backend.
 
+## Repeatable private Git history precheck (advisory)
+
+Run `npm run audit:public-history` in a **full local clone** to inspect
+reachable Git object history without printing file contents, names or matched
+credential strings. PR CI runs the check with a full-history checkout and
+shows only counts and indicator classes. Unit tests verify redaction.
+The tool is heuristic and does **not** scan binary archives, blobs larger
+than its bounded text limit, GitHub Actions logs/artifacts, deleted remote
+repositories, or unreachable Git objects. It can produce both false
+positives and false negatives.
+
+The report's `NO_INDICATORS_IN_SCANNED_TEXT` value means exactly that,
+not `CLEAR_TO_PUBLISH`. `MANUAL_REVIEW_REQUIRED` means an owner should
+inspect any candidate material privately and rotate/revoke actual exposed
+credentials. **Do not paste source lines or suspected secrets into GitHub
+Actions output or public PR comments.** The check never changes visibility
+or any game code.
+
+The next human gates remain: contributor and asset rights, existing
+historical Actions logs and build artifacts, Cloudflare-backed online-play
+security, real Quest 3 test, and the owner's explicit public-release approval.
+
 ## Release gates: do not declare complete without evidence
 
 - [ ] Confirm every author/contributor has agreed that their original
