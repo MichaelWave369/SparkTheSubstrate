@@ -59,6 +59,31 @@
 /* v0.8: choose a current before entering a life. */
 .entry-screen{max-width:1360px;min-height:100svh;margin:auto;padding:clamp(24px,5vw,72px);display:grid;grid-template-columns:minmax(0,1.65fr) minmax(220px,1fr);gap:clamp(24px,5vw,70px);align-items:center}
 .entry-copy{position:relative;z-index:1}.entry-copy>.eyebrow{color:var(--cyan)}.entry-copy h1{font:800 clamp(62px,8vw,116px)/.95 'Manrope',sans-serif;letter-spacing:.08em;color:#f3d694;margin:25px 0 20px;text-shadow:0 0 60px #e9c27625}.entry-copy h1 small{display:block;font:500 clamp(12px,1.5vw,18px)/1.8 'DM Sans',sans-serif;letter-spacing:.36em;color:#d0d7bc;margin-top:12px}.entry-tagline{font:20px/1.5 Georgia,serif;color:#c8d4c7;margin:0 0 32px}.entry-copy h2{font-size:17px;font-weight:500;color:var(--text);margin:0 0 13px}
+/* Spark VR is a first-class path from the start page, not a buried settings link. */
+.entry-vr-feature{display:flex;align-items:center;gap:19px;min-height:114px;
+  padding:18px 22px;margin:0 0 22px;text-decoration:none;
+  border:1px solid #c6a76d;border-radius:9px;color:#f9eccb;
+  background:linear-gradient(112deg,#30483f,#1b3c3b 58%,#18292f);
+  box-shadow:inset 0 0 0 1px #f0d39b25,0 12px 28px #050e0d85;
+  transition:border-color .18s,background .18s,transform .18s;
+}
+.entry-vr-feature:hover{border-color:#f2d593;background:linear-gradient(112deg,#3a5549,#285251 58%,#1f3440);transform:translateY(-2px)}
+.entry-vr-feature:focus-visible{outline:3px solid #f8de9d;outline-offset:4px}
+.entry-vr-mark{flex:none;display:grid;place-items:center;width:66px;height:66px;
+  border:1px solid #f4d49399;border-radius:50%;background:#f3d49f14;
+  color:#f2d495;font:46px/1 Georgia,serif}
+.entry-vr-content{min-width:0;display:grid;gap:5px}
+.entry-vr-label{font:700 10px/1.5 'DM Sans',sans-serif;letter-spacing:.17em;color:#aadfce}
+.entry-vr-content strong{font:800 clamp(20px,2.4vw,30px)/1.15 'Manrope',sans-serif;letter-spacing:.035em;color:#ffe3a0}
+.entry-vr-content small{font:500 12px/1.5 'DM Sans',sans-serif;color:#e0e8dc}
+@media(max-width:560px){
+  .entry-vr-feature{gap:12px;padding:15px 14px;min-height:94px}
+  .entry-vr-mark{width:48px;height:48px;font-size:34px}
+  .entry-vr-label{font-size:9px}
+  .entry-vr-content strong{font-size:20px}
+  .entry-vr-content small{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.entry-vr-feature{transition:none}.entry-vr-feature:hover{transform:none}}
 .entry-poster{display:block;max-width:100%;width:100%;height:auto;max-height:80svh;object-fit:contain;border:1px solid #8c805d66;border-radius:7px;box-shadow:0 22px 75px #0007,0 0 90px #a8954820}.input-profiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.input-profiles button{display:flex;flex-direction:column;gap:9px;min-height:165px;padding:19px 15px;text-align:left;color:#d2ddd1;background:linear-gradient(135deg,#24372f,#13231f);border:1px solid #486252;border-radius:7px;font-family:inherit;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}.input-profiles button:hover{background:#2d4438;transform:translateY(-2px)}.input-profiles button.selected{border-color:var(--gold);background:linear-gradient(135deg,#3b4431,#1e3027);box-shadow:inset 0 0 0 1px #e5bf7a33}.input-profiles strong{font:600 19px 'Manrope',sans-serif;color:#f0d494}.input-profiles span{font-size:12px;line-height:1.5}.input-profiles small{font-size:11px;line-height:1.75;color:#a6c2b2}
 #entry-status{min-height:22px;font-size:12px;color:#a9bcb0;margin:16px 0 13px}.entry-primary{width:100%;min-height:48px}.entry-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.entry-modes button,.entry-settings button,.duel-header button,.settings-presets button{border:1px solid #415b49;color:#bdcec0;background:#1b2c2380;border-radius:5px;padding:11px 9px;font-family:inherit;font-size:12px;line-height:1.4;cursor:pointer;min-height:43px}.entry-modes button:disabled,.entry-primary:disabled{opacity:.4;cursor:default}.entry-settings{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:18px}.entry-settings button,.entry-settings a{font-size:11px;color:#a9beb0}.entry-settings a{margin-left:auto;text-decoration:none;padding:11px}.entry-screen button:focus-visible,.duel-shell button:focus-visible,.duel-shell select:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 .profile-setting{display:flex;align-items:center;gap:15px;margin-bottom:16px;color:#d5dfce}.profile-setting select,.duel-options select{background:#13261d;color:#dce7d4;border:1px solid #567459;border-radius:5px;padding:11px;font-family:inherit;font-size:14px;min-height:43px}.settings-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:17px}.settings-presets button{padding:9px 12px}.orientation-note{color:#b9caaa;font-size:12px;margin:9px 0}.guide-progress-note{font-size:12px!important}.guide-section[hidden]{display:none!important}
