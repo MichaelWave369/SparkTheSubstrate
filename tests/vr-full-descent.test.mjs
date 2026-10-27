@@ -91,7 +91,41 @@ test('the Eye offers canonical continue or finish; finish is a real ending',()=>
   assert.equal(run.victory,'eye');
   const scene=vrRoomSnapshot(state);
   assert.equal(scene.victory,'eye');
-  assert.deepEqual(scene.choices,[]);
+  assert.deepEqual(scene.choices.map(x=>x.id),['rebirth']);
+});
+test('VR death banks canonical memory exactly once then offers three lawful new vessels',()=>{
+  const state=createVRPreview(369),run=state.run;
+  run.phase='dead';run.player.hp=0;run.kills=12;run.essence=10;
+  const oldEssence=state.meta.essence,oldRuns=state.meta.runs;
+  const ready=vrPhaseChoices(state);
+  assert.deepEqual(ready.map(x=>x.id),['rebirth']);
+  chooseVRPhase(state,'rebirth');
+  assert.equal(run.settled,true);
+  assert.equal(state.meta.runs,oldRuns+1);
+  assert.ok(state.meta.essence>oldEssence);
+  assert.equal(state.pendingRebirth,true);
+  const next=vrPhaseChoices(state);
+  assert.equal(next.length,3);
+  assert.ok(next.every(c=>c.id.startsWith('form:')));
+  assert.throws(()=>chooseVRPhase(state,'form:unoffered'),/not currently available/);
+  const chosen=next[0].id;
+  chooseVRPhase(state,chosen);
+  assert.equal(state.run.phase,'playing');
+  assert.equal(state.run.room,'threshold');
+  assert.equal(state.run.form,chosen.slice(5));
+  assert.equal(state.pendingRebirth,false);
+  assert.equal(state.meta.runs,oldRuns+1,'never double-settle a death');
+});
+test('a banked VR death checkpoint resumes at offered reincarnation forms',()=>{
+  const storage=store(),state=createVRPreview(369);
+  state.run.phase='dead';state.run.player.hp=0;state.run.kills=4;
+  chooseVRPhase(state,'rebirth');
+  assert.equal(state.run.settled,true);
+  saveVRCheckpoint(storage,state);
+  const restored=loadVRCheckpoint(storage);
+  assert.equal(restored.pendingRebirth,true);
+  assert.equal(vrPhaseChoices(restored).length,3);
+  assert.equal(restored.meta.runs,1);
 });
 test('cycle between original six vessels only after real resonance unlock and cooldown',()=>{
   const state=createVRPreview(369),run=state.run;
