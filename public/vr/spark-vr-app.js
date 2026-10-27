@@ -36,6 +36,7 @@ const edge=(name,value)=>{
 const resetInputs=()=>{keys.clear();desktopActions={};xrLatch={};};
 
 function saveProgress(force=false){
+  if(!force&&state.ticks===0)return; // Merely viewing VR never creates a checkpoint.
   const now=Date.now(),run=state.run;
   const signature=[run.room,run.phase,run.level,run.form,
     run.cleared.length,run.keys?.length??0,run.seals?.length??0,
@@ -193,8 +194,8 @@ function startDesktop(){
   try{
     ensureRenderer();mode='desktop';paused=false;accum=0;last=0;
     desktop.textContent='Resume desktop preview';pauseButton.disabled=false;
-    enterVR.disabled=false;updateInfo(true);stopDesktop();
-    desktopRAF=requestAnimationFrame(drawDesktop);
+    enterVR.disabled=false;updateInfo(true);$('intro-overlay').hidden=true;
+    stopDesktop();desktopRAF=requestAnimationFrame(drawDesktop);
   }catch(error){show('Desktop preview unavailable: '+error.message);}
 }
 function xrInput(pose,session){
@@ -292,7 +293,7 @@ async function beginXR(){
     catch{xrSpace=await session.requestReferenceSpace('local');floorShift=-1.6;}
     xrSpace.addEventListener?.('reset',()=>{paused=true;resetInputs();rootYaw=0;
       show('Tracking reset · VR paused.');});
-    paused=false;
+    paused=false;$('intro-overlay').hidden=true;
     show('IMMERSIVE SPARK · Canonical solo Descent · RT power/choose · B morph · A gate');
     pauseButton.disabled=false;exitVR.disabled=false;enterVR.disabled=true;
     mode='xr';frameId=session.requestAnimationFrame(onXRFrame);
@@ -361,9 +362,16 @@ reset.addEventListener('click',()=>{
   show('New VR-only journey · original Spark saves untouched.');
 });
 window.addEventListener('keydown',event=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(event.target?.tagName))return;
+  if(event.target?.closest?.('button,a')&&['Space','Enter'].includes(event.code))return;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code))
     event.preventDefault();
   if(event.repeat)return;
+  if(event.code==='Escape'&&mode==='desktop'){
+    paused=!paused;resetInputs();last=0;
+    show(paused?'Desktop paused':'Desktop resumed');
+    return;
+  }
   if(currentChoices().length){
     if(event.code==='ArrowRight'||event.code==='KeyD')changeChoice(1);
     else if(event.code==='ArrowLeft'||event.code==='KeyA')changeChoice(-1);
@@ -375,10 +383,6 @@ window.addEventListener('keydown',event=>{
   else if(event.code==='KeyF')desktopActions.power=true;
   else if(event.code==='KeyE')desktopActions.interact=true;
   else if(event.code==='KeyQ')cycleForm();
-  else if(event.code==='Escape'&&mode==='desktop'){
-    paused=!paused;resetInputs();last=0;
-    show(paused?'Desktop paused':'Desktop resumed');
-  }
   keys.add(event.code);
 });
 window.addEventListener('keyup',event=>keys.delete(event.code));
