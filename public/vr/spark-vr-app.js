@@ -5,6 +5,11 @@ import {
 import {saveVRCheckpoint,loadVRCheckpoint,clearVRCheckpoint} from './spark-vr-save.js';
 import {multiply4,projection4,lookAt4,worldRoot4} from './spark-vr-math.js';
 import {SparkVRRenderer} from './spark-vr-renderer.js';
+import {
+  QUEST_ACCEPTANCE_CASES,createQuestDiagnostics,noteQuestEvent,
+  beginQuestDiagnostics,setQuestReferenceSpace,recordQuestFrame,
+  endQuestDiagnostics,summarizeQuestDiagnostics,questAcceptanceReport
+} from './spark-vr-diagnostics.js';
 import {vrCompass,closestVRGate} from './spark-vr-navigation.js';
 import {
   loadVRComfort,storeVRComfort,normalizeVRComfort,
@@ -22,13 +27,19 @@ const navButton=$('toggle-navigation'),navPanel=$('navigation-panel'),
   navRoutes=$('navigation-routes'),navDescription=$('navigation-description');
 const speedSelect=$('comfort-speed'),turnSelect=$('comfort-turn'),
   vignetteSelect=$('comfort-vignette');
+const fieldChecks=$('field-checks'),fieldMetrics=$('field-metrics'),
+  fieldStatus=$('field-report-status'),
+  fieldDownload=$('field-download'),fieldCopy=$('field-copy');
 let state=createVRPreview(),renderer=null,mode='idle',xr=null,
   xrSpace=null,xrLayer=null,rootYaw=0,desktopYaw=0,desktopPitch=0,
   desktopRAF=0,frameId=null,last=0,accum=0,paused=true,
   floorShift=0,drag=null,outputStamp='',xrLatch={},
   keys=new Set(),desktopActions={},selectedChoice=0,phaseStamp='',
   lastSavedAt=0,lastSavedSignature='',navigationOpen=false,
-  comfort=loadVRComfort(window.localStorage);
+  comfort=loadVRComfort(window.localStorage),
+  questDiagnostics=createQuestDiagnostics(),questResults={},
+  fieldLastUpdate=-1,visibilityLossNoted=false,poseLossNoted=false,
+  controllerLossNoted=false;
 
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const show=message=>{status.textContent=message;};
@@ -44,6 +55,85 @@ const edge=(name,value)=>{
   return !!value&&!previous;
 };
 const resetInputs=()=>{keys.clear();desktopActions={};xrLatch={};};
+function initializeFieldLab(){
+  const results=[
+    ['not-tested','Not tested'],
+    ['pass','Passed on Quest'],
+    ['fail','Failed on Quest']
+  ];
+  fieldChecks.replaceChildren();
+  for(const item of QUEST_ACCEPTANCE_CASES){
+    const row=document.createElement('label');
+    row.className='field-case';
+    const heading=document.createElement('span');
+    heading.textContent=item.label;
+    const select=document.createElement('select');
+    select.setAttribute('aria-label',item.label+' result');
+    select.dataset.caseId=item.id;
+    for(const [value,label] of results){
+      const option=document.createElement('option');
+      option.value=value;option.textContent=label;select.appendChild(option);
+    }
+    select.addEventListener('change',()=>{
+      questResults[item.id]=select.value;
+      renderFieldMetrics(true);
+    });
+    row.append(heading,select);fieldChecks.appendChild(row);
+  }
+  renderFieldMetrics(true);
+}
+function renderFieldMetrics(force=false){
+  const summary=summarizeQuestDiagnostics(questDiagnostics);
+  const now=performance.now();
+  if(!force&&fieldLastUpdate>=0&&now-fieldLastUpdate<1500)return;
+  fieldLastUpdate=now;
+  const cadence=summary.frameIntervalMilliseconds;
+  const submission=summary.javascriptRenderSubmissionMilliseconds;
+  const ms=v=>v===null?'not measured':v.toFixed(1)+' ms';
+  const attempted=QUEST_ACCEPTANCE_CASES.filter(
+    c=>['pass','fail'].includes(questResults[c.id])).length;
+  fieldMetrics.textContent=[
+    'XR sessions: '+summary.sessionCount,
+    'WebXR callback frames: '+summary.renderedFrames,
+    'Two-eye view frames: '+summary.framesWithTwoEyes,
+    'Controllers detected: '+(summary.leftControllerDetected?'L':'–')+
+      ' / '+(summary.rightControllerDetected?'R':'–'),
+    'Reference space: '+summary.referenceSpace,
+    'Frame callback interval (median / p95): '+ms(cadence.median)+' / '+ms(cadence.p95),
+    'JavaScript render submission (median / p95): '+
+      ms(submission.median)+' / '+ms(submission.p95),
+    'Hands-on checks attempted: '+attempted+' / '+QUEST_ACCEPTANCE_CASES.length
+  ].join(' · ');
+}
+function currentQuestReport(){
+  return questAcceptanceReport(questDiagnostics,questResults);
+}
+function exportQuestReport(){
+  // An explicit user click is required. Nothing is uploaded or auto-saved.
+  const json=JSON.stringify(currentQuestReport(),null,2)+'\n';
+  const blob=new Blob([json],{type:'application/json'});
+  const href=URL.createObjectURL(blob);
+  try{
+    const link=document.createElement('a');
+    link.href=href;link.download='spark-vr-quest-field-report.json';
+    document.body.append(link);link.click();link.remove();
+    fieldStatus.textContent='Download prepared locally. No data uploaded.';
+  }finally{
+    // Keep the blob alive long enough for mobile/Quest browser download UI.
+    setTimeout(()=>URL.revokeObjectURL(href),30000);
+  }
+}
+async function copyQuestReport(){
+  try{
+    if(!navigator.clipboard?.writeText)
+      throw Error('Clipboard permission unavailable; use Download instead.');
+    await navigator.clipboard.writeText(
+      JSON.stringify(currentQuestReport(),null,2));
+    fieldStatus.textContent='Quest report copied locally. Paste it into a bug report when ready.';
+  }catch{
+    fieldStatus.textContent='Clipboard unavailable or denied. Use Download Quest test report.';
+  }
+}
 function initializeComfort(){
   speedSelect.value=String(comfort.movement);
   turnSelect.value=String(comfort.turn);
@@ -79,6 +169,8 @@ function updateNavigationPanel(snapshot){
 }
 function toggleNavigation(value=!navigationOpen){
   navigationOpen=!!value;
+  if(mode==='xr')noteQuestEvent(questDiagnostics,
+    navigationOpen?'compass-opened':'compass-closed');
   navButton.setAttribute('aria-expanded',String(navigationOpen));
   navButton.textContent=navigationOpen?'Close room compass':'Show room compass';
   navPanel.hidden=!navigationOpen;
@@ -105,8 +197,10 @@ function saveProgress(force=false){
     saveVRCheckpoint(window.localStorage,state);
     lastSavedAt=now;lastSavedSignature=signature;
     saveStatus.textContent='VR-only checkpoint saved locally · original Descent unchanged';
+    if(mode==='xr')noteQuestEvent(questDiagnostics,'checkpoint-saved');
     resume.disabled=false;
   }catch(error){
+    if(mode==='xr')noteQuestEvent(questDiagnostics,'save-failed');
     saveStatus.textContent='VR checkpoint unavailable: '+error.message;
   }
 }
@@ -159,6 +253,7 @@ function confirmChoice(){
   if(!item)return;
   try{
     chooseVRPhase(state,item.id);
+    if(mode==='xr')noteQuestEvent(questDiagnostics,'choice-confirmed');
     selectedChoice=0;phaseStamp='';last=0;accum=0;
     updateInfo(true);saveProgress(true);
   }catch(error){show('Choice blocked: '+error.message);}
@@ -304,13 +399,19 @@ function onXRFrame(now,frame){
   frameId=session.requestAnimationFrame(onXRFrame);
   try{
     if(session.visibilityState!=='visible'){
+      if(!visibilityLossNoted)noteQuestEvent(questDiagnostics,'visibility-paused');
+      visibilityLossNoted=true;
       paused=true;resetInputs();saveProgress();
       show('Headset not visible · VR paused.');return;
     }
+    visibilityLossNoted=false;
     const pose=frame.getViewerPose(xrSpace);
     if(!pose){
+      if(!poseLossNoted)noteQuestEvent(questDiagnostics,'pose-unavailable');
+      poseLossNoted=true;
       paused=true;resetInputs();show('Head tracking unavailable · VR paused.');return;
     }
+    poseLossNoted=false;
     const input=xrInput(pose,session);
     if(input.navigationToggle)toggleNavigation();
     if(input.togglePause){
@@ -321,8 +422,11 @@ function onXRFrame(now,frame){
       show(paused?'VR paused · press right stick to resume':'VR resumed');
     }
     if(!session.inputSources?.length&&!paused){
+      if(!controllerLossNoted)noteQuestEvent(questDiagnostics,'controller-interrupted');
+      controllerLossNoted=true;
       paused=true;show('Controllers disconnected · VR paused.');resetInputs();
     }
+    if(session.inputSources?.length)controllerLossNoted=false;
     if(input.confirmChoice)confirmChoice();
     if(input.cycleForm)cycleForm();
     simulate(now,input);
@@ -336,17 +440,32 @@ function onXRFrame(now,frame){
       viewport:xrLayer.getViewport(v),
       matrix:multiply4(v.projectionMatrix,multiply4(v.transform.inverse.matrix,root))
     }));
+    const renderStarted=performance.now();
     renderer.render(views,snap,{framebuffer:xrLayer.framebuffer,
       hudPose:pose.transform.matrix,vignette:comfort.vignette});
+    // Only view counts and bounded timings are retained. Never serialize
+    // pose/transform matrices, controller axes or in-game state to receipts.
+    recordQuestFrame(questDiagnostics,{
+      timestamp:now,viewCount:views.length,
+      renderSubmissionMs:performance.now()-renderStarted,
+      left:session.inputSources?.some(c=>c.handedness==='left')??false,
+      right:session.inputSources?.some(c=>c.handedness==='right')??false
+    });
+    renderFieldMetrics();
   }catch(error){
+    noteQuestEvent(questDiagnostics,'runtime-error');
     paused=true;show('VR frame stopped safely: '+error.message);
+    renderFieldMetrics(true);
     void leaveXR();
   }
 }
 async function beginXR(){
   if(xr){show('VR is already active.');return;}
+  noteQuestEvent(questDiagnostics,'xr-start-requested');
   if(!navigator.xr?.requestSession){
-    show('WebXR unavailable. Use Quest Browser over HTTPS or desktop preview.');return;
+    noteQuestEvent(questDiagnostics,'xr-start-failed');
+    show('WebXR unavailable. Use Quest Browser over HTTPS or desktop preview.');
+    renderFieldMetrics(true);return;
   }
   let session=null;
   try{
@@ -355,29 +474,46 @@ async function beginXR(){
     stopDesktop();paused=true;resetInputs();
     session=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});
     xr=session;mode='xr';rootYaw=0;accum=0;last=0;
+    visibilityLossNoted=false;poseLossNoted=false;controllerLossNoted=false;
     if(navigationOpen)toggleNavigation(false);
     session.addEventListener('end',()=>finishXR(session),{once:true});
     session.addEventListener('visibilitychange',()=>{
       if(session.visibilityState!=='visible'){paused=true;resetInputs();}
     });
     session.addEventListener('inputsourceschange',event=>{
-      if(event.removed?.length){paused=true;resetInputs();
-        show('Controller changed · VR paused.');}
+      if(event.removed?.length){
+        noteQuestEvent(questDiagnostics,'controller-interrupted');
+        paused=true;resetInputs();
+        show('Controller changed · VR paused.');
+        renderFieldMetrics(true);
+      }
     });
     await renderer.gl.makeXRCompatible?.();
     xrLayer=new XRWebGLLayer(session,renderer.gl,{
       antialias:false,alpha:false,framebufferScaleFactor:.85});
     session.updateRenderState({baseLayer:xrLayer,depthNear:.05,depthFar:80});
+    let referenceKind='local-floor';
     try{xrSpace=await session.requestReferenceSpace('local-floor');floorShift=0;}
-    catch{xrSpace=await session.requestReferenceSpace('local');floorShift=-1.6;}
-    xrSpace.addEventListener?.('reset',()=>{paused=true;resetInputs();rootYaw=0;
-      show('Tracking reset · VR paused.');});
+    catch{
+      referenceKind='local';
+      xrSpace=await session.requestReferenceSpace('local');floorShift=-1.6;
+    }
+    beginQuestDiagnostics(questDiagnostics,referenceKind);
+    xrSpace.addEventListener?.('reset',()=>{
+      noteQuestEvent(questDiagnostics,'tracking-reset');
+      paused=true;resetInputs();rootYaw=0;
+      show('Tracking reset · VR paused.');
+      renderFieldMetrics(true);
+    });
     paused=false;$('intro-overlay').hidden=true;
     show('IMMERSIVE SPARK · Canonical solo Descent · RT power/choose · B morph · A gate');
     pauseButton.disabled=false;exitVR.disabled=false;enterVR.disabled=true;
     mode='xr';frameId=session.requestAnimationFrame(onXRFrame);
+    renderFieldMetrics(true);
   }catch(error){
+    noteQuestEvent(questDiagnostics,'xr-start-failed');
     show('Unable to enter VR: '+error.message);
+    renderFieldMetrics(true);
     if(session){try{await session.end();}catch{finishXR(session);}}
     else{mode='idle';paused=true;}
   }
@@ -385,10 +521,12 @@ async function beginXR(){
 function finishXR(session){
   if(xr!==session)return;
   saveProgress(true);
+  endQuestDiagnostics(questDiagnostics);
   xr=null;xrSpace=null;xrLayer=null;frameId=null;
   resetInputs();paused=true;mode='idle';last=0;accum=0;
   pauseButton.disabled=true;exitVR.disabled=true;enterVR.disabled=false;
   show('Immersive VR ended · local VR checkpoint saved separately from original Spark.');
+  renderFieldMetrics(true);
 }
 async function leaveXR(){
   const session=xr;if(!session)return;
@@ -417,6 +555,11 @@ pauseButton.addEventListener('click',()=>{
   show(paused?'Preview paused':'Preview resumed');
 });
 exitVR.addEventListener('click',()=>void leaveXR());
+fieldDownload.addEventListener('click',()=>{
+  try{exportQuestReport();}
+  catch{fieldStatus.textContent='Report download failed. Try Copy report.';}
+});
+fieldCopy.addEventListener('click',()=>void copyQuestReport());
 resume.addEventListener('click',()=>{
   if(xr){show('Exit immersive VR before restoring another checkpoint.');return;}
   try{
@@ -495,4 +638,4 @@ canvas.addEventListener('pointermove',event=>{
 canvas.addEventListener('pointerup',()=>{drag=null;});
 canvas.addEventListener('pointercancel',()=>{drag=null;});
 window.addEventListener('pagehide',()=>saveProgress());
-initializeComfort();updateInfo(true);refreshSavedStatus();void checkXR();
+initializeComfort();initializeFieldLab();updateInfo(true);refreshSavedStatus();void checkXR();
