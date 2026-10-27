@@ -3,7 +3,8 @@
 import {
   BODIES, BOONS, WIDTH, HEIGHT, ROOMS, createMeta, createRun, obstacles,
   gateStatus, nearestGate, stepRun, observeRun, chooseBoon, resolveChamber,
-  resolveMilestone, morphRun, validRun, validMeta, pendingKey, pendingRelic
+  resolveMilestone, morphRun, validRun, validMeta, pendingKey, pendingRelic,
+  settleRun, offeredForms
 } from '../action-engine.js?v=0.17.0';
 import {WORLDS,worldOf,WORLD_ORDER} from '../worlds.js?v=0.17.0';
 
@@ -26,14 +27,16 @@ export function createVRPreview(seed=369){
   if(!Number.isSafeInteger(seed)||seed<0||seed>0xffffffff)
     throw Error('VR preview requires a bounded integer seed.');
   const meta=createMeta();
-  return {meta,run:createRun(meta,'spark',seed),blockedMessage:'',ticks:0};
+  return {meta,run:createRun(meta,'spark',seed),blockedMessage:'',ticks:0,
+    pendingRebirth:false};
 }
 export function resumeVRPreview(meta,run){
   // An isolated VR checkpoint is still subject to the canonical save validators.
   if(!validMeta(meta)||!validRun(run)||run.daily||run.dungeon||run.rematch||
     run.partner||!VR_ROOMS.includes(run.room))
     throw Error('The saved VR journey is not a valid solo Spark Descent run.');
-  return {meta:structuredClone(meta),run:structuredClone(run),blockedMessage:'',ticks:0};
+  return {meta:structuredClone(meta),run:structuredClone(run),blockedMessage:'',
+    ticks:0,pendingRebirth:!!run.settled&&['dead','won'].includes(run.phase)};
 }
 const deadzone=(v,limit=.18)=>{
   if(!Number.isFinite(v)||Math.abs(v)<=limit)return 0;
@@ -59,6 +62,19 @@ export function stickToGame(stickX,stickY,headMatrix,rootYaw=0){
 
 export function vrPhaseChoices(state){
   const run=state.run;
+  if(state.pendingRebirth){
+    return offeredForms(state.meta).map(form=>({
+      id:'form:'+form,title:'Rekindle as '+form.toUpperCase(),
+      detail:'Canonical next-life offering · previously earned memory carries forward'
+    }));
+  }
+  if(['dead','won'].includes(run.phase)){
+    return [{
+      id:'rebirth',
+      title:run.phase==='won'?'Remember this victory and begin again':'Remember this life and reincarnate',
+      detail:'Bank canonical earned essence, abilities, keys, seals and records'
+    }];
+  }
   if(run.phase==='resolve')return [
     {id:'0',title:'Liberate the trapped light',detail:'Mercy · +7 karma · +3 essence · +10 HP'},
     {id:'1',title:'Harvest the machinery',detail:'Power · -9 karma · +8 essence · +25 HP'},
@@ -78,12 +94,23 @@ export function chooseVRPhase(state,id){
   const run=state.run;
   const chosen=vrPhaseChoices(state).find(item=>item.id===String(id));
   if(!chosen)throw Error('This decision is not currently available.');
-  if(run.phase==='resolve')resolveChamber(run,Number(id));
+  if(state.pendingRebirth){
+    const form=String(id).slice(5);
+    if(!offeredForms(state.meta).includes(form))
+      throw Error('This vessel was not offered for the next life.');
+    state.run=createRun(state.meta,form,(run.seed+1)>>>0);
+    state.pendingRebirth=false;
+  }else if(['dead','won'].includes(run.phase)){
+    // Explicit choice and once-only bank. Never mutate the original campaign.
+    if(run.settled)throw Error('This completed life was already recorded.');
+    state.meta=settleRun(run,state.meta);
+    state.pendingRebirth=true;
+  }else if(run.phase==='resolve')resolveChamber(run,Number(id));
   else if(run.phase==='boon')chooseBoon(run,id);
   else if(run.phase==='milestone')resolveMilestone(run,id);
   state.blockedMessage='';
   state.ticks++;
-  return observeRun(run,state.meta);
+  return observeRun(state.run,state.meta);
 }
 
 export function nextVRForm(state){
@@ -139,6 +166,7 @@ export function vrRoomSnapshot(state){
     health:run.player.hp,maxHealth:run.player.maxHp,
     level:run.level,xp:run.xp,karma:run.karma,awareness:run.awareness,
     essence:run.essence,keys:[...run.keys],seals:[...run.seals],
+    livesBanked:state.meta.runs,rebirthPending:!!state.pendingRebirth,
     choices:vrPhaseChoices(state),
     player:{x:run.player.x,y:run.player.y},
     enemies:run.enemies.filter(e=>e.hp>0).slice(0,64).map(e=>({
