@@ -18,6 +18,32 @@ test('generated Pages entry discloses local-only saves and sets the feature flag
   assert.match(result,/content="github-pages-static"/);
   assert.throws(()=>renderPagesIndex('<html>unfinished</html>'),/entry script changed/);
 });
+test('main Spark start screen showcases a single prominent, project-relative VR entrance',()=>{
+  const original=source('index.html');
+  const compiled=renderPagesIndex(original);
+  for(const html of [original,compiled]){
+    const start=html.indexOf('<a id="entry-spark-vr"');
+    const end=start<0?-1:html.indexOf('</a>',start);
+    const vrCard=start>=0&&end>start?html.slice(start,end+4):'';
+    assert.ok(vrCard,'a clear VR link is present on the primary start screen');
+    assert.ok(vrCard.includes('class="entry-vr-feature"'));
+    assert.ok(vrCard.includes('href="vr/index.html"'));
+    assert.ok(vrCard.includes('ENTER SPARK VR'));
+    assert.ok(vrCard.includes('Quest 3'));
+    assert.ok(vrCard.includes('desktop preview'));
+    assert.equal(html.split('id="entry-spark-vr"').length-1,1,
+      'the VR link has exactly one accessible ID');
+    assert.ok(start<html.indexOf('class="input-profiles"'),
+      'the VR entry is visible before profile selection');
+    assert.ok(!vrCard.includes('href="/SparkTheSubstrate/vr/'),
+      'use relative links for hosted root and GitHub project URLs');
+  }
+  const styles=source('descent.css');
+  assert.ok(styles.includes('.entry-vr-feature{'));
+  assert.ok(styles.includes('.entry-vr-feature:focus-visible'));
+  assert.ok(styles.includes('@media(max-width:560px)'));
+});
+
 test('staged artifact contains only static assets and preserves the real game / XR / Arcade',()=>{
   const dir=buildPages();
   assert.equal(dir,OUTPUT);
