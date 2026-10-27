@@ -69,7 +69,8 @@ export function recordQuestFrame(state,{timestamp,viewCount,renderSubmissionMs,l
   if(cpu!==null)pushBounded(state.renderMs,cpu);
 }
 export function endQuestDiagnostics(state){
-  if(state.status==='active')state.status='ended';
+  if(state.status!=='active')return;
+  state.status='ended';
   state.lastTimestamp=null;
   noteQuestEvent(state,'xr-ended');
 }
