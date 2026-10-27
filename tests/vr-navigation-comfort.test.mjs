@@ -95,7 +95,7 @@ test('XR implementation wires per-eye comfort, canonical directions and map-on-l
   assert.match(html,/id="navigation-routes"/);
   assert.match(html,/id="toggle-navigation"/);
   assert.match(app,/edge\('navigation',pad\(left,5\)\)/);
-  assert.ok(app.includes("currentChoices().map(x=>x.id).join(',')),'rebirth offers must refresh the actual choice buttons');
+  assert.ok(app.includes("currentChoices().map(x=>x.id).join(',')"),'rebirth offers must refresh the actual choice buttons');
   assert.ok(app.includes('Boolean(state.pendingRebirth)'),'death settlement must update the UI choice cache');
   assert.ok(app.includes('if(navigationOpen)toggleNavigation(false)'),'mode transitions safely close navigation');
   assert.match(app,/event.code==='KeyM'/);
