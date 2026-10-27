@@ -6,24 +6,29 @@ documentation. Third-party dependencies and any separately licensed artwork
 retain their own rights. See [asset provenance](ASSETS_AND_ATTRIBUTION.md),
 [open-source release review](docs/OPEN_SOURCE_RELEASE.md), and [security](SECURITY.md).
 
-**GitHub Pages edition:** after the first successful Pages workflow deployment,
-the expected [playable Spark site](https://michaelwave369.github.io/SparkTheSubstrate/)
-and [two-room immersive VR lab](https://michaelwave369.github.io/SparkTheSubstrate/vr/)
-will provide **local-save solo gameplay**. Online rooms and Cloudflare-backed
-backup remain exclusive to the separately hosted application. See the
-[GitHub Pages free flagship guide](docs/GITHUB_PAGES_FREE_FLAGSHIP.md) for setup,
-availability gates and Quest 3 physical testing.
+**Live GitHub Pages edition:** [Play Spark](https://michaelwave369.github.io/SparkTheSubstrate/)
+or [Enter Spark VR](https://michaelwave369.github.io/SparkTheSubstrate/vr/).
+The Pages edition supports local-save solo gameplay. Online co-op and
+Cloudflare-backed backup remain exclusive to the separately hosted app.
+See [GitHub Pages documentation](docs/GITHUB_PAGES_FREE_FLAGSHIP.md).
 
-## Experimental immersive VR · first two rooms
+## Immersive VR · full solo Descent campaign traversal candidate
 
-The new [Spark WebXR lab](public/vr/index.html) is an **opt-in, separate**
-stereoscopic VR and desktop 3D slice of The Threshold and Glass Causeway. The
-native Spark Descent rules still own player movement, gates, combat, dash and
-Lumen power. Quest Touch left-stick movement, snap turning and interactive
-gate controls are wired for an HTTPS WebXR browser. The prototype does **not**
-touch campaign, Sideways or Memory Arcade saves and makes **no** real-headset
-performance claim. See [VR scope, controls and physical acceptance](docs/vr-first-slice.md).
-The full original game and its many modes remain unchanged.
+Spark's standalone [immersive WebXR experience](public/vr/index.html)
+now reads **all 126 canonical Descent rooms across seven worlds** directly
+from the original engine. It renders unique low-poly world architecture,
+enemy projectiles, hazards and collectible keys/relics. It uses the
+real gate restrictions, karma choices, three offered level-up gifts,
+six-vessel resonance, Eye ending, boss fights and memory banking
+across reincarnations. Desktop and Quest controllers can complete the
+necessary choices without returning to the 2D game.
+
+**VR checkpoints are stored under a separate, browser-local key.** They do
+not change existing Descent, Sideways, Vault or Memory Arcade saves. These
+are software-level integration features, not a claim of proven Quest 3
+performance, controller compatibility, comfort or a full physical campaign
+playthrough. See the [VR progress and headset acceptance guide](docs/vr-first-slice.md)
+for the remaining finish gates. The existing 2D modes remain unchanged.
 
 
 Version 0.17.0 · **guardian memories** finishes the remaining Sideways routes: **39 rooms**, **five relics**, all six matching equipment sets, and three optional branches through the existing worlds. Nacre’s Feather opens the Door Behind Sleep; the Unmade Thread returns from the Room Without a Name to the Outside Window in Pale Orbit. Night Hunter, Pale Horizon and Before the Law add movement, reach, attack-speed and recovery options.
