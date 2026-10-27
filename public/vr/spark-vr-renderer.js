@@ -21,6 +21,16 @@ const HUD_FRAG=`precision mediump float;
 uniform sampler2D atlas;
 varying vec2 vUv;
 void main(){gl_FragColor=texture2D(atlas,vUv);}`;
+// Static viewport-relative peripheral dimming, only when the user opts in.
+// This draw does not touch head pose, gameplay collision, or original Spark.
+const COMFORT_VERT=`attribute vec2 position;
+varying vec2 vPosition;
+void main(){vPosition=position;gl_Position=vec4(position,0.,1.);}`;
+const COMFORT_FRAG=`precision mediump float;
+varying vec2 vPosition;
+uniform float amount;
+void main(){float falloff=smoothstep(0.45,1.12,length(vPosition));
+gl_FragColor=vec4(0.005,0.012,0.021,falloff*amount);}`;
 
 const hex=(input,fallback='#a9bbbe')=>{
   const m=/^#([0-9a-f]{6})$/i.exec(input||'')||/^#([0-9a-f]{6})$/i.exec(fallback);
@@ -232,7 +242,13 @@ export class SparkVRRenderer{
     this.gl=gl;
     this.program=compile(gl,VERT,FRAG);
     this.hudProgram=compile(gl,HUD_VERT,HUD_FRAG);
+    this.comfortProgram=compile(gl,COMFORT_VERT,COMFORT_FRAG);
     this.vertices=gl.createBuffer();this.hudVertices=gl.createBuffer();
+    this.comfortVertices=gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER,this.comfortVertices);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([
+      -1,-1,1,-1,1,1,-1,-1,1,1,-1,1
+    ]),gl.STATIC_DRAW);
     this.hudCanvas=document.createElement('canvas');
     this.hudCanvas.width=512;this.hudCanvas.height=256;
     this.hudContext=this.hudCanvas.getContext('2d');
@@ -254,8 +270,9 @@ export class SparkVRRenderer{
   updateHud(scene){
     const stamp=[scene.roomId,scene.roomName,scene.worldName,scene.form,
       Math.ceil(scene.health),scene.phase,scene.cleared,
-      scene.notice.slice(0,80),scene.selectedChoice??0,
-      scene.choices?.map(x=>x.id).join(',')].join('|');
+      scene.notice.slice(0,80),scene.selectedChoice??0,scene.navigationOpen??false,
+      scene.choices?.map(x=>x.id).join(','),
+      scene.route?.map(x=>x.status+x.name+x.distance).join(',')].join('|');
     if(stamp===this.lastHudStamp)return;
     this.lastHudStamp=stamp;
     const c=this.hudContext,w=512,h=256;
@@ -273,7 +290,19 @@ export class SparkVRRenderer{
       '     '+scene.phase.toUpperCase(),22,123);
     c.fillStyle='#18343d';c.fillRect(22,136,466,16);
     c.fillStyle='#6de6c0';c.fillRect(22,136,466*Math.max(0,Math.min(1,scene.health/scene.maxHealth)),16);
-    if(scene.choices?.length){
+    if(scene.navigationOpen){
+      c.fillStyle='#f7dd9b';c.font='bold 21px sans-serif';
+      c.fillText('COMPASS · CANONICAL ROOM EXITS',22,177);
+      c.font='15px sans-serif';
+      const lines=(scene.route??[]).slice(0,4);
+      lines.forEach((gate,index)=>{
+        const text=gate.heading+'  '+gate.status+'  '+gate.name;
+        c.fillStyle=gate.available?'#8de6c8':'#e9b68b';
+        c.fillText(text.length>55?text.slice(0,52)+'…':text,24,198+index*15);
+      });
+      c.fillStyle='#96c7cf';c.font='12px sans-serif';
+      c.fillText('LEFT Y CLOSES MAP · ROOM SIMULATION PAUSED',22,249);
+    }else if(scene.choices?.length){
       c.font='16px sans-serif';
       scene.choices.forEach((item,index)=>{
         c.fillStyle=index===(scene.selectedChoice??0)?'#f4df9e':'#afc8c7';
@@ -296,7 +325,7 @@ export class SparkVRRenderer{
     g.pixelStorei(g.UNPACK_FLIP_Y_WEBGL,false);
     g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,this.hudCanvas);
   }
-  render(views,scene,{framebuffer=null,hudPose=null}={}){
+  render(views,scene,{framebuffer=null,hudPose=null,vignette=0}={}){
     if(this.disposed)return;
     const gl=this.gl,mesh=makeSceneVertices(scene);
     this.updateHud(scene);
@@ -319,8 +348,25 @@ export class SparkVRRenderer{
       gl.enableVertexAttribArray(b);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
       gl.uniformMatrix4fv(vp,false,view.matrix);
       gl.drawArrays(gl.TRIANGLES,0,mesh.length/6);
+      // A lightweight optional per-eye comfort mask precedes the readable HUD.
+      if(hudPose&&vignette>0)this.drawComfortVignette(vignette);
       if(hudPose)this.drawHud(view,hudPose);
     }
+  }
+  drawComfortVignette(amount){
+    const gl=this.gl;
+    const safe=Math.max(0,Math.min(.75,Number(amount)||0));
+    if(!safe)return;
+    gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.depthMask(false);
+    gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(this.comfortProgram);
+    gl.bindBuffer(gl.ARRAY_BUFFER,this.comfortVertices);
+    const pos=gl.getAttribLocation(this.comfortProgram,'position');
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos,2,gl.FLOAT,false,8,0);
+    gl.uniform1f(gl.getUniformLocation(this.comfortProgram,'amount'),safe);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    gl.disable(gl.BLEND);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);
   }
   drawHud(view,headMatrix){
     const gl=this.gl;
@@ -347,7 +393,9 @@ export class SparkVRRenderer{
     if(this.disposed)return;this.disposed=true;
     const gl=this.gl;
     gl.deleteBuffer(this.vertices);gl.deleteBuffer(this.hudVertices);
+    gl.deleteBuffer(this.comfortVertices);
     gl.deleteTexture(this.hudTexture);
     gl.deleteProgram(this.program);gl.deleteProgram(this.hudProgram);
+    gl.deleteProgram(this.comfortProgram);
   }
 }
