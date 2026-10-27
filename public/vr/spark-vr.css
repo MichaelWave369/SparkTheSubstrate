@@ -52,3 +52,23 @@ footer{font-size:.65rem;letter-spacing:.16em;color:#718e96;margin:17px 0}
 .live-room strong{color:#ebd399}.live-room span{color:#a9d5cb}
 @media(max-width:600px){#phase-options{grid-template-columns:1fr}
   .choice-button{min-height:55px}}
+
+/* Operator-visible comfort and route controls, same design vocabulary as Spark. */
+.comfort-panel,.navigation-panel{border:1px solid #56796d;background:#10272b;
+  padding:14px 17px;margin:14px 0;border-radius:6px}
+.comfort-panel h2,.navigation-panel h2{margin:0 0 6px;color:#f2d59c;
+  font-size:.94rem;letter-spacing:.09em}
+.comfort-panel p,.navigation-panel p{font-size:.78rem;line-height:1.5;color:#b5d0cb;margin:0 0 10px}
+.comfort-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.comfort-controls label{display:grid;gap:7px;font-size:.78rem;color:#d8e6de}
+.comfort-controls select{font:inherit;padding:10px 9px;width:100%;min-width:0;
+  color:#f1e5c4;background:#213b3e;border:1px solid #86aaa0;border-radius:4px}
+.comfort-controls select:focus-visible{outline:3px solid #f3db98;outline-offset:2px}
+.navigation-panel[hidden]{display:none}
+#navigation-routes{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:7px}
+#navigation-routes li{border:1px solid #46625e;background:#193438;padding:9px;
+  display:grid;gap:4px;font-size:.81rem}
+#navigation-routes li strong{color:#f1d597}
+#navigation-routes li small{color:#b8d2cf}
+#navigation-routes li[data-open="true"]{border-color:#63af9b}
+@media(max-width:700px){.comfort-controls{grid-template-columns:1fr}}
