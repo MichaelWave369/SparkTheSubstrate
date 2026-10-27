@@ -1,0 +1,80 @@
+name: Spark Free Flagship — GitHub Pages
+
+on:
+  pull_request:
+    paths:
+      - 'public/**'
+      - 'scripts/build-pages.mjs'
+      - 'tests/pages-static.test.mjs'
+      - '.github/workflows/pages.yml'
+      - '.gitignore'
+  push:
+    branches: [main]
+    paths:
+      - 'public/**'
+      - 'scripts/build-pages.mjs'
+      - 'tests/pages-static.test.mjs'
+      - '.github/workflows/pages.yml'
+      - '.gitignore'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spark-github-pages
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify Spark gameplay, archive, static paths and Quest VR modules
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax-check Pages build and immersive VR modules
+        run: |
+          node --check scripts/build-pages.mjs
+          node --check public/descent.js
+          node --check public/memory-arcade.js
+          node --check public/vr/spark-vr-app.js
+          node --check public/vr/spark-vr-renderer.js
+      - name: Run Spark's complete existing game regression suite
+        run: npm test
+      - name: Stage static public/ game and VR assets
+        run: node scripts/build-pages.mjs
+      - name: Assert Pages subpath links, source isolation, and local-only backend mode
+        run: node --test tests/pages-static.test.mjs
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: verify
+    name: Publish approved static Spark game + WebXR to GitHub Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build tested static-only artifact
+        run: node scripts/build-pages.mjs
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static game artifact (no server, secrets, or build metadata)
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .pages-site
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

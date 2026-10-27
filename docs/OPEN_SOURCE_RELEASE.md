@@ -1,6 +1,9 @@
 # Spark: The Substrate — Public MIT launch readiness
 
-Status: **REVIEW CANDIDATE. Do not switch this repository to public based on this document alone.**
+Status: **Repository visibility is PUBLIC as of 2026-10-27.**
+MIT license and history precheck PRs are merged. This checklist continues
+to track release-security, historical-art-rights, online-play and Quest 3
+validation work; public visibility does **not** imply these gates passed.
 Last reviewed: 2026-10-27.
 
 ## Intended public commitment
@@ -17,14 +20,16 @@ commercial derivatives, MIT is not the appropriate license.
 
 ## Source audit completed for this preparation
 
-- The repository is currently **private**; its main branch is not yet an
-  approved public release.
+- The repository is **public** following the owner's deliberate visibility
+  change. Future audits cannot retroactively make exposed commit history
+  or Actions logs private. Treat any genuinely exposed credentials as
+  requiring revocation and rotation.
 - The main tree was inventoried through GitHub's repository tree API:
   **527 tracked files**, including canonical Descent, Sideways, Duel,
   Memory Arcade historical snapshots, art atlases and the new two-room
   experimental WebXR prototype.
-- The repository previously lacked a root `LICENSE`; this PR proposes
-  the standard MIT license for original software and accompanying docs.
+- A standard root `LICENSE` for covered original software and documentation
+  was added and merged in PR #14.
 - No obvious committed `.env`, private-key or database file name appeared
   in the current main-tree inventory. **This is not secret scanning**:
   contents, build artifacts, previous commits, branches and GitHub Actions
@@ -89,15 +94,17 @@ security, real Quest 3 test, and the owner's explicit public-release approval.
 - [ ] Verify the player-facing download/site packaging does not include
       development-only archived build artifacts or private infrastructure
       metadata needlessly.
-- [ ] Review a final diff and explicitly approve the irreversible
-      disclosure of the repository's source, history and Actions logs
-      before making visibility **public**.
+- [x] Owner explicitly changed repository visibility to **public**.
+      Continue assessing any already-public historical data. If a real
+      credential is found, revoke and rotate it, not merely remove its
+      current tracked file.
 - [ ] Enable suitable GitHub secret scanning, Dependabot, code security
       alerts and a vulnerability reporting path as available to the account.
-- [ ] After approval, choose hosting: retain existing Cloudflare-powered
-      full application, and optionally create a separate *static-only*
-      GitHub Pages distribution of offline-capable modes. Pages does not
-      host Worker/D1 backend APIs.
+- [ ] Keep the existing Cloudflare-powered full application distinct from
+      the static-only GitHub Pages edition. The Pages deployment workflow
+      and its user-facing acceptance are tracked separately in
+      [the Pages guide](GITHUB_PAGES_FREE_FLAGSHIP.md).
+      Pages does not host Worker/D1 backend APIs.
 
 ## Publication principles
 

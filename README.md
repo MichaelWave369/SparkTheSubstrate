@@ -1,13 +1,18 @@
 # Spark: The Substrate — Descent
 
-**Free-to-play flagship · proposed MIT open-source launch.** The original
-software is prepared for MIT licensing through [LICENSE](LICENSE). Original
-artwork, archived editions, third-party dependencies, server disclosures
-and historical logs require final clearance before this private repository
-is made public. See the [public release checklist](docs/OPEN_SOURCE_RELEASE.md),
-[asset review](ASSETS_AND_ATTRIBUTION.md) and [security policy](SECURITY.md).
-The existing browser game and experimental two-room VR slice are not a
-claim that every Quest 3 behavior has been physically accepted.
+**Free-to-play · MIT open-source flagship.** This repository is public,
+and the [MIT license](LICENSE) covers Spark's original software and associated
+documentation. Third-party dependencies and any separately licensed artwork
+retain their own rights. See [asset provenance](ASSETS_AND_ATTRIBUTION.md),
+[open-source release review](docs/OPEN_SOURCE_RELEASE.md), and [security](SECURITY.md).
+
+**GitHub Pages edition:** after the first successful Pages workflow deployment,
+the expected [playable Spark site](https://michaelwave369.github.io/SparkTheSubstrate/)
+and [two-room immersive VR lab](https://michaelwave369.github.io/SparkTheSubstrate/vr/)
+will provide **local-save solo gameplay**. Online rooms and Cloudflare-backed
+backup remain exclusive to the separately hosted application. See the
+[GitHub Pages free flagship guide](docs/GITHUB_PAGES_FREE_FLAGSHIP.md) for setup,
+availability gates and Quest 3 physical testing.
 
 ## Experimental immersive VR · first two rooms
 
