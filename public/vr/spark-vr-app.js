@@ -314,7 +314,10 @@ function onXRFrame(now,frame){
     const input=xrInput(pose,session);
     if(input.navigationToggle)toggleNavigation();
     if(input.togglePause){
-      paused=!paused;resetInputs();accum=0;last=0;
+      paused=!paused;accum=0;last=0;
+      // Never clear xrLatch while the right stick button remains held:
+      // otherwise each XR frame toggles pause repeatedly.
+      keys.clear();desktopActions={};
       show(paused?'VR paused · press right stick to resume':'VR resumed');
     }
     if(!session.inputSources?.length&&!paused){
