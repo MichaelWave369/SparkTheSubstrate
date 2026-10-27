@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {
   createVRPreview,stepVRPreview,vrRoomSnapshot,stickToGame,
-  worldAt,engineAt,VR_SIM_STEP,VR_SLICE_ROOMS
+  worldAt,engineAt,VR_SIM_STEP,VR_ROOMS
 } from '../public/vr/spark-vr-model.js';
 import {worldRoot4,transform4,multiply4,projection4,lookAt4} from '../public/vr/spark-vr-math.js';
 import {makeSceneVertices} from '../public/vr/spark-vr-renderer.js';
@@ -17,7 +17,9 @@ test('VR preview begins as canonical Spark in the actual safe Threshold, isolate
   assert.equal(state.run.room,'threshold');
   assert.equal(state.run.phase,'playing');
   assert.ok(state.run.cleared.includes('threshold'));
-  assert.deepEqual([...VR_SLICE_ROOMS],['threshold','glass']);
+  assert.ok(VR_ROOMS.length>=126,'full original solo campaign room graph exposed');
+  assert.ok(VR_ROOMS.includes('threshold')&&VR_ROOMS.includes('glass'));
+  assert.ok(VR_ROOMS.includes('origin-heart'));
   const snap=vrRoomSnapshot(state);
   assert.equal(snap.roomName,'The Threshold');
   assert.ok(snap.gates.some(g=>g.direction==='north'&&g.to==='glass'&&g.available));
@@ -47,16 +49,21 @@ test('canonical gate interaction reaches the actual Glass Causeway encounter',()
   for(let i=0;i<100;i++)stepVRPreview(state,{},VR_SIM_STEP);
   assert.ok(state.run.spawned>0,'actual Spark encounter spawned foes');
 });
-test('VR boundary refuses unqualified routes beyond the two room slice',()=>{
+test('VR permits the next real Glass gate only after canonical eligibility',()=>{
   const state=createVRPreview(369);
-  // Tests exactly the access boundary without fabricating earned keys or seals.
   state.run.room='glass';
+  // A live room needs a nonzero encounter budget; otherwise stepRun legitimately
+  // clears it immediately and enters the karma-decision phase.
+  state.run.spawnTotal=20;
   state.run.player.x=900;state.run.player.y=300;
-  state.run.cleared.push('glass');
   const before=state.run.room;
   stepVRPreview(state,{interact:true},VR_SIM_STEP);
-  assert.equal(state.run.room,before);
-  assert.match(state.blockedMessage,/two-room|only covers Threshold and Glass/);
+  assert.equal(state.run.room,before,'swarm-locked gate must not bypass the engine');
+  assert.match(state.blockedMessage,/swarm|Break/);
+  state.run.cleared.push('glass');
+  stepVRPreview(state,{interact:false},VR_SIM_STEP);
+  stepVRPreview(state,{interact:true},VR_SIM_STEP);
+  assert.equal(state.run.room,'machine','canonical east exit continues the story');
 });
 test('head-relative stick axes convert to actual engine movement including snap yaw',()=>{
   let result=stickToGame(0,-1,identity,0);

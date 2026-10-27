@@ -10,9 +10,10 @@ static GitHub Pages release contract, distinct from the full Worker/D1 app.
 - Experimental VR route: **https://michaelwave369.github.io/SparkTheSubstrate/vr/**
 - Equivalent explicit VR file: **https://michaelwave369.github.io/SparkTheSubstrate/vr/index.html**
 
-These are **expected URLs**, not verified live links until GitHub Pages reports
-a successful deployment. The workflow reports the actual page URL as its
-`github-pages` environment.
+These URLs were verified publicly reachable when Spark first launched
+on GitHub Pages on 2026-10-27. Later changes still require green GitHub
+Pages deployment and live browser re-verification. The workflow reports
+its actual page URL as the `github-pages` environment.
 
 ## What's included on GitHub Pages
 
@@ -20,8 +21,11 @@ a successful deployment. The workflow reports the actual page URL as its
   Memory Arcade and Echo Lives static gameplay assets.
 - All preserved historical Memory Arcade cabinets in `public/legacy`, with
   working project-relative source receipt links.
-- The experimental **two-room** stereoscopic WebXR prototype of Threshold and
-  Glass Causeway, with a separate disposable run and no campaign save updates.
+- The experimental seven-world stereoscopic WebXR **solo Descent traversal**
+  drawn from all 126 canonical Spark rooms. Original engine gate, combat,
+  gift, karma, morph, rebirth and victory rules remain authoritative.
+  The VR-only browser-local checkpoint never overwrites the original
+  Descent or Sideways saved progress.
 - Browser-local progress for solo modes, using the normal Spark save mechanism.
 - All static JS, CSS, image and source-receipt assets from `public/`.
 - The original game engine and saved-progress formats remain unchanged.
@@ -83,10 +87,13 @@ or an environment file.
 - [ ] Enter Sideways and confirm the separate Sideways save survives reload.
 - [ ] Enter a preserved Memory Arcade cabinet and open a provenance receipt.
   The URL must remain under `/SparkTheSubstrate/legacy/`.
-- [ ] Open `/SparkTheSubstrate/vr/` on desktop and confirm a 3D room displays.
+- [ ] Open `/SparkTheSubstrate/vr/` on desktop and confirm all seven
+  world styles, game choices, separate VR save and cross-room travel load.
 - [ ] On an actual Quest 3, visit the HTTPS VR route in Quest Browser. Test
   **Enter immersive VR**, stereo, head pose, left-stick motion, snap turn,
-  trigger powers, right-grip gate entry and session exit.
+  trigger powers, right-grip gate entry, right-B vessel morph,
+  left-stick/A/trigger decision selection, death-and-rebirth
+  checkpoint recovery and session exit.
 - [ ] Verify no browser console errors or missing image/module URLs.
 - [ ] For a true offline-download edition, make a separate, tested,
   cache-verified packaged release rather than claiming Pages is offline.

@@ -35,3 +35,20 @@ h1 span{display:block;font-size:.33em;letter-spacing:.46em;font-family:system-ui
 footer{font-size:.65rem;letter-spacing:.16em;color:#718e96;margin:17px 0}
 @media(max-width:950px){.layout{grid-template-columns:1fr}.guide{order:2}.preview{order:1}}@media(max-width:560px){.mast{flex-wrap:wrap}.mark{width:52px;height:52px;font-size:34px}.return{margin-left:0}.viewport-top{inset:6px 6px auto}.health{width:125px}.lab-chip,.health{font-size:.52rem}.toolbar button{flex:1 1 44%;font-size:.7rem}.shell{padding:15px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important}}
+
+/* Expanded Descent: accessible choices below the canvas and in the headset HUD. */
+.stage-caption[hidden],.choice-panel [hidden],#phase-options[hidden]{display:none!important}
+.choice-panel{margin:13px 0;padding:2px 0}
+#phase-help{margin:5px 0 12px;color:#f0d9a8;font-size:.88rem;line-height:1.55}
+#phase-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px}
+.choice-button{min-height:74px;display:flex;align-items:center;text-align:left;
+  padding:12px 14px;border:1px solid #719f94;background:#173431;
+  border-radius:6px;color:#e6ecdf;line-height:1.5;font-size:.85rem}
+.choice-button:hover,.choice-button:focus-visible{border-color:#f0d18a;background:#2a4a45}
+.choice-button[aria-pressed="true"]{outline:2px solid #dfc385;outline-offset:1px;background:#3b443a}
+#checkpoint-status{margin-top:6px;color:#c8d6b1;line-height:1.5}
+.telemetry .live-room{display:flex;gap:12px;flex-wrap:wrap;border-top:1px solid #526d6a;
+  padding-top:9px;margin-top:11px}
+.live-room strong{color:#ebd399}.live-room span{color:#a9d5cb}
+@media(max-width:600px){#phase-options{grid-template-columns:1fr}
+  .choice-button{min-height:55px}}

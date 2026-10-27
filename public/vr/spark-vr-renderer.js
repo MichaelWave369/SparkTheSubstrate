@@ -1,4 +1,4 @@
-// Original, low-overhead WebGL scene renderer for the Spark VR two-room slice.
+// Original low-poly WebGL renderer for all canonical Spark solo Descent rooms.
 // Geometry is derived from canonical ROOMS, obstacles and entity positions.
 import {WIDTH,HEIGHT} from '../action-engine.js?v=0.17.0';
 import {worldAt} from './spark-vr-model.js';
@@ -116,11 +116,64 @@ function pushStage(vertices,scene){
     pushBox(vertices,x,.58,z,o.w/100,1.16,o.h/100,stone);
     pushBox(vertices,x,1.18,z,o.w/100+.05,.06,o.h/100+.05,accent);
   }
+  // Distinct, bounded seven-world low-poly motifs; obstacles remain canonical,
+  // and decorative world monuments never change navigation or combat physics.
+  const rank=Number.isInteger(scene.worldRank)?scene.worldRank:0;
+  const tones=[
+    ['#d1b878','#86c7c0'],['#76cadd','#5c9dca'],['#7cc993','#a3d981'],
+    ['#ea9d64','#d7bb72'],['#b5a1e7','#7c90cc'],['#c6d9ec','#77bace'],
+    ['#f2d18c','#88c6ba']
+  ];
+  const [primary,secondary]=tones[Math.max(0,Math.min(6,rank))];
+  const pColor=hex(primary),sColor=hex(secondary);
+  for(let i=0;i<7;i++){
+    const z=-2.42+i*.8,x=i%2?4.28:-4.28;
+    if(rank===1){
+      // Tideglass: bright drowned conduits and ceremonial tide obelisks.
+      pushBox(vertices,x,.11,z,.55,.20,.42,tint(sColor,.7));
+      pushBox(vertices,x,.72,z,.17,1.23,.17,tint(pColor,.9));
+      pushBox(vertices,x,1.41,z,.4,.16,.4,sColor);
+    }else if(rank===2){
+      // Verdant: clustered root pillars, with a crown of leaf-colored light.
+      pushBox(vertices,x,.9,z,.24,1.8,.26,tint(pColor,.44));
+      pushBox(vertices,x,1.94,z,.7,.50,.7,tint(sColor,.8));
+    }else if(rank===3){
+      // Cinder: molten works, vertical shafts and alternating hot segments.
+      pushBox(vertices,x,.92,z,.4,1.85,.42,tint(pColor,.48));
+      pushBox(vertices,x,1.6,z,.52,.18,.52,pColor);
+      pushBox(vertices,x,.72,z,.55,.10,.54,sColor);
+    }else if(rank===4){
+      // Prism: violet split monoliths in an asymmetric dream cadence.
+      pushBox(vertices,x,1.02,z,.29,1.9,.32,tint(pColor,.71));
+      pushBox(vertices,x+.18,1.96,z,.28,.23,.28,sColor);
+    }else if(rank===5){
+      // Pale Orbit: star relays along a geometric path to the final realm.
+      pushBox(vertices,x,.85,z,.25,1.7,.25,tint(sColor,.55));
+      pushBox(vertices,x,1.77,z,.56,.12,.56,tint(pColor,.95));
+    }else if(rank===6){
+      // Uncreated: paired elemental monoliths below the final heart.
+      pushBox(vertices,x,.81,z,.35,1.6,.35,tint(pColor,.55));
+      pushBox(vertices,x,1.67,z,.54,.27,.54,tint(sColor,.98));
+    }else{
+      pushBox(vertices,x,.55,z,.22,1.1,.22,tint(pColor,.5));
+      pushBox(vertices,x,1.15,z,.29,.14,.29,tint(sColor,.9));
+    }
+  }
+  if(scene.safe){
+    pushBox(vertices,0,.26,0,1.8,.50,1.6,tint(sColor,.45));
+    pushBox(vertices,0,.55,0,.85,.10,.85,tint(pColor,.9));
+  }
+  if(scene.boss){
+    // Decorative ceremonial chamber centerpiece; cosmetic only.
+    pushBox(vertices,0,.09,0,1.8,.18,1.8,tint(pColor,.62));
+    pushBox(vertices,0,.05,0,2.35,.05,.12,tint(sColor,.82));
+    pushBox(vertices,0,.05,0,.12,.05,2.35,tint(sColor,.82));
+  }
   // Seven-world motifs reference actual Spark vessel colors without reusing
   // or flattening the original 2D sprite atlas.
   const motifs=['#f7cb79','#e5b78b','#86d8e5','#ddcc93','#a5cfad','#c6bcda'];
   for(let i=0;i<6;i++){
-    const x=-3.65+i*1.46,z=scene.roomId==='glass'?2.42:1.9;
+    const x=-3.65+i*1.46,z=scene.roomId==='glass'?2.42:scene.safe?2.3:1.9;
     pushBox(vertices,x,.77,z,.2,1.54,.2,dark);
     pushBox(vertices,x,1.5,z,.3,.16,.3,tint(hex(motifs[i]),.95));
     pushBox(vertices,x,.47,z,.11,.78,.11,tint(hex(motifs[i]),.6));
@@ -144,6 +197,25 @@ function pushActors(vertices,s){
   for(const frag of s.fragments.slice(0,60)){
     const [x,,z]=worldAt(frag.x,frag.y);
     pushBox(vertices,x,.28,z,.14,.55,.14,[.9,.77,.35]);
+  }
+  for(const mark of (s.dangerMarks??[]).slice(0,40)){
+    const [x,,z]=worldAt(mark.x,mark.y);
+    const size=Math.min(2.8,Math.max(.2,(mark.r??42)*2/100));
+    const tintColor=hex(mark.color,'#fa9277');
+    for(const d of [-1,1]){
+      pushBox(vertices,x,.022,z+d*size/2,size,.03,.035,tintColor);
+      pushBox(vertices,x+d*size/2,.022,z,.035,.03,size,tintColor);
+    }
+  }
+  if(s.keyPickup){
+    const [x,,z]=worldAt(s.keyPickup.x,s.keyPickup.y);
+    pushBox(vertices,x,.42,z,.20,.80,.20,[1,.84,.31]);
+    pushBox(vertices,x,.85,z,.45,.14,.45,[1,.91,.50]);
+  }
+  if(s.relicPickup){
+    const [x,,z]=worldAt(s.relicPickup.x,s.relicPickup.y);
+    pushBox(vertices,x,.35,z,.26,.68,.26,[.52,.94,.95]);
+    pushBox(vertices,x,.76,z,.43,.10,.43,[.9,.96,1]);
   }
 }
 export function makeSceneVertices(snapshot){
@@ -180,26 +252,45 @@ export class SparkVRRenderer{
     this.disposed=false;
   }
   updateHud(scene){
-    const stamp=[scene.roomName,scene.form,Math.ceil(scene.health),scene.phase,
-      scene.cleared,scene.notice.slice(0,80)].join('|');
+    const stamp=[scene.roomId,scene.roomName,scene.worldName,scene.form,
+      Math.ceil(scene.health),scene.phase,scene.cleared,
+      scene.notice.slice(0,80),scene.selectedChoice??0,
+      scene.choices?.map(x=>x.id).join(',')].join('|');
     if(stamp===this.lastHudStamp)return;
     this.lastHudStamp=stamp;
     const c=this.hudContext,w=512,h=256;
     c.clearRect(0,0,w,h);
     c.fillStyle='rgba(7,15,28,.88)';c.fillRect(0,0,w,h);
     c.strokeStyle='#d1b873';c.lineWidth=3;c.strokeRect(4,4,w-8,h-8);
-    c.font='bold 32px sans-serif';c.fillStyle='#f3da9c';c.fillText('SPARK / '+scene.form.toUpperCase(),24,45);
-    c.fillStyle='#e9f4f1';c.font='26px sans-serif';c.fillText(scene.roomName.slice(0,28),24,87);
-    c.font='23px sans-serif';c.fillStyle='#c8d9e5';
-    c.fillText('HP '+Math.ceil(scene.health)+' / '+scene.maxHealth+'     '+scene.phase.toUpperCase(),24,125);
-    c.fillStyle='#18343d';c.fillRect(24,140,464,20);
-    c.fillStyle='#6de6c0';c.fillRect(24,140,464*Math.max(0,Math.min(1,scene.health/scene.maxHealth)),20);
-    const hint=scene.notice|| (scene.cleared?'Walk to a glowing gate':'Clear the swarm to open the gates');
-    c.font='18px sans-serif';c.fillStyle='#d4c8b3';
-    const label=hint.length>59?hint.slice(0,56)+'…':hint;
-    c.fillText(label,24,191);
-    c.font='17px sans-serif';c.fillStyle='#96c7cf';
-    c.fillText('LT DASH  ·  RT POWER  ·  GRIP GATE',24,222);
+    c.font='bold 27px sans-serif';c.fillStyle='#f3da9c';
+    c.fillText('SPARK / '+scene.form.toUpperCase()+'  ·  LEVEL '+(scene.level??1),22,39);
+    c.fillStyle='#a9dccc';c.font='18px sans-serif';
+    c.fillText((scene.worldName??'The First Stratum').slice(0,43),22,66);
+    c.fillStyle='#e9f4f1';c.font='22px sans-serif';
+    c.fillText(scene.roomName.slice(0,36),22,96);
+    c.font='18px sans-serif';c.fillStyle='#c8d9e5';
+    c.fillText('HP '+Math.ceil(scene.health)+' / '+scene.maxHealth+
+      '     '+scene.phase.toUpperCase(),22,123);
+    c.fillStyle='#18343d';c.fillRect(22,136,466,16);
+    c.fillStyle='#6de6c0';c.fillRect(22,136,466*Math.max(0,Math.min(1,scene.health/scene.maxHealth)),16);
+    if(scene.choices?.length){
+      c.font='16px sans-serif';
+      scene.choices.forEach((item,index)=>{
+        c.fillStyle=index===(scene.selectedChoice??0)?'#f4df9e':'#afc8c7';
+        const label=(index===(scene.selectedChoice??0)?'▶ ':'   ')+item.title;
+        c.fillText(label.length>55?label.slice(0,52)+'…':label,22,177+index*22);
+      });
+      c.fillStyle='#96c7cf';c.font='13px sans-serif';
+      c.fillText('LEFT STICK SELECT  ·  RT / A CONFIRM',22,249);
+    }else{
+      const hint=scene.notice|| (scene.cleared?
+        'Travel through the open gate · A or grip':'Clear the swarm to open the gates');
+      c.font='17px sans-serif';c.fillStyle='#d4c8b3';
+      const label=hint.length>58?hint.slice(0,55)+'…':hint;
+      c.fillText(label,22,190);
+      c.font='15px sans-serif';c.fillStyle='#96c7cf';
+      c.fillText('LT DASH  ·  RT POWER  ·  A GATE  ·  B MORPH',22,228);
+    }
     const g=this.gl;
     g.bindTexture(g.TEXTURE_2D,this.hudTexture);
     g.pixelStorei(g.UNPACK_FLIP_Y_WEBGL,false);

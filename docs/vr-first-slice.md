@@ -1,81 +1,140 @@
-# SPARK immersive VR first slice (proposed v0.17.x experimental)
+# Spark immersive Descent VR — full campaign traversal candidate
 
-**Intent:** make the first playable headset-native incarnation of Spark in the
-existing repository. This is a **separate, disposable two-room Descent run**, not
-a replacement for its 126-chamber campaign, 39-room Sideways mode, Duel,
-Memory Arcade, multiplayer, rewards, or any saved-progress namespace.
+**Status: software integration candidate; real Quest 3 acceptance required.**
 
-## Entry / preview
+This version expands the previous **two-room** experimental slice to the
+**complete canonical solo Descent room graph**. No room list is manually
+duplicated: `VR_ROOMS = Object.keys(ROOMS)` in the real Spark engine.
+Automated regression tests enumerate every original exit target across all
+seven worlds and confirm it has a VR renderer path.
 
-1. Open Spark's home page and select **Immersive VR · prototype**.
-2. On a desktop with WebGL, click **Desktop 3D preview** to inspect the stage.
-   WASD/arrows move, drag to turn the view, Space dashes, F invokes canonical
-   vessel power, E interacts with canonical gates, Esc pauses.
-3. On a Quest 3 in an HTTPS-capable WebXR browser, click **Enter immersive VR**
-   and accept the immersive-session prompt. No session starts automatically.
-4. Face the north gate and use left stick to walk to it. Right grip/A interacts
-   once the actual engine's gate-proximity rule passes.
-5. In the **Glass Causeway**, actual Spark enemy spawning, damage, autoweapon
-   attacks, dash and power follow `action-engine.js`. Room visual appearance is
-   an original low-poly interpretation, not a full translation of Spark 2D art.
-6. The first VR slice stops at Threshold and Glass. Rewards and progression
-   are **not saved or promoted** back to any campaign.
+This is a full *solo progression path* in stylized 3D, **not** a complete
+translation of all original 2D assets, Quest-certified release, or XR co-op.
 
-## Controllers / comfort
+## How to play
 
-- Left stick: head-relative movement and strafing through the actual Spark engine.
-- Right stick horizontal: 30-degree snap turning with neutral reset latch.
-- Left trigger: Spark dash; right trigger: vessel power; automatic weapon attack
-  remains the real engine default; right grip or A: gate interaction.
-- Right stick click: pause/resume.
-- Loss of headset visibility, tracking or a controller pauses and drops held
-  controls. User-triggered session exit returns to the preview page.
-- Local-floor reference space preferred; local fallback is explicitly calibrated
-  to a 1.6 m reference eye height. This is approximate, not guardian/collision
-  guardian calibration. Do not assume wall-lean/room-scale boundary physics.
-- Seated first testing recommended, clear physical surroundings, stop for
-  discomfort. No teleport, vignette option, spatialized audio, collision-aware
-  room-scale walking, or 72/90 FPS claim yet.
+1. Open the public GitHub Pages
+   [Spark VR entry](https://michaelwave369.github.io/SparkTheSubstrate/vr/)
+   after the release PR has merged and the Pages workflow has deployed.
+2. To inspect on PC, click **Desktop 3D preview**.
+   Use WASD or arrows to move, drag the stage to aim the camera,
+   Space dash, F vessel power, E gate interaction, Q next vessel after
+   resonance is unlocked, Esc pause.
+3. On Quest Browser over HTTPS, press **Enter immersive VR** with controllers
+   active. The session is **user-initiated**, stereoscopic, and retains the
+   native headset head pose separate from game movement.
+4. Left stick: HMD-relative movement / strafe.
+   Right stick horizontal: 30° snap turns after neutral reset.
+   Left trigger: dash. Right trigger: native vessel power.
+   Right grip / A: interact with a nearby canonical gate or secret.
+   Right B: cycle vessels *only after* unlocking resonance in Mirror Nursery.
+   Right stick click: pause / resume.
+5. Spark stops for **real canonical choices** at the proper moments.
+   Left stick horizontal selects a decision and A/right trigger confirms.
+   On desktop the equivalent is left/right arrows and Enter. All choices
+   are shown on-page and on the in-headset HUD:
+   - Level-up gifts come from actual `run.choices` and `chooseBoon`.
+   - Room karma decisions use `resolveChamber` (liberate, harvest, listen).
+   - The Eye offers the canonical `resolveMilestone` decisions
+     **continue** or **finish**. Finishing banks an Eye victory.
+   - Death/victory requires **explicit memory banking** through
+     `settleRun`, then a choice of three `offeredForms` for a new life.
+6. Clear guards, collect the **actual** room keys and relics, defeat
+   guardians, obtain seals, and travel to The Uncreated with the real
+   canonical room/ward/vessel/key restrictions. Gate interaction never
+   teleports past an unopened or distant gate.
+7. The separate **VR checkpoint** saves automatically during play
+   (and after major transitions) and can be saved explicitly from the
+   page. It stores only the local VR meta/run state in browser storage
+   under `spark-substrate-immersive-vr-v1`.
+   **Resume VR checkpoint** restores it in desktop/Quest Browser.
+   **New VR journey** deletes only that VR save after confirmation.
+   The original Spark Descent, Sideways, Vault, Memory Arcade, and online
+   credential keys are never read, rewritten or merged by this path.
 
-## Architectural truth boundary
+## Seven canonical worlds
 
-- `public/vr/spark-vr-model.js` imports real `createMeta/createRun/stepRun/
-  observeRun/ROOMS/obstacles/gateStatus` from `public/action-engine.js`.
-- `public/vr/spark-vr-renderer.js` renders bounded stereoscopic WebGL
-  geometry derived from the canonical room/obstacle/enemy/shot positions.
-- `public/vr/spark-vr-app.js` owns only browser/XR input, fixed-step scheduling,
-  explicit session lifetime, view transforms, and the temporary preview state.
-- No new engine fork, no console `eval`, no runtime dependencies, no API calls,
-  no persisted VR run, no automatic promotion of kills, coins, keys or abilities.
-- Browser `navigator.xr` availability and stereo acceptance depend on an
-  actual HTTPS deployment and Quest hardware. Automated tests validate math,
-  real engine stepping, first gate travel, combat spawn, collision budgets and
-  preservation of the existing entry route, **not** physical headset rendering.
-
-## Release gate: must physically test, do not infer from CI
-
-| Acceptance | Expected result | Current status |
+| World | VR architectural motifs | Real engine content |
 | --- | --- | --- |
-| Desktop route | link opens an intact 3D preview, no JS console errors | Pending |
-| Stereo | Quest browser enters two-eye XR, correct depth and scale | Pending |
-| Controllers | left stick move, right snap-turn, trigger dash/power, grip gate | Pending |
-| Tracking | head tracking independent of body movement | Pending |
-| Gates | north Threshold → Glass uses actual proximity and availability | CI contract only |
-| Combat | real Glass enemy spawn, attacks and HP deductions | CI contract only |
-| Isolation | existing personal campaign, Sideways and Arcade saves stay untouched | CI source checks; manual confirm pending |
-| Safety | lost tracking/controller pauses; exit and re-enter safely | Pending |
-| Comfort | seated first trial, no eye strain or unsafe passthrough assumptions | Pending |
-| Performance | actual headset FPS / thermal comfort for 15 minutes | Pending |
-| Offline | verified over HTTPS after asset caching, no cloud service dependence | Pending |
-| Production | seven worlds, full campaign, six vessel modes and co-op | Not implemented |
+| First Stratum | Bronze threshold pillars and instrument hall | The Threshold, Glass, Sepulcher, Warden and 18 native chambers |
+| Tideglass Expanse | Aqua conduits and ceremonial obelisks | Pearl Key, Thalassa and tidal hazards |
+| Verdant Memory | Root pylons and leaf crowns | Seed Key, Tree gates and the Thornmother |
+| Cinder Clockworks | Ember furnaces and mechanical pillars | Ember Key, Rock gates and the Regent |
+| Prism Night | Violet dream monoliths | Dusk Key, Animal gates and the Night Weaver |
+| Pale Orbit | Lunar relay towers and celestial forms | Orbit Key, Spark gates and the Curator |
+| The Uncreated | Elemental monoliths and final ceremonial heart | Six seals, Human gate and Demiurge |
 
-## Next meaningful rung
+Current 3D rooms are **stylized procedural architecture**, not reconstructed
+high-detail environments. Canonical enemy, projectile, fragment, key/relic
+and danger-mark positions are represented by bounded 3D meshes. Engine
+`ROOMS`, `obstacles`, `stepRun`, `gateStatus`, karma, boons, forms, bosses,
+loot, victory and settlement remain authoritative.
 
-After real Quest validation, build an **XR-first interaction vocabulary** for
-shards, melee, projectiles, collision-aware locomotion, gates and six vessels.
-Only then graduate from the first two rooms to the remaining six worlds using
-existing Spark semantic IDs and game rules. Treat BTM's VR structure as a tested
-reference, never as a substitute for Spark's authoritative game engine.
+## Preservation and technical boundaries
 
-Source and art remain under Spark's existing project terms; this PR adds no
-third-party assets and changes no preserved historical versions.
+- Static browser WebGL/WebXR, no third-party runtime assets or APIs.
+- Canonical game logic is **imported**, not duplicated or patched to invent
+  VR-only rewards, collision shortcuts or free unlocks.
+- The separate VR save requires Spark's `validMeta` and `validRun`,
+  rejects co-op/daily/dungeon/rematch states and caps serialized size.
+- Original campaign saves are untouched. Browser storage is per origin:
+  Quest Browser does not automatically share a Windows Chrome VR checkpoint.
+  No cloud sync or transfer is implied.
+- Gate/choice data come from `action-engine.js`; all progression is earned
+  through ordinary solo gameplay.
+- This edition excludes XR multiplayer, room-scale locomotion physics,
+  teleport locomotion, full art/audio parity, hand tracking, passthrough,
+  native Meta OS replacement, dynamic platform install, and VR online saves.
+- `prefers-reduced-motion` removes decorative UI motion, **but does not
+  remove smooth VR locomotion**. First test seated in a cleared play space;
+  stop immediately for discomfort.
+
+## CI/software acceptance
+
+`.github/workflows/immersive-vr.yml` performs Node syntax and the complete
+Spark regression suite, plus `tests/vr-first-slice.test.mjs` and
+`tests/vr-full-descent.test.mjs` for:
+
+- Full room/exit graph and seven-world coverage.
+- Canonical swarm-locked and unlocked passage, first gate and beyond.
+- Gift, karma, Eye ending and six-vessel unlock/cooldown constraints.
+- Once-only death settlement, earned memory bank, legal offered rebirths.
+- Separate checkpoint roundtrip and invalid/oversize/cross-mode rejection.
+- Generated finite, bounded low-poly scenes, in-world key/relic/mark hints,
+  stereoscopic transform math and explicit WebXR session permissions.
+- Source and Pages subpath links are checked by existing GitHub Pages CI.
+
+**Passing these tests is not a physical headset pass.**
+
+## Required real Quest 3 finish line (not yet signed off)
+
+- [ ] HTTPS site opens and controller permission succeeds in Quest Browser
+- [ ] Correct stereo projection, depth, world scale, floor height and head pose
+- [ ] No nausea at seated/snap-turn comfort baseline; accessible exit
+- [ ] Controllers: movement, dash, power, grip interaction, snap turning,
+      pause/resume and unlocked vessel cycling
+- [ ] Threshold → Glass → Machine gate progression, including blocked gate
+      reasons, first real combat and first karma decision
+- [ ] Level-up gifts and Eye continue/finish operate inside the headset
+- [ ] Key pickup, relic pickup, boss danger warnings, world transition,
+      required seals/vessels and no geometry causing view clipping
+- [ ] Local VR checkpoint survives page reload and is **not** accidentally
+      written into original Spark saved campaign
+- [ ] Death → memory bank → offered vessel → fresh life is playable
+- [ ] 15-minute practical FPS/thermal/comfort verification on the Quest 3
+- [ ] Full progression playthrough without a softlock or fatal WebGL error
+
+## Subsequent finish rungs
+
+1. Physical headset acceptance and fixes, with receipts for the tested
+   Quest/browser version and real interactions.
+2. Comfort choices: locomotion vignette, optional teleport and adjustable
+   turn increments; fix tracking-origin and hands/controller ergonomics.
+3. Audio/atmosphere, native HUD interactions, authentic level themes and
+   performance budgeting against real headset frame times.
+4. Long-run save recovery, boss combat balancing and full real-world
+   126-room playthrough coverage.
+5. Explicit VR release tag only after the verified finish gates are satisfied.
+
+This is a substantial expansion of a playable prototype. It **must not be
+described as Quest-certified or finished** on CI evidence alone.
