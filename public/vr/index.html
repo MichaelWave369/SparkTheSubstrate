@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#071018">
-  <title>Spark: The Substrate | Immersive VR Preview</title>
-  <meta name="description" content="The Threshold and Glass Causeway in a separate, saved-progress-free stereoscopic Spark VR prototype.">
+  <title>Spark: The Substrate | Immersive Descent VR</title>
+  <meta name="description" content="Explore the full canonical seven-world Spark Descent graph in experimental immersive WebXR, with separate browser-local VR checkpoints.">
   <link rel="stylesheet" href="./spark-vr.css">
 </head>
 <body>
@@ -21,20 +21,24 @@
     </header>
     <div class="layout">
       <aside class="guide">
-        <p class="kicker">FIRST IMMERSIVE CHAPTER · EXPERIMENTAL</p>
+        <p class="kicker">FULL DESCENT GRAPH · EXPERIMENTAL XR</p>
         <h2>Walk beyond<br><em>the screen.</em></h2>
-        <p>The Threshold is no longer a painted map. Walk through its first gate and
-          fight the Glass Causeway using Spark's <strong>existing</strong> Descent rules.</p>
+        <p>Enter Spark's original solo Descent as a continuous, stereoscopic world.
+          All canonical chambers, routes, guardians, karma, keys, gifts and six
+          vessels remain governed by Spark's <strong>existing</strong> game engine.</p>
         <div class="route">
-          <div><b>01</b><span><strong>The Threshold</strong><small>Cross the northern gate</small></span></div>
-          <div><b>02</b><span><strong>Glass Causeway</strong><small>Defeat the real simulated swarm</small></span></div>
+          <div><b>01</b><span><strong>First Stratum</strong><small>The Threshold to the Warden</small></span></div>
+          <div><b>02</b><span><strong>Five created provinces</strong><small>Tideglass, Verdant, Cinder, Prism and Orbit</small></span></div>
+          <div><b>03</b><span><strong>The Uncreated</strong><small>Six seals and the Demiurge</small></span></div>
         </div>
         <div class="disclosure" role="note">
-          <strong>Prototype boundary</strong>
-          <p>Only these two rooms are rendered in VR. Enemy combat and gate rules come from
-            canonical Spark, but this is a separate fresh run. No campaign,
-            Sideways, Vault, or Memory Arcade save is read or written. No co-op,
-            campaign rewards, complete VR world or physical headset validation is claimed.</p>
+          <strong>Prototype boundary · experimental, not headset-certified</strong>
+          <p>The complete solo Descent room graph is now accessible with original
+            progression rules, but its 3D rooms are stylized low-poly interpretations.
+            VR checkpoints stay only in this browser, separate from campaign,
+            Sideways, Vault and Memory Arcade saves. No online co-op,
+            original-save promotion, finished art conversion or real Quest 3
+            performance/comfort qualification is claimed.</p>
         </div>
         <h3>Quest Touch controllers</h3>
         <dl class="controls">
@@ -43,42 +47,54 @@
           <div><dt>Left trigger</dt><dd>Dash</dd></div>
           <div><dt>Right trigger</dt><dd>Vessel power · auto-fire remains native</dd></div>
           <div><dt>Right grip / A</dt><dd>Gate interaction near a real gate</dd></div>
+          <div><dt>Right B</dt><dd>Cycle six vessels once resonance is unlocked</dd></div>
+          <div><dt>Left stick / RT / A</dt><dd>Choose gifts, karma and Eye milestones when paused by the engine</dd></div>
           <div><dt>Right stick click</dt><dd>Pause or resume</dd></div>
         </dl>
         <h3>Desktop test controls</h3>
-        <p class="keyboard">WASD / arrows move · drag view to look · Space dash · F power
-          · E gate · Esc pause</p>
+        <p class="keyboard">WASD move · drag to look · Space dash · F power · E gate ·
+          Q next unlocked vessel · arrows select choices · Enter confirms · Esc pause</p>
         <p class="micro">Comfort: stay seated on your first visit, use snap turning,
           keep a clear physical space, and exit if movement feels uncomfortable.
-          This preview has no teleport locomotion yet.</p>
+          Smooth locomotion remains experimental and teleport movement is not yet implemented.
+          Use the in-page VR checkpoint to resume after a break.</p>
       </aside>
       <section class="preview">
         <div class="viewport-wrap">
           <canvas id="world" width="1280" height="720"
             aria-label="Interactive 3D Spark prototype. Start desktop preview or enter WebXR."></canvas>
           <div class="viewport-top">
-            <div class="lab-chip"><i></i> VR LAB / TWO-ROOM SLICE</div>
+            <div class="lab-chip"><i></i> SOLO DESCENT / SEVEN WORLDS</div>
             <div class="health"><span>VESSEL INTEGRITY</span><div><i id="health"></i></div></div>
           </div>
-          <div class="stage-caption">
+          <div class="stage-caption" id="intro-overlay">
             <span>THE THRESHOLD</span>
             <strong>STEP INSIDE THE SUBSTRATE</strong>
-            <small>Start desktop preview, or enter from Quest Browser over HTTPS</small>
+            <small>Desktop preview or Quest Browser · experimental WebXR</small>
           </div>
         </div>
         <div class="toolbar" role="group" aria-label="VR preview controls">
           <button id="enter-vr" class="primary">Enter immersive VR</button>
           <button id="desktop">Desktop 3D preview</button>
           <button id="pause" disabled>Pause / resume</button>
-          <button id="reset">Reset VR prototype</button>
+          <button id="resume-vr" disabled>Resume VR checkpoint</button>
+          <button id="save-vr">Save VR checkpoint</button>
+          <button id="reset">New VR journey</button>
           <button id="exit-vr" disabled>Exit VR</button>
         </div>
         <p id="xr-support" class="support" role="status">Checking WebXR availability…</p>
+        <p id="checkpoint-status" class="support" role="status">Checking browser-local VR checkpoint…</p>
+        <section class="choice-panel" aria-label="Canonical Spark progression choices">
+          <p id="phase-help" hidden></p>
+          <div id="phase-options" hidden></div>
+        </section>
         <section class="telemetry" aria-label="Live prototype telemetry">
           <p id="facts">No engine session yet</p>
-          <p id="status" role="status" aria-live="polite">Choose a mode to begin this unsaved preview.</p>
+          <p class="live-room"><strong id="world-heading">The First Stratum</strong>
+            <span id="room-heading">The Threshold</span></p>
+          <p id="status" role="status" aria-live="polite">Choose a mode to begin an isolated VR-only journey.</p>
         </section>
-        <footer>SPARK 0.17 CANONICAL RULES · READ-ONLY TO SAVED PROGRESS · WEBXR REQUIRES HTTPS</footer>
+        <footer>SPARK 0.17 CANONICAL RULES · SEPARATE LOCAL VR SAVE · WEBXR REQUIRES HTTPS · QUEST ACCEPTANCE PENDING</footer>
       </section>
     </div>
   </main>
