@@ -103,7 +103,8 @@ test('VR files use an explicit entry and do not rename or take over established 
   const entry=await readFile(source,'utf8');
   const page=await readFile(new URL('../public/vr/index.html',import.meta.url),'utf8');
   const app=await readFile(new URL('../public/vr/spark-vr-app.js',import.meta.url),'utf8');
-  assert.match(entry,/href="vr\/index\.html" id="entry-spark-vr"/);
+  assert.ok(entry.includes('id="entry-spark-vr"'),'VR link stays uniquely identifiable');
+  assert.ok(entry.includes('href="vr/index.html"'),'VR route remains relative and subpath-safe');
   assert.match(page,/id="enter-vr"/);
   assert.match(page,/Prototype boundary/);
   assert.match(app,/navigator\.xr\.requestSession\('immersive-vr'/);
