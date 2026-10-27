@@ -143,6 +143,8 @@ test('cycle between original six vessels only after real resonance unlock and co
 test('canonical locked gates remain closed and cannot be bypassed by VR',()=>{
   const state=createVRPreview(369),run=state.run;
   run.room='glass';run.player.x=900;run.player.y=300;
+  // Initialize the live Glass encounter for the canonical gate test.
+  run.spawnTotal=20;
   stepVRPreview(state,{interact:true},VR_SIM_STEP);
   assert.equal(run.room,'glass');
   assert.match(state.blockedMessage,/swarm/);
