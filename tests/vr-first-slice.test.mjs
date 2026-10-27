@@ -52,6 +52,9 @@ test('canonical gate interaction reaches the actual Glass Causeway encounter',()
 test('VR permits the next real Glass gate only after canonical eligibility',()=>{
   const state=createVRPreview(369);
   state.run.room='glass';
+  // A live room needs a nonzero encounter budget; otherwise stepRun legitimately
+  // clears it immediately and enters the karma-decision phase.
+  state.run.spawnTotal=20;
   state.run.player.x=900;state.run.player.y=300;
   const before=state.run.room;
   stepVRPreview(state,{interact:true},VR_SIM_STEP);
