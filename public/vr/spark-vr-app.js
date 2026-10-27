@@ -82,7 +82,10 @@ function toggleNavigation(value=!navigationOpen){
   navButton.setAttribute('aria-expanded',String(navigationOpen));
   navButton.textContent=navigationOpen?'Close room compass':'Show room compass';
   navPanel.hidden=!navigationOpen;
-  last=0;accum=0;resetInputs();
+  last=0;accum=0;
+  // Preserve XR edge latches while a controller button is held, or Y
+  // would repeatedly open/close the compass every animation frame.
+  keys.clear();desktopActions={};
   updateInfo(true);
 }
 function decorateSnapshot(snap){
