@@ -1,0 +1,35 @@
+name: Spark Private Pre-Publication History Audit
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit-public-history.mjs'
+      - 'tests/public-history-audit.test.mjs'
+      - 'docs/OPEN_SOURCE_RELEASE.md'
+      - 'package.json'
+      - '.github/workflows/public-history-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  redacted-history-review:
+    name: Redacted Git history scan (advisory, NOT publication approval)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out all reachable refs and history (private job)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check scanner syntax and redaction tests
+        run: |
+          node --check scripts/audit-public-history.mjs
+          node --test tests/public-history-audit.test.mjs
+      - name: Inspect reachable Git blobs; output only counts and categories
+        run: node scripts/audit-public-history.mjs
