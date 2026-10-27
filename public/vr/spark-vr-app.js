@@ -1,10 +1,15 @@
 import {
   createVRPreview,resumeVRPreview,stepVRPreview,vrRoomSnapshot,worldAt,stickToGame,
-  chooseVRPhase,nextVRForm,vrPhaseChoices,VR_SIM_STEP,VR_SNAP_RADIANS
+  chooseVRPhase,nextVRForm,vrPhaseChoices,VR_SIM_STEP
 } from './spark-vr-model.js';
 import {saveVRCheckpoint,loadVRCheckpoint,clearVRCheckpoint} from './spark-vr-save.js';
 import {multiply4,projection4,lookAt4,worldRoot4} from './spark-vr-math.js';
 import {SparkVRRenderer} from './spark-vr-renderer.js';
+import {vrCompass,closestVRGate} from './spark-vr-navigation.js';
+import {
+  loadVRComfort,storeVRComfort,normalizeVRComfort,
+  applyVRComfortToMovement,vrSnapRadians
+} from './spark-vr-comfort.js';
 
 // This app owns presentation and a separate VR-only local save.
 // No canonical campaign, Sideways, Arcade or cloud progress is read or changed.
@@ -13,12 +18,17 @@ const canvas=$('world'),status=$('status'),details=$('facts'),color=$('health');
 const enterVR=$('enter-vr'),desktop=$('desktop'),pauseButton=$('pause'),
   reset=$('reset'),exitVR=$('exit-vr'),resume=$('resume-vr'),save=$('save-vr');
 const options=$('phase-options'),phaseHelp=$('phase-help'),saveStatus=$('checkpoint-status');
+const navButton=$('toggle-navigation'),navPanel=$('navigation-panel'),
+  navRoutes=$('navigation-routes'),navDescription=$('navigation-description');
+const speedSelect=$('comfort-speed'),turnSelect=$('comfort-turn'),
+  vignetteSelect=$('comfort-vignette');
 let state=createVRPreview(),renderer=null,mode='idle',xr=null,
   xrSpace=null,xrLayer=null,rootYaw=0,desktopYaw=0,desktopPitch=0,
   desktopRAF=0,frameId=null,last=0,accum=0,paused=true,
   floorShift=0,drag=null,outputStamp='',xrLatch={},
   keys=new Set(),desktopActions={},selectedChoice=0,phaseStamp='',
-  lastSavedAt=0,lastSavedSignature='';
+  lastSavedAt=0,lastSavedSignature='',navigationOpen=false,
+  comfort=loadVRComfort(window.localStorage);
 
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const show=message=>{status.textContent=message;};
@@ -34,6 +44,52 @@ const edge=(name,value)=>{
   return !!value&&!previous;
 };
 const resetInputs=()=>{keys.clear();desktopActions={};xrLatch={};};
+function initializeComfort(){
+  speedSelect.value=String(comfort.movement);
+  turnSelect.value=String(comfort.turn);
+  vignetteSelect.value=String(comfort.vignette);
+}
+function changeComfort(){
+  const selected=normalizeVRComfort({
+    movement:speedSelect.value,
+    turn:turnSelect.value,
+    vignette:vignetteSelect.value
+  });
+  comfort=selected;
+  try{storeVRComfort(window.localStorage,comfort);}
+  catch{show('Comfort settings applied for this visit, but browser storage is unavailable.');}
+}
+function updateNavigationPanel(snapshot){
+  if(!navigationOpen)return;
+  const compass=vrCompass(snapshot);
+  navRoutes.replaceChildren();
+  const near=closestVRGate(snapshot);
+  navDescription.textContent=near?
+    'Closest gate: '+near.heading+' · '+near.name+
+      ' · '+near.distance+' engine units · '+near.reason:
+    'No exits are available in this room.';
+  compass.forEach(gate=>{
+    const item=document.createElement('li'),title=document.createElement('strong'),
+      hint=document.createElement('small');
+    item.dataset.open=String(gate.available);
+    title.textContent=gate.heading+' · '+gate.status+' · '+gate.name;
+    hint.textContent=gate.reason;
+    item.append(title,hint);navRoutes.append(item);
+  });
+}
+function toggleNavigation(value=!navigationOpen){
+  navigationOpen=!!value;
+  navButton.setAttribute('aria-expanded',String(navigationOpen));
+  navButton.textContent=navigationOpen?'Close room compass':'Show room compass';
+  navPanel.hidden=!navigationOpen;
+  last=0;accum=0;resetInputs();
+  updateInfo(true);
+}
+function decorateSnapshot(snap){
+  snap.navigationOpen=navigationOpen;
+  snap.route=vrCompass(snap);
+  return snap;
+}
 
 function saveProgress(force=false){
   if(!force&&state.ticks===0)return; // Merely viewing VR never creates a checkpoint.
@@ -112,9 +168,10 @@ function cycleForm(){
 function updateInfo(force=false){
   const snap=vrRoomSnapshot(state);
   refreshChoices();
+  if(navigationOpen)updateNavigationPanel(snap);
   const stamp=[snap.roomId,snap.phase,Math.ceil(snap.health),snap.cleared,
     Math.floor(state.run.time),snap.notice,snap.form,selectedChoice,
-    snap.keys.length,snap.seals.length].join('|');
+    snap.keys.length,snap.seals.length,navigationOpen].join('|');
   if(stamp===outputStamp&&!force)return snap;
   outputStamp=stamp;
   color.style.width=(100*clamp(snap.health/snap.maxHealth,0,1)).toFixed(1)+'%';
@@ -148,7 +205,8 @@ function desktopInput(){
   const y=(keys.has('KeyS')||keys.has('ArrowDown')?1:0)-
     (keys.has('KeyW')||keys.has('ArrowUp')?1:0);
   const c=Math.cos(desktopYaw),s=Math.sin(desktopYaw);
-  const result={x:c*x-s*y,y:s*x+c*y,
+  const movement=applyVRComfortToMovement({x:c*x-s*y,y:s*x+c*y},comfort);
+  const result={...movement,
     dash:!!desktopActions.dash,power:!!desktopActions.power,
     interact:!!desktopActions.interact};
   desktopActions={};return result;
@@ -156,7 +214,7 @@ function desktopInput(){
 function simulate(now,input){
   const dt=Math.min(.05,Math.max(0,last?(now-last)/1000:0));
   last=now;
-  if(paused||!dt)return;
+  if(paused||navigationOpen||!dt)return;
   accum=Math.min(.08,accum+dt);
   let count=0;
   while(accum>=VR_SIM_STEP&&count<4){
@@ -178,7 +236,8 @@ function drawDesktop(now){
     const w=Math.max(2,Math.floor(canvas.clientWidth*dpr)),
       h=Math.max(2,Math.floor(canvas.clientHeight*dpr));
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
-    const snap=vrRoomSnapshot(state),[px,,pz]=worldAt(snap.player.x,snap.player.y);
+    const snap=decorateSnapshot(vrRoomSnapshot(state));
+    const [px,,pz]=worldAt(snap.player.x,snap.player.y);
     snap.selectedChoice=selectedChoice;
     const root=worldRoot4(px,pz);
     const direction=[Math.sin(desktopYaw),Math.sin(desktopPitch),-Math.cos(desktopYaw)];
@@ -193,6 +252,7 @@ function startDesktop(){
   if(xr){show('Exit immersive VR before entering desktop preview.');return;}
   try{
     ensureRenderer();mode='desktop';paused=false;accum=0;last=0;
+    navigationOpen=false;
     desktop.textContent='Resume desktop preview';pauseButton.disabled=false;
     enterVR.disabled=false;updateInfo(true);$('intro-overlay').hidden=true;
     stopDesktop();desktopRAF=requestAnimationFrame(drawDesktop);
@@ -203,6 +263,11 @@ function xrInput(pose,session){
   const left=controllers.find(s=>s.handedness==='left'),
     right=controllers.find(s=>s.handedness==='right');
   const axes=stick(left),turn=stick(right)[0];
+  const toggleMap=edge('navigation',pad(left,5));
+  if(navigationOpen){
+    return {x:0,y:0,navigationToggle:toggleMap,
+      togglePause:edge('pause',pad(right,3))};
+  }
   if(currentChoices().length){
     if(Math.abs(axes[0])<.32)xrLatch.choiceAxis=false;
     if(Math.abs(axes[0])>.78&&!xrLatch.choiceAxis){
@@ -210,16 +275,18 @@ function xrInput(pose,session){
     }
     return {x:0,y:0,
       confirmChoice:edge('confirmChoice',pad(right,0)||pad(right,4)),
+      navigationToggle:toggleMap,
       togglePause:edge('pause',pad(right,3))};
   }
   // Explicitly clear choice trigger before returning to normal RT power input.
   xrLatch.confirmChoice=false;
   if(Math.abs(turn)<.3)xrLatch.turn=false;
   if(Math.abs(turn)>.72&&!xrLatch.turn){
-    rootYaw+=Math.sign(turn)*VR_SNAP_RADIANS;xrLatch.turn=true;
+    rootYaw+=Math.sign(turn)*vrSnapRadians(comfort);xrLatch.turn=true;
   }
-  const movement=stickToGame(axes[0],axes[1],pose.transform.matrix,rootYaw);
-  return {...movement,
+  const movement=applyVRComfortToMovement(
+    stickToGame(axes[0],axes[1],pose.transform.matrix,rootYaw),comfort);
+  return {...movement,navigationToggle:toggleMap,
     dash:edge('dash',pad(left,0)),
     power:edge('power',pad(right,0)),
     interact:edge('interact',pad(right,1)||pad(right,4)),
@@ -239,6 +306,7 @@ function onXRFrame(now,frame){
       paused=true;resetInputs();show('Head tracking unavailable · VR paused.');return;
     }
     const input=xrInput(pose,session);
+    if(input.navigationToggle)toggleNavigation();
     if(input.togglePause){
       paused=!paused;resetInputs();accum=0;last=0;
       show(paused?'VR paused · press right stick to resume':'VR resumed');
@@ -249,7 +317,8 @@ function onXRFrame(now,frame){
     if(input.confirmChoice)confirmChoice();
     if(input.cycleForm)cycleForm();
     simulate(now,input);
-    const snap=vrRoomSnapshot(state),[px,,pz]=worldAt(snap.player.x,snap.player.y);
+    const snap=decorateSnapshot(vrRoomSnapshot(state));
+    const [px,,pz]=worldAt(snap.player.x,snap.player.y);
     snap.selectedChoice=selectedChoice;
     const root=worldRoot4(px,pz,rootYaw,floorShift);
     const views=pose.views.map(v=>({
@@ -259,7 +328,7 @@ function onXRFrame(now,frame){
       matrix:multiply4(v.projectionMatrix,multiply4(v.transform.inverse.matrix,root))
     }));
     renderer.render(views,snap,{framebuffer:xrLayer.framebuffer,
-      hudPose:pose.transform.matrix});
+      hudPose:pose.transform.matrix,vignette:comfort.vignette});
   }catch(error){
     paused=true;show('VR frame stopped safely: '+error.message);
     void leaveXR();
@@ -277,6 +346,7 @@ async function beginXR(){
     stopDesktop();paused=true;resetInputs();
     session=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});
     xr=session;mode='xr';rootYaw=0;accum=0;last=0;
+    navigationOpen=false;
     session.addEventListener('end',()=>finishXR(session),{once:true});
     session.addEventListener('visibilitychange',()=>{
       if(session.visibilityState!=='visible'){paused=true;resetInputs();}
@@ -347,6 +417,7 @@ resume.addEventListener('click',()=>{
     rootYaw=0;desktopYaw=0;desktopPitch=0;last=0;accum=0;
     selectedChoice=0;phaseStamp='';outputStamp='';resetInputs();
     updateInfo(true);
+    toggleNavigation(false);
     show('VR-only journey restored · start Desktop or Enter VR to continue.');
   }catch(error){show('VR resume blocked: '+error.message);}
 });
@@ -358,15 +429,22 @@ reset.addEventListener('click',()=>{
   state=createVRPreview();rootYaw=0;desktopYaw=0;desktopPitch=0;
   last=0;accum=0;outputStamp='';phaseStamp='';selectedChoice=0;
   lastSavedSignature='';lastSavedAt=0;resetInputs();
-  updateInfo(true);refreshSavedStatus();
+  toggleNavigation(false);updateInfo(true);refreshSavedStatus();
   show('New VR-only journey · original Spark saves untouched.');
 });
+navButton.addEventListener('click',()=>toggleNavigation());
+for(const control of [speedSelect,turnSelect,vignetteSelect])
+  control.addEventListener('change',changeComfort);
 window.addEventListener('keydown',event=>{
   if(['INPUT','TEXTAREA','SELECT'].includes(event.target?.tagName))return;
   if(event.target?.closest?.('button,a')&&['Space','Enter'].includes(event.code))return;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code))
     event.preventDefault();
   if(event.repeat)return;
+  if(event.code==='KeyM'&&mode==='desktop'){
+    toggleNavigation();return;
+  }
+  if(navigationOpen)return;
   if(event.code==='Escape'&&mode==='desktop'){
     paused=!paused;resetInputs();last=0;
     show(paused?'Desktop paused':'Desktop resumed');
@@ -408,4 +486,4 @@ canvas.addEventListener('pointermove',event=>{
 canvas.addEventListener('pointerup',()=>{drag=null;});
 canvas.addEventListener('pointercancel',()=>{drag=null;});
 window.addEventListener('pagehide',()=>saveProgress());
-updateInfo(true);refreshSavedStatus();void checkXR();
+initializeComfort();updateInfo(true);refreshSavedStatus();void checkXR();
