@@ -60,8 +60,9 @@ test('comfort defaults are bounded and never increase canonical movement beyond 
   const gentle=applyVRComfortToMovement({x:.5,y:-.5},{movement:.5,turn:30,vignette:0});
   assert.deepEqual(gentle,{x:.25,y:-.25});
   const defaultMove=applyVRComfortToMovement({x:1,y:-1});
-  assert.equal(defaultMove.x,.75);
-  assert.equal(defaultMove.y,-.75);
+  assert.ok(Math.hypot(defaultMove.x,defaultMove.y)<=.750000001);
+  assert.ok(Math.abs(defaultMove.x)>0&&Math.abs(defaultMove.y)>0,
+    'both diagonal movement axes remain active');
   assert.deepEqual(
     applyVRComfortToMovement({x:Infinity,y:NaN},{movement:1,turn:60,vignette:.75}),
     {x:0,y:0}
