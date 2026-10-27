@@ -22,7 +22,10 @@ export function applyVRComfortToMovement(vector,comfort=VR_COMFORT_DEFAULTS){
   const settings=normalizeVRComfort(comfort);
   const x=Number.isFinite(vector?.x)?vector.x:0;
   const y=Number.isFinite(vector?.y)?vector.y:0;
-  return {x:x*settings.movement,y:y*settings.movement};
+  // Diagonal keyboard input can exceed unit length; normalize first or
+  // Spark's engine would cap it at full speed, defeating the comfort setting.
+  const length=Math.hypot(x,y),scale=length>1?1/length:1;
+  return {x:x*scale*settings.movement,y:y*scale*settings.movement};
 }
 export function vrSnapRadians(comfort=VR_COMFORT_DEFAULTS){
   return normalizeVRComfort(comfort).turn*Math.PI/180;
