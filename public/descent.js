@@ -23,6 +23,8 @@ import {DuelScreen} from './duel-view.js?v=0.17.0';
 import {SideScreen} from './sideways-view.js?v=0.17.0';
 
 const $=id=>document.getElementById(id),CAMPAIGN_KEY='spark-substrate-descent-v2',signed=n=>n>0?'+'+n:String(n),pad=n=>String(n).padStart(2,'0');
+// Set only in the generated static GitHub Pages edition, never on the Worker-backed site.
+const STATIC_PAGES=globalThis.SPARK_STATIC_PAGES===true;
 let KEY=CAMPAIGN_KEY,PREVIOUS_KEY='spark-substrate-previous-spark',CREDENTIAL_KEY='spark-substrate-save-credential';
 const PROFILE_INDEX='spark-substrate-save-profiles-v1',ACTIVE_PROFILE='spark-substrate-active-save-v1',personalKey=k=>/^spark-substrate-descent-v2:coop:[A-HJ-NP-Z2-9]{8}:(host|guest)$/.test(k);
 try{const key=sessionStorage.getItem(ACTIVE_PROFILE);if(personalKey(key)){KEY=key;CREDENTIAL_KEY=key+':credential';PREVIOUS_KEY=key+':previous';}}catch{}
@@ -56,6 +58,7 @@ function renderStart(){
  for(const profile of INPUT_PROFILES){$('profile-'+profile).setAttribute('aria-pressed',String(settings.inputProfile===profile));$('profile-'+profile).classList.toggle('selected',settings.inputProfile===profile);}
  $('profile-copy-pc').textContent=profileCopy('pc',settings.bindings);$('entry-status').textContent=ready?PROFILE_LABELS[settings.inputProfile]+' selected. Confirm a mode to enter.':'Choose an input profile, then confirm a mode.';
  for(const id of ['entry-begin','entry-daily','entry-duel','entry-host','entry-join','entry-dungeon','entry-sideways'])$(id).disabled=!ready;
+ if(STATIC_PAGES){for(const id of ['entry-host','entry-join']){$(id).disabled=true;$(id).hidden=true;}}
  $('entry-rematches').hidden=!rematchBosses(meta,run).length;$('entry-rematches').disabled=!ready||online.active;
  $('entry-sideways').disabled=!ready||online.active;$('entry-sideways').textContent=side.journey?'Sideways descent · continue journey':'Sideways descent · platform adventure';$('entry-duel').disabled=!ready||online.active;$('entry-dungeon').disabled=!ready||online.active;$('entry-dungeon').textContent=dungeonState.run&&!['dead'].includes(dungeonState.run.phase)?'Endless dungeon · continue floor '+(dungeonState.run.dungeon.floor+(dungeonState.run.phase==='resolve'?1:0)):'Endless dungeon';$('entry-continue').hidden=!hasJourney(meta,run);$('entry-continue').disabled=!ready;
  $('entry-sound').textContent=sound?'Mute sound':'Enable sound';$('entry-sound').setAttribute('aria-pressed',String(sound));
@@ -64,11 +67,12 @@ function renderStart(){
 }
 function chooseProfile(profile){if(!INPUT_PROFILES.includes(profile))throw Error('Choose PC, Controller, or Mobile.');settings.inputProfile=profile;if(profile==='controller')settings.controller=true;clearInput();controllerButtons=[];persistSettings();renderStart();renderRail();renderOverlay(true);duel.setProfile(profile);side.clearInputs();if(entryMode==='sideways')side.render(true);if(sound)void audio.enable(true).catch(error=>{sound=false;persistSettings();announce(error.message);});if(entryMode==='start')$('entry-begin').focus({preventScroll:true});}
 function enterDescent(intent='descent'){
+ if(STATIC_PAGES&&['host','join'].includes(intent))throw Error('Online rooms are not available in the static GitHub Pages edition.');
  if(['dungeon','rematch'].includes(entryMode))returnToStart();
  if(!INPUT_PROFILES.includes(settings.inputProfile))throw Error('Choose how you enter first.');entryMode='descent';campaignEntered=true;
- if(intent==='host'||intent==='join'){progress?.dispose();progress=null;}else if(!progress)connectProgress();renderSaveStatus();renderStart();resize();if(intent==='continue'&&run?.phase==='playing')paused=false;finish();renderRail();renderOverlay(true);
+ if(intent==='host'||intent==='join'){progress?.dispose();progress=null;}else if(!progress&&!STATIC_PAGES)connectProgress();renderSaveStatus();renderStart();resize();if(intent==='continue'&&run?.phase==='playing')paused=false;finish();renderRail();renderOverlay(true);
  if(intent==='daily')act('daily');if(intent==='host'||intent==='join'){onlineIntent=intent;act('online');$(intent==='host'?'online-host':'online-code').focus({preventScroll:true});}
- if(!online.active&&!['host','join'].includes(intent)){onlineRecovery=online.resume();void onlineRecovery.then(resumed=>{if(resumed){$('online-room-code').textContent=online.code;renderOverlay(true);renderRail();focusCanvas();}});}
+ if(!STATIC_PAGES&&!online.active&&!['host','join'].includes(intent)){onlineRecovery=online.resume();void onlineRecovery.then(resumed=>{if(resumed){$('online-room-code').textContent=online.code;renderOverlay(true);renderRail();focusCanvas();}});}
 }
 function returnToStart(){if(entryMode==='sideways'){side.save();side.clearInputs();if(side.arcade.active)side.arcade.leave();side.active=false;}if(entryMode==='table')saveTable();if(['dungeon','rematch'].includes(entryMode)){if(entryMode==='dungeon'&&run?.phase==='resolve'&&run.xp<run.nextXp)nextDungeonFloor(run);save();run=campaignCache?.run??null;menu=campaignCache?.menu??true;paused=campaignCache?.paused??false;campaignCache=null;}if(entryMode==='descent'){if(run?.phase==='playing')paused=true;clearInput();save();}entryMode='start';clearInput();renderStart();}
 function enterDungeon(){
@@ -218,6 +222,7 @@ function rememberPlayerName(){playerName=cleanPlayerName($('online-name').value)
 async function usePlayerName(){rememberPlayerName();if(online.active)await online.rename(playerName);renderOnlineStatus();renderOnlineSetup();}
 async function sendCoopVote(index){try{await online.vote(coopChoiceContext(run),Number(index));renderOverlay(true);}catch(error){announce(error.message);const note=$('game-overlay').querySelector('[data-coop-choice-note]');if(note)note.textContent=error.message;}}
 async function onlineAction(action){
+ if(STATIC_PAGES)throw Error('Online rooms require Spark’s full hosted edition. This GitHub Pages edition is offline-first.');
  if(action!=='online-leave')requireDescent();if(action==='online'){openDialog('online-dialog');return;}
  if(action==='online-fall-host'||action==='online-fall-guest'){try{if(online.role!=='host'||onlineWaiting)throw Error('The host starts controlled falls when both players are present.');controlledFall(run,action==='online-fall-guest');paused=false;rescueWaiting=true;$('online-dialog').dataset.skipPauseRestore='true';$('online-dialog').close();clearInput();changed();restoreCanvasFocus();void online.sync();}catch(error){$('online-error').textContent=error.message;}return;}
  if(action==='online-name'){try{await usePlayerName();$('online-error').textContent='Name remembered for this device.';}catch(error){$('online-error').textContent=error.message;}return;}
@@ -269,6 +274,7 @@ function renderWorldMap(){
  $('world-travel').disabled=online.role==='guest'||!checkpointAvailable(run)||!worldUnlocked(mapWorld,seals);$('world-travel').dataset.world=mapWorld;$('world-travel').textContent='Travel to '+world.name;
 }
 function connectProgress(preferDevice=false){
+ if(STATIC_PAGES){progress?.dispose();progress=null;renderSaveStatus();return;}
  const epoch=loadEpoch,instance=new ProgressSave({fetch:window.fetch?.bind(window),storage:localStorage,credentialKey:CREDENTIAL_KEY,onStatus:renderSaveStatus});progress=instance;
  void instance.open(savedState()).then(saved=>{if(instance!==progress||epoch!==loadEpoch)return;if(saved){if(['dungeon','rematch'].includes(entryMode)){if(!preferDevice&&!online.active){meta=prepareEquipment(saved.meta);campaignCache={run:validRun(saved.run)?saved.run:null,menu:!validRun(saved.run),paused:saved.run?.phase==='playing'};}return;}if(preferDevice||online.active){save();void instance.flush();return;}meta=prepareEquipment(saved.meta);if(validRun(saved.run)){run=saved.run;menu=false;paused=run.phase==='playing';}else{run=null;menu=true;paused=false;}finish();save();renderRail();renderOverlay(true);}});
 }
