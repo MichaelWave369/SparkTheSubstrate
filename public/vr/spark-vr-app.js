@@ -121,7 +121,10 @@ function refreshSavedStatus(){
 }
 const currentChoices=()=>vrPhaseChoices(state);
 function refreshChoices(force=false){
-  const signature=state.run.phase+':'+state.run.choices.join(',');
+  // Death -> banked memory -> offered next life keeps the same 'dead' phase.
+  // Include offered choice IDs so the rendered buttons update immediately.
+  const signature=state.run.phase+':'+currentChoices().map(x=>x.id).join(',')+
+    ':'+Boolean(state.pendingRebirth);
   if(!force&&signature===phaseStamp)return;
   if(signature!==phaseStamp)selectedChoice=0;
   phaseStamp=signature;
@@ -252,7 +255,7 @@ function startDesktop(){
   if(xr){show('Exit immersive VR before entering desktop preview.');return;}
   try{
     ensureRenderer();mode='desktop';paused=false;accum=0;last=0;
-    navigationOpen=false;
+    if(navigationOpen)toggleNavigation(false);
     desktop.textContent='Resume desktop preview';pauseButton.disabled=false;
     enterVR.disabled=false;updateInfo(true);$('intro-overlay').hidden=true;
     stopDesktop();desktopRAF=requestAnimationFrame(drawDesktop);
@@ -346,7 +349,7 @@ async function beginXR(){
     stopDesktop();paused=true;resetInputs();
     session=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});
     xr=session;mode='xr';rootYaw=0;accum=0;last=0;
-    navigationOpen=false;
+    if(navigationOpen)toggleNavigation(false);
     session.addEventListener('end',()=>finishXR(session),{once:true});
     session.addEventListener('visibilitychange',()=>{
       if(session.visibilityState!=='visible'){paused=true;resetInputs();}
