@@ -1,5 +1,14 @@
 # Spark: The Substrate — Descent
 
+**Free-to-play flagship · proposed MIT open-source launch.** The original
+software is prepared for MIT licensing through [LICENSE](LICENSE). Original
+artwork, archived editions, third-party dependencies, server disclosures
+and historical logs require final clearance before this private repository
+is made public. See the [public release checklist](docs/OPEN_SOURCE_RELEASE.md),
+[asset review](ASSETS_AND_ATTRIBUTION.md) and [security policy](SECURITY.md).
+The existing browser game and experimental two-room VR slice are not a
+claim that every Quest 3 behavior has been physically accepted.
+
 ## Experimental immersive VR · first two rooms
 
 The new [Spark WebXR lab](public/vr/index.html) is an **opt-in, separate**
