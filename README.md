@@ -1,5 +1,17 @@
 # Spark: The Substrate — Descent
 
+## Experimental immersive VR · first two rooms
+
+The new [Spark WebXR lab](public/vr/index.html) is an **opt-in, separate**
+stereoscopic VR and desktop 3D slice of The Threshold and Glass Causeway. The
+native Spark Descent rules still own player movement, gates, combat, dash and
+Lumen power. Quest Touch left-stick movement, snap turning and interactive
+gate controls are wired for an HTTPS WebXR browser. The prototype does **not**
+touch campaign, Sideways or Memory Arcade saves and makes **no** real-headset
+performance claim. See [VR scope, controls and physical acceptance](docs/vr-first-slice.md).
+The full original game and its many modes remain unchanged.
+
+
 Version 0.17.0 · **guardian memories** finishes the remaining Sideways routes: **39 rooms**, **five relics**, all six matching equipment sets, and three optional branches through the existing worlds. Nacre’s Feather opens the Door Behind Sleep; the Unmade Thread returns from the Room Without a Name to the Outside Window in Pale Orbit. Night Hunter, Pale Horizon and Before the Law add movement, reach, attack-speed and recovery options.
 
 The eight existing guardians now have readable side-view patterns drawn from their Descent fights. **Pause → Guardian memories** replays defeated guardians with fixed 180 health and no gear or rewards. Replays save separately, show remaining guardian HP on a loss, and return to the exact journey room with its build, injury, coins and progress preserved. Existing Sideways saves and the original route continue. Verification: 329 tests, a normal-health 39-room walk with zero falls, all eight UI-controlled replays with in-fight reloads, older-save backtracking, deposit/economy and authentic Arcade regressions. [Routes, controls, save boundaries and release evidence](docs/sideways-guardians.md).

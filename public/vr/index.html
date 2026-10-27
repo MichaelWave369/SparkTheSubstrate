@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071018">
+  <title>Spark: The Substrate | Immersive VR Preview</title>
+  <meta name="description" content="The Threshold and Glass Causeway in a separate, saved-progress-free stereoscopic Spark VR prototype.">
+  <link rel="stylesheet" href="./spark-vr.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="mast">
+      <div class="mark" aria-hidden="true">✧</div>
+      <div>
+        <p class="eyebrow">ONE SPARK · MANY SHAPES / VR LAB</p>
+        <h1>SPARK <span>THE SUBSTRATE</span></h1>
+        <p class="tagline">The body falls. The spark remembers.</p>
+      </div>
+      <a class="return" href="../index.html">Return to original Spark</a>
+    </header>
+    <div class="layout">
+      <aside class="guide">
+        <p class="kicker">FIRST IMMERSIVE CHAPTER · EXPERIMENTAL</p>
+        <h2>Walk beyond<br><em>the screen.</em></h2>
+        <p>The Threshold is no longer a painted map. Walk through its first gate and
+          fight the Glass Causeway using Spark's <strong>existing</strong> Descent rules.</p>
+        <div class="route">
+          <div><b>01</b><span><strong>The Threshold</strong><small>Cross the northern gate</small></span></div>
+          <div><b>02</b><span><strong>Glass Causeway</strong><small>Defeat the real simulated swarm</small></span></div>
+        </div>
+        <div class="disclosure" role="note">
+          <strong>Prototype boundary</strong>
+          <p>Only these two rooms are rendered in VR. Enemy combat and gate rules come from
+            canonical Spark, but this is a separate fresh run. No campaign,
+            Sideways, Vault, or Memory Arcade save is read or written. No co-op,
+            campaign rewards, complete VR world or physical headset validation is claimed.</p>
+        </div>
+        <h3>Quest Touch controllers</h3>
+        <dl class="controls">
+          <div><dt>Left stick</dt><dd>Move / strafe, head-relative</dd></div>
+          <div><dt>Right stick</dt><dd>Snap turn 30°</dd></div>
+          <div><dt>Left trigger</dt><dd>Dash</dd></div>
+          <div><dt>Right trigger</dt><dd>Vessel power · auto-fire remains native</dd></div>
+          <div><dt>Right grip / A</dt><dd>Gate interaction near a real gate</dd></div>
+          <div><dt>Right stick click</dt><dd>Pause or resume</dd></div>
+        </dl>
+        <h3>Desktop test controls</h3>
+        <p class="keyboard">WASD / arrows move · drag view to look · Space dash · F power
+          · E gate · Esc pause</p>
+        <p class="micro">Comfort: stay seated on your first visit, use snap turning,
+          keep a clear physical space, and exit if movement feels uncomfortable.
+          This preview has no teleport locomotion yet.</p>
+      </aside>
+      <section class="preview">
+        <div class="viewport-wrap">
+          <canvas id="world" width="1280" height="720"
+            aria-label="Interactive 3D Spark prototype. Start desktop preview or enter WebXR."></canvas>
+          <div class="viewport-top">
+            <div class="lab-chip"><i></i> VR LAB / TWO-ROOM SLICE</div>
+            <div class="health"><span>VESSEL INTEGRITY</span><div><i id="health"></i></div></div>
+          </div>
+          <div class="stage-caption">
+            <span>THE THRESHOLD</span>
+            <strong>STEP INSIDE THE SUBSTRATE</strong>
+            <small>Start desktop preview, or enter from Quest Browser over HTTPS</small>
+          </div>
+        </div>
+        <div class="toolbar" role="group" aria-label="VR preview controls">
+          <button id="enter-vr" class="primary">Enter immersive VR</button>
+          <button id="desktop">Desktop 3D preview</button>
+          <button id="pause" disabled>Pause / resume</button>
+          <button id="reset">Reset VR prototype</button>
+          <button id="exit-vr" disabled>Exit VR</button>
+        </div>
+        <p id="xr-support" class="support" role="status">Checking WebXR availability…</p>
+        <section class="telemetry" aria-label="Live prototype telemetry">
+          <p id="facts">No engine session yet</p>
+          <p id="status" role="status" aria-live="polite">Choose a mode to begin this unsaved preview.</p>
+        </section>
+        <footer>SPARK 0.17 CANONICAL RULES · READ-ONLY TO SAVED PROGRESS · WEBXR REQUIRES HTTPS</footer>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="./spark-vr-app.js"></script>
+</body>
+</html>

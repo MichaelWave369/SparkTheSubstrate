@@ -1,0 +1,42 @@
+name: SPARK Immersive VR First Slice
+
+on:
+  pull_request:
+    paths:
+      - "public/vr/**"
+      - "public/index.html"
+      - "tests/vr-first-slice.test.mjs"
+      - "docs/vr-first-slice.md"
+      - ".github/workflows/immersive-vr.yml"
+  push:
+    branches: [main]
+    paths:
+      - "public/vr/**"
+      - "public/index.html"
+      - "tests/vr-first-slice.test.mjs"
+      - "docs/vr-first-slice.md"
+      - ".github/workflows/immersive-vr.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  vr-first-slice:
+    name: VR / real Spark engine + stereo math + save isolation
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Parse browser and headset modules
+        run: |
+          node --check public/vr/spark-vr-app.js
+          node --check public/vr/spark-vr-renderer.js
+          node --check public/vr/spark-vr-model.js
+          node --check public/vr/spark-vr-math.js
+      - name: Prove canonical Threshold to Glass rules
+        run: node --test tests/vr-first-slice.test.mjs
+      - name: Preserve all existing Spark engine and save regressions
+        run: npm test
