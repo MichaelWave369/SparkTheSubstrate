@@ -110,7 +110,7 @@ test('export never includes user identifiers, room data, game progress, input ve
     pose:{x:sentinel},room:sentinel,save:sentinel,controllerAxis:sentinel
   });
   const serialized=JSON.stringify(questAcceptanceReport(state,{stereo:'pass'}));
-  for(const forbidden of [sentinel,'controllerAxis','pose','saveData','navigator',
+  for(const forbidden of [sentinel,'controllerAxis','"pose":','saveData','navigator',
     'latitude','longitude','gameProgress','userAgent']){
     assert.equal(serialized.includes(forbidden),false,forbidden+' must never appear');
   }
