@@ -50,13 +50,15 @@
           <div><dt>Right B</dt><dd>Cycle six vessels once resonance is unlocked</dd></div>
           <div><dt>Left stick / RT / A</dt><dd>Choose gifts, karma and Eye milestones when paused by the engine</dd></div>
           <div><dt>Right stick click</dt><dd>Pause or resume</dd></div>
+          <div><dt>Left Y</dt><dd>Open/close room compass and pause simulation</dd></div>
         </dl>
         <h3>Desktop test controls</h3>
         <p class="keyboard">WASD move · drag to look · Space dash · F power · E gate ·
-          Q next unlocked vessel · arrows select choices · Enter confirms · Esc pause</p>
+          Q next unlocked vessel · M room compass · arrows select choices · Enter confirms · Esc pause</p>
         <p class="micro">Comfort: stay seated on your first visit, use snap turning,
           keep a clear physical space, and exit if movement feels uncomfortable.
           Smooth locomotion remains experimental and teleport movement is not yet implemented.
+          Set a slower movement speed and a comfort vignette before entering VR.
           Use the in-page VR checkpoint to resume after a break.</p>
       </aside>
       <section class="preview">
@@ -79,11 +81,48 @@
           <button id="pause" disabled>Pause / resume</button>
           <button id="resume-vr" disabled>Resume VR checkpoint</button>
           <button id="save-vr">Save VR checkpoint</button>
+          <button id="toggle-navigation" type="button" aria-expanded="false"
+            aria-controls="navigation-panel">Show room compass</button>
           <button id="reset">New VR journey</button>
           <button id="exit-vr" disabled>Exit VR</button>
         </div>
         <p id="xr-support" class="support" role="status">Checking WebXR availability…</p>
         <p id="checkpoint-status" class="support" role="status">Checking browser-local VR checkpoint…</p>
+        <section class="comfort-panel" aria-label="VR motion comfort settings">
+          <h2>Comfort settings</h2>
+          <p>Choose before entering immersive VR. These preferences are saved locally,
+            separate from gameplay and with no server connection.</p>
+          <div class="comfort-controls">
+            <label>Movement speed
+              <select id="comfort-speed">
+                <option value="0.5">Gentle · 50%</option>
+                <option value="0.75" selected>Comfortable · 75%</option>
+                <option value="1">Original · 100%</option>
+              </select>
+            </label>
+            <label>Snap turning
+              <select id="comfort-turn">
+                <option value="30" selected>30° steps</option>
+                <option value="45">45° steps</option>
+                <option value="60">60° steps</option>
+              </select>
+            </label>
+            <label>Peripheral comfort mask
+              <select id="comfort-vignette">
+                <option value="0">Off</option>
+                <option value="0.4" selected>Subtle</option>
+                <option value="0.75">Stronger</option>
+              </select>
+            </label>
+          </div>
+        </section>
+        <section class="navigation-panel" id="navigation-panel"
+          aria-label="Canonical room compass" hidden>
+          <h2>Room compass</h2>
+          <p id="navigation-description">Directions use original Spark gates.
+            Locked doors cannot be bypassed.</p>
+          <ol id="navigation-routes" aria-live="polite"></ol>
+        </section>
         <section class="choice-panel" aria-label="Canonical Spark progression choices">
           <p id="phase-help" hidden></p>
           <div id="phase-options" hidden></div>
