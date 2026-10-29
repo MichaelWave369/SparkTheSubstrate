@@ -111,7 +111,12 @@
     {
       "finding": "First hosted browser job asserted wrist pause after a fixed 150 ms delay, before a slow software-rendered frame sampled Tab",
       "observed": "GitHub run 40923803443 / browser job 123623816194: false !== true at wrist-open assertion; original engine, Pages and Rung 1 browser checks passed",
-      "resolution": "Keyboard acceptance now waits for actual movement and actual wrist paused state before asserting, preserving the same behavior requirement. Corrected full browser suite executed locally and passed."
+      "resolution": "Replaced fixed-duration keyboard waits with actual runtime-state checks. The first polling attempt is preserved as a separate finding below."
+    },
+    {
+      "finding": "Second hosted browser run exposed early W input before neutral rearm and an async polling predicate that Playwright treated as immediately truthy",
+      "observed": "GitHub run 40924823903 / browser job 123627401084: actual keyboard movement assertion failed; engine, Pages and original Rung 1 browser checks passed",
+      "resolution": "Test loads the actual app module once and synchronously waits for neutral readiness, actual native movement and wrist paused state. Startup and rearm safeguards remain unchanged. Corrected full browser suite executed locally and passed."
     }
   ]
 }

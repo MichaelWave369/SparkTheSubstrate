@@ -42,7 +42,7 @@
     },
     {
       "path": "docs/vr-living/verification.json",
-      "sha256": "19a31ad58eabc1588bcb34817aeb129f378d34d2580fa9e9ce306d3bf82cb4d2"
+      "sha256": "26a05cdf80a4f8f901359830323b06b34bec8ef918ed1b8434f619868440b534"
     },
     {
       "path": "docs/vr-living/vessel-animal.png",
@@ -66,7 +66,7 @@
     },
     {
       "path": "docs/vr-living/wrist.png",
-      "sha256": "919191fd5f99b169df640b9d2492fc024ef0b522df126e5a1474f3a8c319b993"
+      "sha256": "ec6bfe707a6911170c5d04ab10deadb47732ddc24ce02a070580fbddaf8e6797"
     },
     {
       "path": "public/vr/ascension.html",
@@ -138,7 +138,7 @@
     },
     {
       "path": "scripts/check-vr-living-browser.mjs",
-      "sha256": "c2a80e92fd8aef3842851ca1f3e1810247c9d56ace6e7c9e96c9743bec90710f"
+      "sha256": "929aceeff097c38060cbd9386507f61e0794539d397da523de9cd10318e61fbc"
     },
     {
       "path": "tests/vr-living-path.mjs",
