@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "browser": "153.0.8010.0",
+  "path": {
+    "glass": {
+      "health": 137,
+      "level": 3,
+      "karma": 7,
+      "essence": 3,
+      "cleared": true,
+      "kills": 14,
+      "damage": 510
+    },
+    "restored": true,
+    "continued": true,
+    "room": "machine"
+  },
+  "transformation": {
+    "form": "tree",
+    "cooldown": 2.9833333333333334,
+    "earned": {
+      "rooms": [
+        "machine",
+        "roots",
+        "machine",
+        "quiet",
+        "conduit",
+        "reliquary",
+        "cistern",
+        "nursery"
+      ],
+      "keyring": [
+        "ivory"
+      ],
+      "abilities": [
+        "phase",
+        "root",
+        "morph"
+      ],
+      "level": 11,
+      "health": 237
+    },
+    "source": "Fresh campaign: native encounters, earned Ivory key, legal gates and cleared Mirror Nursery; no state/HP/reward injection"
+  },
+  "vesselEvidence": [
+    {
+      "form": "human",
+      "cooldown": 2.9833333333333334
+    },
+    {
+      "form": "computer",
+      "cooldown": 2.9833333333333334
+    },
+    {
+      "form": "animal",
+      "cooldown": 2.9833333333333334
+    },
+    {
+      "form": "rock",
+      "cooldown": 2.9833333333333334
+    },
+    {
+      "form": "spark",
+      "cooldown": 2.9833333333333334
+    }
+  ],
+  "stereo": {
+    "eyes": [
+      341599,
+      341599
+    ],
+    "error": 0
+  },
+  "cleanup": {
+    "gpu": [
+      {
+        "buffers": 0,
+        "textures": 0,
+        "programs": 0
+      }
+    ],
+    "voices": 0
+  },
+  "remoteRequests": 0,
+  "browserErrors": 0,
+  "checks": [
+    "actual desktop keyboard",
+    "wrist capture",
+    "fresh canonical Threshold→Glass→Machine",
+    "real combat/rewards/choices",
+    "save/restore/continue",
+    "three real room screenshots",
+    "legitimately earned Tree transformation",
+    "both-eye retained geometry",
+    "clean mode exit/relaunch",
+    "project subpath imports",
+    "no remote requests"
+  ],
+  "hardwareVerification": "NOT PERFORMED; Chromium with software WebGL and synthetic poses"
+}

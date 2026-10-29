@@ -68,3 +68,14 @@ original Web Audio oscillator synthesis. These additions use this repository's
 MIT license. No external artwork, models, textures, audio files, runtime CDN,
 asset downloads or new app dependencies are required. Optional browser QA uses
 Playwright as isolated development tooling; it is never shipped with the game.
+
+## SPARK VR: The Living Substrate — Rung 2
+
+The room themes, beams, faceted energy/crystals, six vessel gauntlet variants,
+wrist UI, procedural atmospheric geometry and synthesized vessel/room tones in
+`public/vr/` are original additions covered by the repository's MIT license.
+Existing Spark geometry helpers were extracted into `spark-vr-geometry.js`.
+No BTM engines or assets were copied; its runtime/equipment patterns informed the
+design. No new app dependency, runtime download, CDN, paid API or remote telemetry.
+Browser evidence uses isolated Playwright/Chromium development tools; those
+executables and packages are not distributed with Spark.

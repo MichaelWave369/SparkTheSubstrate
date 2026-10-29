@@ -24,7 +24,15 @@ export const QUEST_ACCEPTANCE_CASES=Object.freeze([
   Object.freeze({id:'ascension-comfort',label:'Ascension: headset menu changes posture, speed, snap turn, vignette and reduced intensity'}),
   Object.freeze({id:'ascension-recovery',label:'Ascension: each missing controller pose, tracking jump, reference reset and visibility loss pauses; held triggers never fire on resume'}),
   Object.freeze({id:'ascension-boundary',label:'Ascension: bounded head/hand poses cannot shoot through arena edges; recenter and explicit resume recover'}),
-  Object.freeze({id:'ascension-exit',label:'Ascension: B and pause-menu exit return to browser; repeat XR entry without duplicate input/audio'})
+  Object.freeze({id:'ascension-exit',label:'Ascension: B and pause-menu exit return to browser; repeat XR entry without duplicate input/audio'}),
+  Object.freeze({id:'living-campaign',label:'Living Descent: Threshold → real Glass combat/rewards → Machine gate works'}),
+  Object.freeze({id:'living-vessels',label:'Living Descent: six hands are visually distinct; only earned resonance changes form'}),
+  Object.freeze({id:'living-worlds',label:'Living Descent: Threshold, Glass and Machine have readable scale, cover and gate geometry'}),
+  Object.freeze({id:'living-wrist',label:'Living Descent: deliberate wrist, progression choices, inventory, navigation and comfort work using controllers'}),
+  Object.freeze({id:'living-checkpoint',label:'Living Descent: old VR checkpoint restores; save/restore/continue keeps earned progress'}),
+  Object.freeze({id:'living-motion',label:'Living Descent: bounded physical lean uses native collision; controller alternatives work seated'}),
+  Object.freeze({id:'living-hub',label:'Living hub: mode change ends XR cleanly, relaunch works, audio/listeners do not duplicate'}),
+  Object.freeze({id:'living-quality',label:'Living Descent: all three quality presets and reduced intensity are comfortable on the tested headset'})
 ]);
 const MAX_SAMPLES=480;
 const EVENTS=Object.freeze([

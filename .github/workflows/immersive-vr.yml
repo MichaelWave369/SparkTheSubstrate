@@ -7,6 +7,9 @@ on:
       - "public/duel-engine.js"
       - "public/duel-spatial.js"
       - "tests/vr-ascension.test.mjs"
+      - "tests/vr-living*.mjs"
+      - "scripts/check-vr-living-browser.mjs"
+      - "docs/vr-living/**"
       - "scripts/check-vr-ascension-browser.mjs"
       - "docs/vr-ascension/**"
       - "public/index.html"
@@ -23,6 +26,9 @@ on:
       - "public/duel-engine.js"
       - "public/duel-spatial.js"
       - "tests/vr-ascension.test.mjs"
+      - "tests/vr-living*.mjs"
+      - "scripts/check-vr-living-browser.mjs"
+      - "docs/vr-living/**"
       - "scripts/check-vr-ascension-browser.mjs"
       - "docs/vr-ascension/**"
       - "public/index.html"
@@ -74,9 +80,13 @@ jobs:
       - name: Check real browser rendering with synthetic input, never hardware certification
         env:
           SPARK_PLAYWRIGHT_MODULE: /tmp/spark-xr-qa/node_modules/playwright/index.mjs
-        run: node scripts/check-vr-ascension-browser.mjs
+        run: |
+          node scripts/check-vr-ascension-browser.mjs
+          node scripts/check-vr-living-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: spark-xr-browser-evidence
-          path: work/vr-browser/
+          path: |
+            work/vr-browser/
+            work/vr-living-browser/

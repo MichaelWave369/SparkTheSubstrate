@@ -1,0 +1,140 @@
+import {pushBox,pushBeam,pushGem,pushRing,hex,tint} from './spark-vr-geometry.js';
+import {worldAt} from './spark-vr-model.js';
+export const ROOM_THEME_VERSION='spark.xr.room-theme.v1';
+export const XR_QUALITY=Object.freeze({
+  performance:Object.freeze({detail:6,particles:6,scale:.7,far:18}),
+  balanced:Object.freeze({detail:12,particles:16,scale:.85,far:25}),
+  high:Object.freeze({detail:20,particles:28,scale:1,far:32})
+});
+export const ROOM_THEMES=Object.freeze({
+  stratum:{stone:'#20323c',light:'#f4cc83',glow:'#6ddbd0'},
+  tideglass:{stone:'#173a4c',light:'#94e5ee',glow:'#66a7ec'},
+  verdant:{stone:'#263f33',light:'#b5da85',glow:'#6ad8ab'},
+  cinder:{stone:'#44302d',light:'#f2b16a',glow:'#e57a49'},
+  prism:{stone:'#30324c',light:'#d7b5ee',glow:'#7ca7df'},
+  orbit:{stone:'#2e3d52',light:'#dbe6f3',glow:'#7dcbeb'},
+  uncreated:{stone:'#383a3c',light:'#ffdfa4',glow:'#8be9d2'}
+});
+const WORLD_IDS=['stratum','tideglass','verdant','cinder','prism','orbit','uncreated'];
+const SHOWCASE={threshold:{stone:'#303239',light:'#f4d08a',glow:'#b5dbc5'},
+  glass:{stone:'#1d3549',light:'#b2e9f0',glow:'#59c4dd'},machine:{stone:'#272c3d',light:'#e4ab64',glow:'#69dfc5'}};
+export function roomTheme(scene){return {version:ROOM_THEME_VERSION,...(ROOM_THEMES[scene.worldId]||ROOM_THEMES[WORLD_IDS[scene.worldRank]]||ROOM_THEMES.stratum),
+  ...(SHOWCASE[scene.roomId]||{}),
+  showcase:['threshold','glass','machine'].includes(scene.roomId)?scene.roomId:'world'};}
+const cache=new Map();
+export function clearRoomGeometryCache(){cache.clear();}
+export function roomGeometryKey(s){return JSON.stringify([ROOM_THEME_VERSION,s.roomId,s.worldId,s.quality||'balanced',
+  s.gates.map(g=>[g.direction,g.available]),s.obstacles]);}
+export function livingRoomGeometry(s){
+  const key=roomGeometryKey(s);if(cache.has(key))return cache.get(key);
+  const v=[],theme=roomTheme(s),stone=hex(theme.stone),light=hex(theme.light),glow=hex(theme.glow),q=XR_QUALITY[s.quality]||XR_QUALITY.balanced;
+  pushBox(v,0,-.10,0,9.6,.20,6,tint(stone,.65));
+  // Floor inlays are flush; all new solid architecture is beyond the legal body
+  // footprint or above head height. Cover uses the exact canonical footprints.
+  for(let x=-4.25;x<4.3;x+=.5)pushBox(v,x,.004,0,.009,.008,5.18,tint(glow,.35));
+  for(let z=-2.5;z<2.6;z+=.5)pushBox(v,0,.005,z,8.6,.009,.008,tint(light,.22));
+  const sides=new Set(s.gates.map(g=>g.direction));
+  for(const axis of ['x','z'])for(const side of [-1,1]){
+    const dir=axis==='x'?(side<0?'west':'east'):(side<0?'north':'south'),edge=(axis==='x'?4.8:3)*side;
+    const length=axis==='x'?6:9.6;
+    if(sides.has(dir))for(const sign of [-1,1])pushBox(v,axis==='x'?edge:sign*(length/4+.45),1.8,axis==='x'?sign*(length/4+.45):edge,
+      axis==='x'?.18:length/2-.9,3.6,axis==='x'?length/2-.9:.18,stone);
+    else pushBox(v,axis==='x'?edge:0,1.8,axis==='x'?0:edge,axis==='x'?.18:length,3.6,axis==='x'?length:.18,stone);
+  }
+  for(const gate of s.gates){
+    const horizontal=['north','south'].includes(gate.direction),x=horizontal?0:gate.direction==='east'?4.65:-4.65,
+      z=horizontal?(gate.direction==='north'?-2.85:2.85):0,col=gate.available?glow:tint(light,.58);
+    for(const side of [-1,1]){
+      pushBox(v,x+(horizontal?side*.84:0),1.28,z+(horizontal?0:side*.84),horizontal?.13:.28,2.56,horizontal?.28:.13,col);
+      pushGem(v,x+(horizontal?side*.84:0),2.7,z+(horizontal?0:side*.84),.12,.35,light);
+    }
+    pushBox(v,x,2.55,z,horizontal?1.8:.25,.13,horizontal?.25:1.8,col);
+    pushBox(v,x,.018,z,horizontal?1.5:.28,.025,horizontal?.28:1.5,tint(col,.7));
+    if(!gate.available)for(let k=0;k<5;k++)pushBox(v,x,.3+k*.42,z,horizontal?1.5:.018,.012,horizontal?.018:1.5,tint(light,.45));
+  }
+  for(const o of s.obstacles){
+    const [x,,z]=worldAt(o.x+o.w/2,o.y+o.h/2);
+    pushBox(v,x,.58,z,o.w/100,1.16,o.h/100,tint(stone,1.6));
+    pushBox(v,x,.99,z,o.w/100,.045,o.h/100,glow);
+    pushGem(v,x,1.16,z,Math.min(o.w,o.h)/240,.32,light);
+  }
+  // Tall peripheral ribs frame every real room across all seven worlds.
+  for(const x of [-4.55,4.55])for(let i=0;i<5;i++){
+    const z=-2.2+i*1.1;
+    pushBox(v,x,1.65,z,.30,3.3,.28,tint(stone,1.6));
+    pushBox(v,x,2.85,z,.36,.12,.38,light);
+    pushBox(v,x,1.6,z,.035,2.3,.31,tint(glow,.8));
+  }
+  for(const z of [-2.72,2.72])for(const x of [-3.8,-2.0,2.0,3.8]){
+    pushBeam(v,[x,3.15,z],[x*.62,4.15,z],.14,tint(light,.6));
+    pushGem(v,x,2.5,z,.17,.75,tint(glow,.9));
+  }
+  if(s.roomId==='threshold'){
+    pushRing(v,0,2.8,0,1.55,light,q.detail);
+    pushRing(v,0,2.95,0,.9,glow,q.detail);
+    pushGem(v,0,2.8,0,.25,.55,light);
+    for(let i=0;i<q.detail;i++){
+      const a=i/q.detail*Math.PI*2;
+      pushGem(v,Math.cos(a)*1.2,2.7,Math.sin(a)*1.2,.075,.22,glow);
+    }
+    // An illuminated trail points to the genuine north gate without blocking it.
+    for(let z=-2.3;z<1.6;z+=.35)pushBox(v,0,.012,z,.10,.015,.075,tint(light,.7));
+  }else if(s.roomId==='glass'){
+    for(const x of [-4.55,4.55])for(let i=0;i<q.detail/2;i++){
+      const z=-2.3+i*4.6/Math.max(1,q.detail/2-1);
+      pushGem(v,x,1.5,z,.18,2.4,tint(glow,1.1));
+      pushBeam(v,[x,3.3,z],[0,3.95,z],.035,tint(light,.6));
+    }
+    for(const z of [-1.7,0,1.7]){
+      pushBeam(v,[-4.5,2.85,z],[4.5,2.85,z],.06,tint(glow,.8));
+      for(const x of [-1.8,1.8])pushGem(v,x,2.65,z,.11,.36,light);
+    }
+  }else if(s.roomId==='machine'){
+    for(const x of [-4.48,4.48])for(const z of [-2.15,0,2.15]){
+      pushBox(v,x,1.45,z,.24,2.9,.48,tint(stone,2));
+      for(let k=0;k<4;k++)pushBox(v,x,.5+k*.55,z,.30,.08,.56,k%2?glow:light);
+      pushBeam(v,[x,3.0,z],[x*.55,3.7,z],.20,tint(stone,2));
+    }
+    pushRing(v,0,2.75,0,1.65,tint(glow,.7),q.detail);
+    pushRing(v,0,2.75,0,1.9,tint(light,.5),q.detail);
+    for(let z=-2.45;z<=2.45;z+=.18)for(const x of [-3.9,3.9])pushBox(v,x,.012,z,.035,.015,.09,tint(glow,.5));
+  }else{
+    for(let i=0;i<q.detail/2;i++){
+      const a=i/Math.max(1,q.detail/2)*Math.PI*2;
+      pushGem(v,Math.cos(a)*1.45,3.5,Math.sin(a)*1.45,.13,.5,light);
+    }
+  }
+  const result=new Float32Array(v);cache.set(key,result);
+  if(cache.size>4)cache.delete(cache.keys().next().value);
+  return result;
+}
+export function livingDynamicGeometry(v,s){
+  const q=XR_QUALITY[s.quality]||XR_QUALITY.balanced,theme=roomTheme(s),glow=hex(theme.glow),light=hex(theme.light);
+  if(s.roomId==='machine')for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2+(s.reduced?0:s.time*.18);
+    pushBeam(v,[Math.cos(a)*.45,2.77,Math.sin(a)*.45],[Math.cos(a)*1.75,2.77,Math.sin(a)*1.75],.09,light);
+    pushGem(v,Math.cos(a)*1.75,2.77,Math.sin(a)*1.75,.1,.25,glow);
+  }
+  for(const enemy of s.enemies.slice(0,24))if(enemy.windup>0){
+    const [x,,z]=worldAt(enemy.x,enemy.y),r=(enemy.r||18)/100+.13;
+    pushRing(v,x,.035,z,r,[1,.55,.25],q.detail);
+    if(Number.isFinite(enemy.chargeX)&&Number.isFinite(enemy.chargeY))pushBeam(v,[x,.045,z],
+      [x+enemy.chargeX*1.2,.045,z+enemy.chargeY*1.2],.035,[1,.62,.3]);
+  }
+  for(const fx of (s.effects||[]).slice(-(s.reduced?4:q.particles))){
+    const [x,,z]=worldAt(fx.x,fx.y),col=hex(fx.color),life=Math.max(0,Math.min(1,1-fx.life/(fx.maxLife||Math.max(.1,fx.life)))),r=Math.min(2.5,(fx.r||20)/100);
+    if(['wave','power','slash'].includes(fx.type)){
+      const segments=fx.type==='slash'?Math.max(3,q.detail/2):q.detail;
+      for(let i=0;i<segments;i++){
+        const a=fx.type==='slash'?Math.atan2(s.facing?.y||0,s.facing?.x||1)-1.52+i/Math.max(1,segments-1)*3.04:i/q.detail*Math.PI*2;
+        pushGem(v,x+Math.cos(a)*r*(.65+life*.35),.28+life*.25,z+Math.sin(a)*r*(.65+life*.35),.035,.12,col);
+      }
+    }else pushGem(v,x,.7+life*.45,z,.06*(1-life),.14*(1-life),col);
+  }
+  if(s.transform>0&&!s.reduced){const [x,,z]=worldAt(s.player.x,s.player.y);pushRing(v,x,.15,z,.6+(1-s.transform)*.5,hex(s.vessel.color),q.detail);}
+  if(!s.reduced)for(let i=0;i<q.particles;i++){
+    const a=i*2.3999,x=Math.cos(a)*4.1,z=Math.sin(a)*2.45,y=2.4+Math.sin(s.time*.2+i)*.25;
+    pushGem(v,x,y,z,.012,.035,tint(glow,.6));
+  }
+  if(s.target){const p=s.target.point;pushRing(v,p[0],.025,p[2],.28,s.target.available?glow:light,q.detail);}
+}

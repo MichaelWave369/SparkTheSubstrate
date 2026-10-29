@@ -3,16 +3,21 @@
 import {WIDTH,HEIGHT} from '../action-engine.js?v=0.17.0';
 import {worldAt} from './spark-vr-model.js';
 import {multiply4,transform4} from './spark-vr-math.js';
+import {hex,tint,pushBox,pushGem,pushRing,pushBeam} from './spark-vr-geometry.js';
+import {livingRoomGeometry,livingDynamicGeometry} from './spark-room-themes.js';
 import {duelWorldPoint} from './spark-xr-adapters.js';
 
 const VERT= `attribute vec3 position;
 attribute vec3 color;
 uniform mat4 vp;
 varying vec3 vColor;
-void main(){vColor=color;gl_Position=vp*vec4(position,1.0);}`;
+varying float vDepth;
+void main(){vColor=color;gl_Position=vp*vec4(position,1.0);vDepth=gl_Position.w;}`;
 const FRAG= `precision mediump float;
 varying vec3 vColor;
-void main(){gl_FragColor=vec4(vColor,1.0);}`;
+varying float vDepth;
+uniform float fogAmount;
+void main(){float fog=clamp((vDepth-3.)/18.,0.,.65)*fogAmount;gl_FragColor=vec4(mix(vColor,vec3(.012,.025,.04),fog),1.0);}`;
 const HUD_VERT=`attribute vec3 position;
 attribute vec2 uv;
 uniform mat4 vp;
@@ -33,12 +38,6 @@ uniform float amount;
 void main(){float falloff=smoothstep(0.45,1.12,length(vPosition));
 gl_FragColor=vec4(0.005,0.012,0.021,falloff*amount);}`;
 
-const hex=(input,fallback='#a9bbbe')=>{
-  const m=/^#([0-9a-f]{6})$/i.exec(input||'')||/^#([0-9a-f]{6})$/i.exec(fallback);
-  const n=parseInt(m[1],16);
-  return [(n>>>16)/255,((n>>>8)&255)/255,(n&255)/255];
-};
-const tint=(a,mul=1)=>a.map(v=>Math.min(1,v*mul));
 
 function compile(gl,vertex,fragment){
   const shaders=[];
@@ -59,22 +58,7 @@ function compile(gl,vertex,fragment){
   }catch(error){if(program)gl.deleteProgram(program);throw error;}
   finally{shaders.forEach(sh=>gl.deleteShader(sh));}
 }
-function pushBox(vertices,x,y,z,w,h,d,color){
-  // Each face gets a slightly different diffuse shade. No texture fetches.
-  const a=x-w/2,b=x+w/2,c=y-h/2,e=y+h/2,f=z-d/2,g=z+d/2;
-  const p=[
-    [[a,c,g],[b,c,g],[b,e,g],[a,e,g],.62],
-    [[b,c,f],[a,c,f],[a,e,f],[b,e,f],.42],
-    [[a,c,f],[a,c,g],[a,e,g],[a,e,f],.48],
-    [[b,c,g],[b,c,f],[b,e,f],[b,e,g],.74],
-    [[a,e,f],[a,e,g],[b,e,g],[b,e,f],1],
-    [[a,c,g],[a,c,f],[b,c,f],[b,c,g],.26]
-  ];
-  for(const [v0,v1,v2,v3,light] of p){
-    const col=tint(color,light);
-    for(const v of [v0,v1,v2,v0,v2,v3])vertices.push(...v,...col);
-  }
-}
+
 function pushStage(vertices,scene){
   const c=hex(scene.roomTheme),accent=tint(c,1.6),stone=[.12,.15,.22],
     wall=[.10,.12,.20],dark=[.02,.045,.075];
@@ -201,9 +185,11 @@ function pushActors(vertices,s){
     pushBox(vertices,x,.35+radius/2,z,radius*1.6,.7+radius,radius*1.6,col);
     pushBox(vertices,x,.96+radius/2,z,radius*.65,.2,radius*.65,tint(col,1.8));
   }
-  for(const shot of s.shots.slice(0,80)){
+  for(const shot of s.shots.slice(0,s.living?240:80)){
     const [x,,z]=worldAt(shot.x,shot.y);
-    pushBox(vertices,x,.65,z,.14,.14,.14,shot.enemy?[1,.28,.35]:[.31,.97,1]);
+    const col=shot.enemy?[1,.28,.35]:s.living?hex(shot.color):[.31,.97,1];
+    if(s.living)pushGem(vertices,x,.82,z,.07,.22,col);
+    else pushBox(vertices,x,.65,z,.14,.14,.14,col);
   }
   for(const frag of s.fragments.slice(0,60)){
     const [x,,z]=worldAt(frag.x,frag.y);
@@ -231,7 +217,8 @@ function pushActors(vertices,s){
 }
 export function makeSceneVertices(snapshot){
   const vertices=[];
-  if(snapshot.presentation==='arena')pushArena(vertices,snapshot);
+  if(snapshot.living){vertices.push(...livingRoomGeometry(snapshot));pushActors(vertices,snapshot);livingDynamicGeometry(vertices,snapshot);}
+  else if(snapshot.presentation==='arena')pushArena(vertices,snapshot);
   else{pushStage(vertices,snapshot);pushActors(vertices,snapshot);}
   return new Float32Array(vertices);
 }
@@ -242,7 +229,13 @@ export function makeTrackedHandVertices(hands={},reduced=false){
   const result=[];
   for(const name of ['left','right']){
     const hand=hands[name];if(!hand?.matrix)continue;
-    const local=[],col=hex(hand.color),sign=name==='left'?-1:1;
+    const local=[],col=hex(hand.color),sign=name==='left'?-1:1,accent=hex(hand.accent||hand.color);
+    if(hand.style==='lumen'){pushRing(local,0,.04,-.04,.075,accent,reduced?6:12);pushGem(local,0,.08,-.045,.035,.07,col);}
+    if(hand.style==='blade'){pushBeam(local,[0,.015,-.05],[0,.025,-.53],.018,accent);pushBox(local,0,.025,-.13,.15,.025,.025,col);}
+    if(hand.style==='prism'){for(let i=-1;i<=1;i++)pushGem(local,i*.045,.045,-.04,.022,.09,accent);pushBox(local,0,.035,0,.10,.025,.09,col);}
+    if(hand.style==='claw'){for(let i=-1;i<=1;i++)pushBeam(local,[i*.024,.025,-.06],[i*.036,.01,-.23],.016,accent);}
+    if(hand.style==='root'){for(const side of [-1,1]){pushBeam(local,[side*.035,.025,.05],[side*.06,.04,-.1],.02,col);pushGem(local,side*.06,.05,-.09,.035,.035,accent);}}
+    if(hand.style==='crystal'){pushBox(local,0,.005,-.01,.12,.065,.13,col);for(const side of [-1,1])pushGem(local,side*.055,.045,-.04,.03,.09,accent);}
     pushBox(local,0,0,0,.075,.035,.105,tint(col,.6));
     pushBox(local,0,0,.065,.09,.045,.025,col);
     for(let i=0;i<4;i++){
@@ -253,6 +246,7 @@ export function makeTrackedHandVertices(hands={},reduced=false){
     pushBox(local,sign*.049,-.004,-.015,.030,.025,.05,col);
     const charge=Math.max(0,Math.min(1,hand.charge||0));
     const size=.025+charge*.075;
+    if(hand.recovering)pushBox(local,0,.026,.064,.08,.01,.025,[.35,.35,.39]);
     pushBox(local,0,.055,-.085,size,size,size,col);
     if(charge>0){
       const count=reduced?2:6;
@@ -327,7 +321,7 @@ export class SparkVRRenderer{
     this.program=compile(gl,VERT,FRAG);
     this.hudProgram=compile(gl,HUD_VERT,HUD_FRAG);
     this.comfortProgram=compile(gl,COMFORT_VERT,COMFORT_FRAG);
-    this.vertices=gl.createBuffer();this.hudVertices=gl.createBuffer();this.handVertices=gl.createBuffer();
+    this.vertices=gl.createBuffer();this.hudVertices=gl.createBuffer();this.handVertices=gl.createBuffer();this.stageVertices=gl.createBuffer();
     this.comfortVertices=gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER,this.comfortVertices);
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([
@@ -352,6 +346,7 @@ export class SparkVRRenderer{
     this.disposed=false;
   }
   updateHud(scene){
+    if(scene.living)return this.updateLivingHud(scene);
     if(scene.presentation==='arena')return this.updateArenaHud(scene);
     const stamp=[scene.roomId,scene.roomName,scene.worldName,scene.form,
       Math.ceil(scene.health),scene.phase,scene.cleared,
@@ -441,12 +436,52 @@ export class SparkVRRenderer{
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,this.hudCanvas);
   }
+  updateLivingHud(s){
+    const stamp=JSON.stringify([s.form,s.roomId,Math.ceil(s.health),s.cooldown.toFixed(1),s.paused,s.menuIndex,s.menuLabels,s.pauseReason,s.choices]);
+    if(stamp===this.lastHudStamp)return;this.lastHudStamp=stamp;
+    if(this.hudCanvas.height!==512){
+      this.hudCanvas.height=512;
+      this.hudMesh=new Float32Array([-.33,-.33,0,0,1,.33,-.33,0,1,1,.33,.33,0,1,0,
+        -.33,-.33,0,0,1,.33,.33,0,1,0,-.33,.33,0,0,0]);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.hudVertices);
+      this.gl.bufferData(this.gl.ARRAY_BUFFER,this.hudMesh,this.gl.STATIC_DRAW);
+    }
+    const c=this.hudContext;
+    c.fillStyle='rgba(5,17,25,.96)';c.fillRect(0,0,512,512);
+    c.strokeStyle=s.vessel.color;c.lineWidth=4;c.strokeRect(4,4,504,504);
+    c.fillStyle=s.vessel.color;c.font='bold 26px sans-serif';c.fillText('SPARK / '+s.form.toUpperCase(),20,38);
+    c.fillStyle='#dae9e4';c.font='19px sans-serif';c.fillText(s.worldName,20,68);c.fillText(s.roomName,20,96);
+    c.fillText('HP '+Math.ceil(s.health)+' / '+s.maxHealth+'    POWER '+s.cooldown.toFixed(1)+'s',20,127);
+    c.fillStyle='#99cfbd';c.font='15px sans-serif';
+    c.fillText('Keys '+(s.keys.join(', ')||'—')+' · Seals '+(s.seals.join(', ')||'—'),20,153);
+    c.fillText('Relics '+(s.relics.join(', ')||'—'),20,174);
+    const hint=s.notice||s.roomDescription||s.pauseReason||'';
+    c.fillStyle='#ddcca7';c.fillText(hint.slice(0,58),20,200);c.fillText(hint.slice(58,116),20,220);
+    c.fillStyle='#94b7ba';c.font='14px sans-serif';
+    c.fillText('Native auto-attacks · release trigger uses vessel power',20,249);
+    const labels=s.menuLabels||[];
+    for(let i=-1;i<=3;i++){
+      const index=(s.menuIndex+i+labels.length)%labels.length;
+      c.fillStyle=i===0?s.vessel.color:'#94b7ba';c.font=i===0?'bold 21px sans-serif':'18px sans-serif';
+      c.fillText((i===0?'▶ ':'  ')+(labels[index]||'').slice(0,43),20,292+(i+1)*37);
+    }
+    c.fillStyle='#8cb9b2';c.font='13px sans-serif';c.fillText((s.pauseReason||'').slice(0,64),20,471);
+    c.font='14px sans-serif';c.fillText('LEFT STICK SELECT · TRIGGER CONFIRM · X CLOSE',20,493);
+    const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.hudTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,this.hudCanvas);
+  }
   render(views,scene,{framebuffer=null,hudPose=null,vignette=0,hands={},reduced=false}={}){
     if(this.disposed)return;
-    const gl=this.gl,mesh=makeSceneVertices(scene),handMesh=makeTrackedHandVertices(hands,reduced);
+    const gl=this.gl;
+    this.living=!!scene.living;
+    let mesh;
+    if(scene.living){const dynamic=[];pushActors(dynamic,scene);livingDynamicGeometry(dynamic,scene);mesh=new Float32Array(dynamic);
+      const stage=livingRoomGeometry(scene);if(stage!==this.stageMesh){this.stageMesh=stage;gl.bindBuffer(gl.ARRAY_BUFFER,this.stageVertices);gl.bufferData(gl.ARRAY_BUFFER,stage,gl.STATIC_DRAW);}}
+    else mesh=makeSceneVertices(scene);
+    const handMesh=makeTrackedHandVertices(hands,reduced);
     gl.bindBuffer(gl.ARRAY_BUFFER,this.handVertices);
     gl.bufferData(gl.ARRAY_BUFFER,handMesh,gl.DYNAMIC_DRAW);
-    this.updateHud(scene);
+    if(!scene.living||scene.paused)this.updateHud(scene);
     gl.bindBuffer(gl.ARRAY_BUFFER,this.vertices);
     gl.bufferData(gl.ARRAY_BUFFER,mesh,gl.DYNAMIC_DRAW);
     gl.bindFramebuffer(gl.FRAMEBUFFER,framebuffer);
@@ -461,7 +496,14 @@ export class SparkVRRenderer{
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     for(const view of views){
       gl.viewport(view.viewport.x,view.viewport.y,view.viewport.width,view.viewport.height);
-      gl.useProgram(p);
+      gl.useProgram(p);gl.enable(gl.CULL_FACE);
+      gl.uniform1f(gl.getUniformLocation(p,'fogAmount'),scene.living?1:0);
+      if(scene.living){
+        gl.bindBuffer(gl.ARRAY_BUFFER,this.stageVertices);
+        gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,24,0);
+        gl.enableVertexAttribArray(b);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
+        gl.uniformMatrix4fv(vp,false,view.matrix);gl.drawArrays(gl.TRIANGLES,0,this.stageMesh.length/6);
+      }
       gl.bindBuffer(gl.ARRAY_BUFFER,this.vertices);
       gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,24,0);
       gl.enableVertexAttribArray(b);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
@@ -475,7 +517,7 @@ export class SparkVRRenderer{
       }
       // A lightweight optional per-eye comfort mask precedes the readable HUD.
       if(hudPose&&vignette>0)this.drawComfortVignette(vignette);
-      if(hudPose)this.drawHud(view,hudPose);
+      if(hudPose&&(!scene.living||scene.paused))this.drawHud(view,hudPose,hands.left?.matrix);
     }
   }
   drawComfortVignette(amount){
@@ -493,12 +535,15 @@ export class SparkVRRenderer{
     gl.drawArrays(gl.TRIANGLES,0,6);
     gl.disable(gl.BLEND);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);
   }
-  drawHud(view,headMatrix){
+  drawHud(view,headMatrix,leftGrip){
     const gl=this.gl;
     // Head-following, placed ABOVE rather than across the central sight line.
     const anchored=new Float32Array(headMatrix);
     for(let k=0;k<3;k++)anchored[12+k]+=
       headMatrix[4+k]*.38-headMatrix[8+k]*1.75;
+    if(this.living){
+      for(let k=0;k<3;k++)anchored[12+k]=leftGrip?leftGrip[12+k]+headMatrix[k]*.18-headMatrix[8+k]*.45+(k===1?.25:0):headMatrix[12+k]-headMatrix[8+k]*1.2;
+    }
     const m=multiply4(view.projection,multiply4(view.inverse,anchored));
     gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.depthMask(false);
     gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
@@ -517,7 +562,7 @@ export class SparkVRRenderer{
   dispose(){
     if(this.disposed)return;this.disposed=true;
     const gl=this.gl;
-    gl.deleteBuffer(this.vertices);gl.deleteBuffer(this.hudVertices);gl.deleteBuffer(this.handVertices);
+    gl.deleteBuffer(this.vertices);gl.deleteBuffer(this.hudVertices);gl.deleteBuffer(this.handVertices);gl.deleteBuffer(this.stageVertices);this.stageMesh=null;
     gl.deleteBuffer(this.comfortVertices);
     gl.deleteTexture(this.hudTexture);
     gl.deleteProgram(this.program);gl.deleteProgram(this.hudProgram);

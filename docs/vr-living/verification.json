@@ -1,0 +1,112 @@
+{
+  "schema": "spark.xr.rung2.verification.v1",
+  "candidate": "SPARK Living Substrate Rung 2",
+  "date": "2026-10-29",
+  "baseCommit": "025e98c2ae0b84f7f3117dabccddfee5edc47ead",
+  "controllingMission": "User attachment: WORK BUILD MISSION / The Living Substrate / Rung 2",
+  "controllingMissionSHA256": "d914b89404d28faacd8f15a5a38233e3adfb43d84c83e7e2a8f78c4f56eed871",
+  "status": "Implemented, integrated and executed locally in software",
+  "independentVerification": false,
+  "physicalQuestVerification": "NOT_PERFORMED",
+  "releaseAuthority": "MichaelWave369; no auto merge or deploy",
+  "checks": [
+    {
+      "command": "npm test",
+      "result": "PASS",
+      "tests": 423,
+      "baseline": 412,
+      "new": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node scripts/check-runtime-bridge.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/build-pages.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node --test tests/pages-static.test.mjs",
+      "result": "PASS",
+      "tests": 7
+    },
+    {
+      "command": "node --check public/vr/*.js (each), scripts/check-vr-living-browser.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/check-vr-ascension-browser.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/check-vr-living-browser.mjs",
+      "result": "PASS",
+      "receipt": "browser-results.json"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "environment": {
+    "node": "v24.22.1",
+    "browser": "Chromium 153.0.8010.0",
+    "renderer": "Software WebGL / SwiftShader",
+    "optionalBrowserTool": "Playwright 1.62.1"
+  },
+  "authorityPreservation": {
+    "actionEngineChanged": false,
+    "duelEngineChanged": false,
+    "sidewaysEngineChanged": false,
+    "saveSchemaChanged": false,
+    "progressionOrRewardOverrides": false,
+    "newAppDependencies": [],
+    "remoteRuntimeAssets": []
+  },
+  "executedPath": {
+    "freshStart": "threshold",
+    "canonicalGlassKills": 14,
+    "rewardChoices": true,
+    "roomAfterSaveRestoreContinue": "machine",
+    "extendedRouteEarns": [
+      "root",
+      "ivory key",
+      "morph"
+    ],
+    "transformationSource": "Cleared actual Mirror Nursery after real input-only campaign route"
+  },
+  "documentedScope": {
+    "P0": "Complete in software",
+    "P1": "Complete in software",
+    "P2": "Wrist, hub, targeting and bounded feedback included",
+    "P3Deferred": [
+      "Seamless in-session mode transitions",
+      "Playable Sideways XR adapter",
+      "Wider bespoke room art beyond shared world themes"
+    ]
+  },
+  "manualAcceptance": "Quest Field Lab / docs/vr-living/rung-2.md",
+  "limitations": [
+    "Synthetic controller/head poses in software tests",
+    "Actual headset comfort, frame rate and controller ergonomics unverified",
+    "Descent keeps native auto-attacks; ray aim does not redirect damage",
+    "Duck lowers view without adding immunity",
+    "No independent verification or release claim"
+  ],
+  "preservedFindings": [
+    {
+      "finding": "Initial six-form fixture tried creating unoffered starting vessels",
+      "resolution": "Fixture uses the canonical earned-resonance morph action; browser evidence later earns resonance through real play."
+    },
+    {
+      "finding": "Initial cover assertion assumed a fixed legacy obstacle position",
+      "resolution": "Assertion now reads the actual canonical selected room layout, then proves physical motion cannot cross it."
+    },
+    {
+      "finding": "Initial test browser executable had been cleaned from scratch",
+      "resolution": "Provisioned isolated recognized Chromium development tooling; no app dependency or shipped binary was added."
+    }
+  ]
+}

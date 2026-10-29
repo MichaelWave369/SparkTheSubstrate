@@ -1,6 +1,8 @@
 import {createDuel, stepDuel, DUEL_MOVES, DUEL_TECHNIQUES} from '../duel-engine.js';
 import {duelBody} from '../duel-spatial.js';
-import {createVRPreview, stepVRPreview, vrRoomSnapshot} from './spark-vr-model.js';
+import {createVRPreview, stepVRPreview, vrRoomSnapshot,chooseVRPhase,nextVRForm} from './spark-vr-model.js';
+import {BODIES,powerProfile,attackProfile,morphRun,gateEntryStatus,exitPosition,enterGate} from '../action-engine.js?v=0.17.0';
+import {VesselPresentation} from './spark-vessel-presentation.js';
 import {XR_INPUT_VERSION, XR_ADAPTER_VERSION, clamp} from './spark-xr-input.js';
 
 export const ARENA_RELEASE = 'SPARK VR: ELEMENTAL ASCENSION / Rung 1';
@@ -72,21 +74,47 @@ export class DuelXRAdapter {
   dispose() { this.effects = []; this.events = []; }
 }
 
-// Example of the same presentation contract over the unchanged seven-world engine.
-// Existing /vr/index.html remains the full checkpoint/progression UI for Descent.
-// A host supplies explicit phase choices/save policy; generic XR never writes saves.
+// Real campaign adapter. Checkpoint IO remains owned by the host, using the old format.
 export class DescentXRAdapter {
   version = XR_ADAPTER_VERSION;
   id = 'descent';
-  constructor(state = createVRPreview()) { this.state = state; }
+  constructor(state = createVRPreview()) { this.state = state; this.presentation=new VesselPresentation(); }
   step(input, dt = 1 / 60) {
-    if (input?.version !== XR_INPUT_VERSION || !input.valid) return false;
-    const movement = input.descentMovement || {x: 0, y: input.move || 0};
-    stepVRPreview(this.state, {...movement, dash: !!input.dodge, power: !!input.cast,
-      interact: input.interact === true}, dt);
+    if (input?.version !== XR_INPUT_VERSION || !input.valid || input.ready===false) return false;
+    const run=this.state.run;
+    if(input.cast)this.powerBlocked=(run.player.powerCooldown??0)>0;
+    if(input.cycleForm)this.cycleForm();
+    const movement=input.descentMovement||input.movement||{x:0,y:input.move||0};
+    const physical=input.physicalDelta||{x:0,y:0},speed=BODIES[run.form].speed;
+    let x=(Number.isFinite(movement.x)?movement.x:0)+(Number.isFinite(physical.x)?physical.x:0)/(speed*dt);
+    let y=(Number.isFinite(movement.y)?movement.y:0)+(Number.isFinite(physical.y)?physical.y:0)/(speed*dt);
+    const max=Number.isFinite(input.motionScale)?clamp(input.motionScale,.5,1):1,n=Math.max(1,Math.hypot(x,y)/max);
+    x/=n;y/=n;
+    stepVRPreview(this.state,{x,y,dash:input.dash===true||(input.interact===undefined&&input.dodge===true),
+      power:!!input.cast,interact:input.interact===true},dt);
+    this.presentation.observe(this.snapshotBase(),dt);
     return true;
   }
-  snapshot() { return vrRoomSnapshot(this.state); }
-  drainEvents() { return []; }
-  dispose() {}
+  choose(id){chooseVRPhase(this.state,id);this.presentation.observe(this.snapshotBase(),0);}
+  enterGate(direction){enterGate(this.state.run,direction);this.state.ticks++;this.presentation.observe(this.snapshotBase(),0);}
+  morph(form){morphRun(this.state.run,form);this.state.ticks++;this.presentation.observe(this.snapshotBase(),0);}
+  cycleForm(){try{nextVRForm(this.state);this.presentation.observe(this.snapshotBase(),0);}catch(error){this.state.blockedMessage=error.message;}}
+  snapshotBase(){
+    const run=this.state.run,s=vrRoomSnapshot(this.state);
+    return {...s,living:true,presentation:'descent',frame:this.state.ticks,time:run.time,
+      cooldown:run.player.powerCooldown??0,attackCooldown:run.player.attackClock,
+      notice:this.powerBlocked&&(run.player.powerCooldown??0)>0?'Power recovering · '+run.player.powerCooldown.toFixed(1)+'s':s.notice,
+      power:powerProfile(run),weapon:attackProfile(run),dashCooldown:run.player.dashCooldown??0,
+      morphCooldown:run.player.morphCooldown??0,availableForms:run.abilities.includes('morph')?Object.keys(BODIES):[],
+      abilities:[...run.abilities],relics:[...(run.relics??[])],
+      facing:{x:run.player.facingX,y:run.player.facingY},
+      effects:run.effects.slice(-48).map(e=>({...e})),
+      enemies:run.enemies.filter(e=>e.hp>0).slice(0,64).map(e=>({...e})),
+      shots:run.shots.filter(e=>e.life>0).slice(0,240).map(e=>({...e})),
+      gates:s.gates.map(g=>({...g,position:exitPosition(g.direction),entry:gateEntryStatus(run,g.direction)}))};
+  }
+  snapshot(){return {...this.snapshotBase(),vessel:this.presentation.describe(this.state.run.form),
+    transform:this.presentation.transform,feedback:this.presentation.feedback};}
+  drainEvents(){return this.presentation.drainEvents();}
+  dispose(){this.presentation.reset();}
 }
