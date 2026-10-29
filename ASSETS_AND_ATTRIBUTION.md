@@ -58,3 +58,13 @@ be licensed onward.
 This is not legal advice. Its purpose is to **avoid claiming rights
 we have not actually established**, while preserving the goal of
 free gameplay and genuinely reusable source code.
+
+## SPARK VR: Elemental Ascension — Rung 1
+
+The controller gauntlets, charge seeds, arena, Archon geometry, windup corridor,
+projectile and impact geometry in `public/vr/spark-vr-renderer.js` are original
+procedural artwork created for Spark. Arena sounds in `spark-xr-feedback.js` are
+original Web Audio oscillator synthesis. These additions use this repository's
+MIT license. No external artwork, models, textures, audio files, runtime CDN,
+asset downloads or new app dependencies are required. Optional browser QA uses
+Playwright as isolated development tooling; it is never shipped with the game.

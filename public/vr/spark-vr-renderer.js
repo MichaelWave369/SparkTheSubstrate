@@ -2,7 +2,8 @@
 // Geometry is derived from canonical ROOMS, obstacles and entity positions.
 import {WIDTH,HEIGHT} from '../action-engine.js?v=0.17.0';
 import {worldAt} from './spark-vr-model.js';
-import {multiply4} from './spark-vr-math.js';
+import {multiply4,transform4} from './spark-vr-math.js';
+import {duelWorldPoint} from './spark-xr-adapters.js';
 
 const VERT= `attribute vec3 position;
 attribute vec3 color;
@@ -230,9 +231,92 @@ function pushActors(vertices,s){
 }
 export function makeSceneVertices(snapshot){
   const vertices=[];
-  pushStage(vertices,snapshot);
-  pushActors(vertices,snapshot);
+  if(snapshot.presentation==='arena')pushArena(vertices,snapshot);
+  else{pushStage(vertices,snapshot);pushActors(vertices,snapshot);}
   return new Float32Array(vertices);
+}
+
+// Original vessel gauntlets: tracked palms, five fingers, wrist rings and charge seeds.
+// Vertices live in XR reference space; no camera-relative fake hands or retained poses.
+export function makeTrackedHandVertices(hands={},reduced=false){
+  const result=[];
+  for(const name of ['left','right']){
+    const hand=hands[name];if(!hand?.matrix)continue;
+    const local=[],col=hex(hand.color),sign=name==='left'?-1:1;
+    pushBox(local,0,0,0,.075,.035,.105,tint(col,.6));
+    pushBox(local,0,0,.065,.09,.045,.025,col);
+    for(let i=0;i<4;i++){
+      const x=(i-1.5)*.019,z=-.083+(i===3?.012:0);
+      pushBox(local,x,0,z,.014,.025,.066,tint(col,.85));
+      pushBox(local,x,-.006,z-.041,.013,.020,.02,col);
+    }
+    pushBox(local,sign*.049,-.004,-.015,.030,.025,.05,col);
+    const charge=Math.max(0,Math.min(1,hand.charge||0));
+    const size=.025+charge*.075;
+    pushBox(local,0,.055,-.085,size,size,size,col);
+    if(charge>0){
+      const count=reduced?2:6;
+      for(let i=0;i<count;i++){
+        const a=i/count*Math.PI*2+charge*2;
+        pushBox(local,Math.cos(a)*.095,.055+Math.sin(a)*.07,-.085,.014,.014,.014,col);
+      }
+    }
+    // A short physical aiming filament, aligned with each tracked grip.
+    pushBox(local,0,0,-.40,.004,.004,.42,tint(col,.45));
+    for(let i=0;i<local.length;i+=6){
+      result.push(...transform4(hand.matrix,local.slice(i,i+3)),...local.slice(i+3,i+6));
+    }
+  }
+  return new Float32Array(result);
+}
+function pushArena(v,s){
+  const dark=[.035,.075,.095],gold=[.86,.64,.29],mint=[.28,.71,.70];
+  pushBox(v,0,-.11,0,5.6,.2,10,dark);
+  for(let x=-2.5;x<=2.5;x+=.5)pushBox(v,x,.002,0,.009,.01,9.6,tint(mint,.3));
+  for(let z=-4.5;z<=4.5;z+=.5)pushBox(v,0,.002,z,5.4,.01,.009,tint(mint,.3));
+  for(const x of [-2.8,2.8]){
+    pushBox(v,x,1.35,0,.18,2.7,10,dark);
+    for(let z=-4.5;z<=4.5;z+=1.5){
+      pushBox(v,x*.94,1.1,z,.18,2.2,.25,tint(mint,.5));
+      pushBox(v,x*.94,2.25,z,.3,.12,.38,gold);
+    }
+  }
+  for(const z of [-4.9,4.9])pushBox(v,0,1.35,z,5.6,2.7,.15,dark);
+  // Finite central lane marks the small physical lean zone; no room-scale walking task.
+  for(const x of [-.6,.6])pushBox(v,x,.015,0,.02,.025,8,tint(gold,.6));
+  for(const e of s.enemies){
+    const [x,y,z]=duelWorldPoint(e.x,e.y,e.z),col=hex(e.color);
+    pushBox(v,x,y-.35,z,.36,.80,.31,tint(col,.55));
+    pushBox(v,x,y+.17,z,.23,.30,.23,col);
+    for(const a of [-1,1]){
+      pushBox(v,x+a*.26,y-.24,z,.12,.60,.14,tint(col,.7));
+      pushBox(v,x+a*.12,.43,z,.14,.80,.16,tint(col,.45));
+    }
+    pushBox(v,x,2.12,z,.85,.06,.035,[.17,.23,.25]);
+    pushBox(v,x-(1-e.hp/e.maxHp)*.425,2.12,z,.85*Math.max(0,e.hp/e.maxHp),.065,.04,mint);
+    if(s.windup){
+      const size=.16+s.windup.progress*.35;
+      pushBox(v,x,y,z+.29,size,size*.65,.08,[.98,.62,.22]);
+      // A locked amber corridor is visible during the canonical 0.7 second startup.
+      const a=s.windup.aim;
+      if(a)for(let k=0;k<12;k++){
+        const p=duelWorldPoint(a.x+a.vx*k*3,a.y+a.vy*k*3,a.z+a.vz*k*3);
+        pushBox(v,p[0],.035,p[2],.035,.025,.12,gold);
+      }
+    }
+  }
+  for(const b of s.bolts){
+    const [x,y,z]=duelWorldPoint(b.x,b.y,b.z),col=b.owner?[1,.35,.18]:[.45,.94,1];
+    pushBox(v,x,y,z,.12,.12,.20,col);
+    pushBox(v,x,y,z+(b.owner?-.14:.14),.05,.05,.18,tint(col,.65));
+  }
+  for(const e of s.effects){
+    const [x,y,z]=duelWorldPoint(e.x,e.y,e.z),size=.12+(.3-e.life)*1.5;
+    for(const side of [-1,1]){
+      pushBox(v,x+side*size,y,z,.045,.32,.045,gold);
+      pushBox(v,x,y+side*size,z,.32,.045,.045,mint);
+    }
+  }
 }
 export class SparkVRRenderer{
   constructor(canvas){
@@ -243,7 +327,7 @@ export class SparkVRRenderer{
     this.program=compile(gl,VERT,FRAG);
     this.hudProgram=compile(gl,HUD_VERT,HUD_FRAG);
     this.comfortProgram=compile(gl,COMFORT_VERT,COMFORT_FRAG);
-    this.vertices=gl.createBuffer();this.hudVertices=gl.createBuffer();
+    this.vertices=gl.createBuffer();this.hudVertices=gl.createBuffer();this.handVertices=gl.createBuffer();
     this.comfortVertices=gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER,this.comfortVertices);
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([
@@ -268,6 +352,7 @@ export class SparkVRRenderer{
     this.disposed=false;
   }
   updateHud(scene){
+    if(scene.presentation==='arena')return this.updateArenaHud(scene);
     const stamp=[scene.roomId,scene.roomName,scene.worldName,scene.form,
       Math.ceil(scene.health),scene.phase,scene.cleared,
       scene.notice.slice(0,80),scene.selectedChoice??0,scene.navigationOpen??false,
@@ -325,9 +410,42 @@ export class SparkVRRenderer{
     g.pixelStorei(g.UNPACK_FLIP_Y_WEBGL,false);
     g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,this.hudCanvas);
   }
-  render(views,scene,{framebuffer=null,hudPose=null,vignette=0}={}){
+  updateArenaHud(s){
+    const stamp=[s.frame>>3,s.paused,s.menuIndex,s.menuLabels?.join('|'),s.pauseReason].join('|');
+    if(stamp===this.lastHudStamp)return;this.lastHudStamp=stamp;
+    const c=this.hudContext;
+    c.clearRect(0,0,512,256);c.fillStyle='rgba(4,17,25,.93)';c.fillRect(0,0,512,256);
+    c.strokeStyle='#d6bc79';c.lineWidth=3;c.strokeRect(3,3,506,250);
+    c.fillStyle='#f5d593';c.font='bold 24px sans-serif';c.fillText('SPARK / ELEMENTAL ASCENSION',18,32);
+    c.font='18px sans-serif';c.fillStyle='#ade5db';
+    c.fillText('ROUND '+s.round+' · '+s.rounds.join(' : ')+' · '+s.clock+'s',18,60);
+    if(s.paused){
+      c.fillStyle='#ffd6a3';c.fillText((s.pauseReason||'PAUSED').slice(0,48),18,86);
+      for(let i=-1;i<=2;i++){
+        const index=(s.menuIndex+i+s.menuLabels.length)%s.menuLabels.length;
+        c.fillStyle=i===0?'#ffe4a3':'#94c3c5';c.font=i===0?'bold 20px sans-serif':'17px sans-serif';
+        c.fillText((i===0?'▶ ':'  ')+s.menuLabels[index],18,120+(i+1)*28);
+      }
+      c.font='14px sans-serif';c.fillStyle='#c2d0cf';c.fillText('LEFT STICK SELECT · TRIGGER CONFIRM · B EXIT',18,244);
+    }else{
+      c.fillStyle='#d3ece8';c.fillText('YOU '+Math.ceil(s.health)+' / '+s.maxHealth+'    ARCHON '+Math.ceil(s.enemyHealth),18,91);
+      c.fillText('CAST '+s.cooldown.toFixed(1)+'s    DODGE '+s.dodgeCooldown.toFixed(1)+'s',18,118);
+      c.fillStyle=s.windup?'#ffc16e':'#9be3d3';
+      c.fillText(s.windup?'WINDUP · LEAN / DUCK / DODGE':'HOLD TRIGGER · AIM · RELEASE',18,151);
+      c.font='15px sans-serif';c.fillStyle='#d9d7bb';
+      c.fillText(s.notice.slice(0,60),18,185);
+      c.fillText('GRIP / A DODGE · LEFT GRIP DUCK · Y RECENTER',18,214);
+      c.fillText('RIGHT STICK CLICK: COMFORT / PAUSE · B EXIT',18,240);
+    }
+    const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.hudTexture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,this.hudCanvas);
+  }
+  render(views,scene,{framebuffer=null,hudPose=null,vignette=0,hands={},reduced=false}={}){
     if(this.disposed)return;
-    const gl=this.gl,mesh=makeSceneVertices(scene);
+    const gl=this.gl,mesh=makeSceneVertices(scene),handMesh=makeTrackedHandVertices(hands,reduced);
+    gl.bindBuffer(gl.ARRAY_BUFFER,this.handVertices);
+    gl.bufferData(gl.ARRAY_BUFFER,handMesh,gl.DYNAMIC_DRAW);
     this.updateHud(scene);
     gl.bindBuffer(gl.ARRAY_BUFFER,this.vertices);
     gl.bufferData(gl.ARRAY_BUFFER,mesh,gl.DYNAMIC_DRAW);
@@ -338,16 +456,23 @@ export class SparkVRRenderer{
     const p=this.program;
     const a=gl.getAttribLocation(p,'position'),b=gl.getAttribLocation(p,'color'),
       vp=gl.getUniformLocation(p,'vp');
+    // gl.clear ignores viewport: clear once or the second eye erases the first.
+    gl.clearColor(.012,.023,.045,1);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     for(const view of views){
       gl.viewport(view.viewport.x,view.viewport.y,view.viewport.width,view.viewport.height);
-      gl.clearColor(.012,.023,.045,1);
-      gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
       gl.useProgram(p);
       gl.bindBuffer(gl.ARRAY_BUFFER,this.vertices);
       gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,24,0);
       gl.enableVertexAttribArray(b);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
       gl.uniformMatrix4fv(vp,false,view.matrix);
       gl.drawArrays(gl.TRIANGLES,0,mesh.length/6);
+      if(handMesh.length&&view.projection&&view.inverse){
+        gl.bindBuffer(gl.ARRAY_BUFFER,this.handVertices);
+        gl.vertexAttribPointer(a,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
+        gl.uniformMatrix4fv(vp,false,multiply4(view.projection,view.inverse));
+        gl.drawArrays(gl.TRIANGLES,0,handMesh.length/6);
+      }
       // A lightweight optional per-eye comfort mask precedes the readable HUD.
       if(hudPose&&vignette>0)this.drawComfortVignette(vignette);
       if(hudPose)this.drawHud(view,hudPose);
@@ -392,7 +517,7 @@ export class SparkVRRenderer{
   dispose(){
     if(this.disposed)return;this.disposed=true;
     const gl=this.gl;
-    gl.deleteBuffer(this.vertices);gl.deleteBuffer(this.hudVertices);
+    gl.deleteBuffer(this.vertices);gl.deleteBuffer(this.hudVertices);gl.deleteBuffer(this.handVertices);
     gl.deleteBuffer(this.comfortVertices);
     gl.deleteTexture(this.hudTexture);
     gl.deleteProgram(this.program);gl.deleteProgram(this.hudProgram);

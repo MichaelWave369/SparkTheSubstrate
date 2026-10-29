@@ -1,0 +1,103 @@
+{
+  "schema": "spark.xr.rung1.artifacts.v1",
+  "algorithm": "sha256",
+  "scope": "Candidate changed/new files except this self-referential manifest",
+  "files": [
+    {
+      "path": ".github/workflows/immersive-vr.yml",
+      "sha256": "2006d9d602912d970be3f77cac8f43bbd70aeaa675d675c97bf9c7c52ec182a0"
+    },
+    {
+      "path": "ASSETS_AND_ATTRIBUTION.md",
+      "sha256": "89695ad89780f72810e615a1296204de57ea3118fadb9422adf9cded3d2af5c1"
+    },
+    {
+      "path": "README.md",
+      "sha256": "70d657b10c19b0ef3009e3e829e297ea5d460cf7efca29c5d7742b62e2d50898"
+    },
+    {
+      "path": "docs/vr-ascension/arena-desktop.png",
+      "sha256": "d547fe7087cc8811d19baedebb8e17185d5d2a7c79dba440a86a51f1a2279df2"
+    },
+    {
+      "path": "docs/vr-ascension/browser-results.json",
+      "sha256": "1824159499223c0968053020ade107a3b47bb0664c8359b87fe463adec2444f2"
+    },
+    {
+      "path": "docs/vr-ascension/controlling-brief.md",
+      "sha256": "c9c4a915f01f443bb544245e9033293bc45973e2dbea59659a9616bb365576ac"
+    },
+    {
+      "path": "docs/vr-ascension/descent-desktop.png",
+      "sha256": "d6d36cf29686858bd96b166f3cc691e33707e553cd50cf1be074bc0807f43582"
+    },
+    {
+      "path": "docs/vr-ascension/review-handoff.md",
+      "sha256": "45212c3cb5e17e6acab41a6c84a9997a286d68a0565355ddd42e5f3dd10e7027"
+    },
+    {
+      "path": "docs/vr-ascension/rung-1.md",
+      "sha256": "ad80e9970d81ea92d271fbf349ba6f9ddd97ca0b301dc3b0de6cfce4e68515c6"
+    },
+    {
+      "path": "docs/vr-ascension/verification.json",
+      "sha256": "db5c61088d67f072ad3411fa9dab0fa34b9bfcf9472ed2f5fda15861b4f5cab6"
+    },
+    {
+      "path": "public/duel-engine.js",
+      "sha256": "502697e0166f43989ea4057a3f500d22d9b0f9e3605b2d107e54b8ad81f7ef70"
+    },
+    {
+      "path": "public/duel-spatial.js",
+      "sha256": "9d54b9baf210c1a46b6f355a5921d647c76bca034dcef7c5e231ddb8c3d293fb"
+    },
+    {
+      "path": "public/vr/ascension.html",
+      "sha256": "5dc56b1692c99bce02cdf85ddc60f0b1c9e3fd487627b0165ed31a71b12caca5"
+    },
+    {
+      "path": "public/vr/index.html",
+      "sha256": "231c78b3164a021636233aa96f3a6ec4962d33f08b01db4f91f9c17312b58aec"
+    },
+    {
+      "path": "public/vr/spark-ascension-app.js",
+      "sha256": "52a5640e2fc8967cc6d8072da6a1fe8a07a812cef67dc8bf004b749d2cc52ff8"
+    },
+    {
+      "path": "public/vr/spark-vr-diagnostics.js",
+      "sha256": "615e1e777fc1f7dd68d5c943036fe49175762a88bec5297ed7171ff11bbbc062"
+    },
+    {
+      "path": "public/vr/spark-vr-renderer.js",
+      "sha256": "26e1f6301d962cc89546f5d32a2815259e4463daa1d22309c8dbf70924f2b214"
+    },
+    {
+      "path": "public/vr/spark-xr-adapters.js",
+      "sha256": "14d203d0a556cc7cc7aa4eb3889abfaaa1d37956c2d80c66ef84745d0361b428"
+    },
+    {
+      "path": "public/vr/spark-xr-feedback.js",
+      "sha256": "4fd63859076f1886a281dabbe348131c282f835886ce271be3945445657f957a"
+    },
+    {
+      "path": "public/vr/spark-xr-input.js",
+      "sha256": "c756df176c7ff6899199ff491292b8e20641b4a0f94d4480e306b17528313aa9"
+    },
+    {
+      "path": "public/vr/spark-xr-preview.js",
+      "sha256": "6dbd51b8a2fe8db75513f450c654c3c64c36320b33ab77aac1200eac748f4424"
+    },
+    {
+      "path": "public/vr/spark-xr-runtime.js",
+      "sha256": "6885cab44ac8563d120c5de05cc6915d1e649f721175c3d8bfea3be961d1d453"
+    },
+    {
+      "path": "scripts/check-vr-ascension-browser.mjs",
+      "sha256": "2e5c6395cbf7cb3a2289ca66e09d17c1ab3f6ea8f1ff74f020b2bb8e120ebc55"
+    },
+    {
+      "path": "tests/vr-ascension.test.mjs",
+      "sha256": "abcfa5ef616736a0fcbce09d82f7c0237c848c1dc6674f8074924b2f8b737a5f"
+    }
+  ]
+}

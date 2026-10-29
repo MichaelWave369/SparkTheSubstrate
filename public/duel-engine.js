@@ -1,3 +1,4 @@
+import {DUEL_SPATIAL_RULES,duelSpatialInput,duelBody,duelBoltAim,duelSpatialCollision,duelSpatialBoltInBounds} from './duel-spatial.js';
 // A separate 60 Hz simulation. Nothing here reads or writes descent progression.
 export const DUEL_CONTACT=200;
 export const DUEL_FORMS=['spark','human','computer','animal','tree','rock'];
@@ -49,9 +50,10 @@ function random(m){m.rng=(Math.imul(m.rng,1664525)+1013904223)>>>0;return m.rng/
 const fighter=(form,i,rules=DUEL_CONDITIONS.classic,bonusHp=0)=>({form,x:i?670:290,y:0,vx:0,vy:0,hp:rules.health+(i?bonusHp:0),maxHp:rules.health+(i?bonusHp:0),meter:rules.meter,facing:i?-1:1,crouch:false,blocking:false,attack:null,stun:0,root:0,cooldown:0,guard:0,focusCharge:0,focusGuard:0,focusBoost:0,focusConnected:false,overclock:0,flash:0,rounds:0,previous:{},input:{},pending:null,motion:[],lastDirection:'N',walk:0,combo:freshCombo(),comboOwner:null,juggles:0,lastTechnique:null,stats:{hits:0,damage:0,specials:0,supers:0,throws:0,techs:0,commands:0,bestCombo:0}});
 function resolveDuelContact(m){const [a,b]=m.fighters;if(Math.abs(a.y-b.y)<60&&Math.abs(a.x-b.x)<DUEL_CONTACT){const sign=a.x<=b.x?1:-1,lunging=f=>f.attack?.kind==='special'&&['animal','collector'].includes(f.form),center=lunging(a)&&!lunging(b)?a.x+sign*DUEL_CONTACT/2:lunging(b)&&!lunging(a)?b.x-sign*DUEL_CONTACT/2:(a.x+b.x)/2,middle=clamp(center,45+DUEL_CONTACT/2,915-DUEL_CONTACT/2);a.x=middle-sign*DUEL_CONTACT/2;b.x=middle+sign*DUEL_CONTACT/2;}}
 function emit(m,type,data={}){m.events.push({id:++m.serial,type,frame:m.frames,...data});if(m.events.length>80)m.events.shift();}
-export function createDuel({forms=['spark','human'],stage='glass',bot=false,difficulty='medium',profile='pc',seed=Date.now()>>>0,condition='classic',bonusHp=0}={}){
+export function createDuel({forms=['spark','human'],stage='glass',bot=false,difficulty='medium',profile='pc',seed=Date.now()>>>0,condition='classic',bonusHp=0,spatial=false}={}){
+ if(typeof spatial!=='boolean')throw Error('Invalid spatial Duel setting.');
  if(!Array.isArray(forms)||forms.length!==2||forms.some(form=>!DUEL_FIGHTERS.includes(form))||!Object.hasOwn(DUEL_STAGES,stage)||!['easy','medium','hard'].includes(difficulty)||!['pc','controller','mobile'].includes(profile)||!Number.isInteger(seed)||!Object.hasOwn(DUEL_CONDITIONS,condition)||!Number.isInteger(bonusHp)||bonusHp<0||bonusHp>44||(!bot&&bonusHp!==0))throw Error('Choose two known vessels, a stage, and valid duel settings.');
- return {version:1,mode:'duel',forms:[...forms],stage,condition,rules:{...DUEL_CONDITIONS[condition]},bonusHp,bot:!!bot,difficulty,profile,seed:seed>>>0,rng:seed>>>0,frames:0,serial:0,phase:profile==='mobile'&&!bot?'handoff':'playing',clock:60,round:1,firstHit:false,replay:0,roundWinner:null,winner:null,breakFrames:0,freeze:0,cinematic:0,throw:null,bolts:[],fighters:forms.map((form,i)=>fighter(form,i,DUEL_CONDITIONS[condition],bonusHp)),events:[],turn:0,turnFrames:180,botState:{decision:0,input:{},seenSpecials:0,lastAttack:null,pendingSpecial:null},recorded:false};
+ return {version:1,mode:'duel',...(spatial?{spatial:1}:{}),forms:[...forms],stage,condition,rules:{...DUEL_CONDITIONS[condition]},bonusHp,bot:!!bot,difficulty,profile,seed:seed>>>0,rng:seed>>>0,frames:0,serial:0,phase:profile==='mobile'&&!bot?'handoff':'playing',clock:60,round:1,firstHit:false,replay:0,roundWinner:null,winner:null,breakFrames:0,freeze:0,cinematic:0,throw:null,bolts:[],fighters:forms.map((form,i)=>fighter(form,i,DUEL_CONDITIONS[condition],bonusHp)),events:[],turn:0,turnFrames:180,botState:{decision:0,input:{},seenSpecials:0,lastAttack:null,pendingSpecial:null},recorded:false};
 }
 export function readyDuel(m){if(m.phase!=='handoff')throw Error('No handoff is waiting.');m.phase='playing';m.turnFrames=180;emit(m,'ready',{player:m.turn});}
 export function skipDuelScene(m){if(m.phase==='finisher'){m.phase='finished';m.breakFrames=0;emit(m,'match',{winner:m.winner});}else if(m.cinematic>0){if(m.fighters.some(f=>f.attack?.kind==='super'))return;m.cinematic=0;}}
@@ -92,11 +94,13 @@ function attack(m,i,kind,technique=null){
  const f=m.fighters[i];f.attack={id:++m.serial,kind,technique,crouch:['light','lk'].includes(kind)&&f.crouch,frame:0,hit:false,connected:false,...(kind==='special'&&f.focusBoost>0?{startup:7}:{})};
  if(kind==='special'){f.focusBoost=0;f.cooldown=m.rules.cooldown;f.stats.specials++;if(technique){f.stats.commands++;f.lastTechnique={name:DUEL_TECHNIQUES[f.form][technique].name,frame:m.frames};emit(m,'command',{player:i,technique,name:f.lastTechnique.name});}}
  if(kind==='super'){f.meter=0;f.stats.supers++;m.cinematic=72;}
+ if(m.spatial&&kind==='special'){f.attack.aim=duelBoltAim(m,i,f.pending?.aim);if(i===1)f.attack.startup=DUEL_SPATIAL_RULES.enemyWindup;}
  emit(m,kind==='super'?'super':'attack',{player:i,kind,technique,attackId:f.attack.id});
 }
 function advanceAttack(m,i){
  const f=m.fighters[i],a=f.attack;if(!a)return;const move=moveFor(f);a.frame++;
  if(a.kind==='special'&&a.frame===move.startup){
+  const boltCount=m.bolts.length;
   if(a.technique){
    if(move.guard)f.guard=move.guard;if(move.overclock)f.overclock=move.overclock;
    if(move.dash)f.x=clamp(f.x+f.facing*move.dash,45,915);
@@ -109,6 +113,7 @@ function advanceAttack(m,i){
    if(f.form==='collector'){f.x=clamp(f.x+f.facing*90,45,915);if(Math.abs(f.x-m.fighters[1-i].x)<DUEL_CONTACT+12&&m.fighters[1-i].y===0){a.hit=true;const hp=m.fighters[1-i].hp;addDamage(m,i,1-i,move.damage,{special:true,throwing:true});a.connected=m.fighters[1-i].hp<hp;}}
    if(f.form==='animal'){f.x=clamp(f.x+f.facing*160,45,915);f.y=35;f.vy=70;}
   }
+  if(m.spatial&&m.bolts.length>boltCount)Object.assign(m.bolts.at(-1),a.aim);
   emit(m,'power',{player:i,form:f.form,technique:a.technique});
  }
  if(a.frame>=move.startup&&a.frame<move.startup+move.active&&!a.hit){
@@ -137,6 +142,19 @@ function captureInput(m,i,raw={}){
   f.pending={action,command,back:input.x*f.facing<-.25,frame:m.frames,expires:m.frames+(command?18:12)};
   if(command)f.motion=[];break;
  }}
+ if(m.spatial){
+  const spatial=duelSpatialInput(raw.spatial);
+  f.spatialPose=spatial?.body??null;
+  if(spatial?.dodge&&!f.previous.dodge&&(f.dodgeCooldown??0)===0&&f.stun===0&&!f.attack){
+   f.dodgeTime=DUEL_SPATIAL_RULES.dodgeFrames;f.dodgeCooldown=DUEL_SPATIAL_RULES.dodgeCooldown;
+   f.dodgeOffset=spatial.dodgeDirection*DUEL_SPATIAL_RULES.dodgeDistance;emit(m,'dodge',{player:i});
+  }
+  input.dodge=!!spatial?.dodge;input.cast=!!spatial?.cast;
+  if(spatial?.cast&&!f.previous.cast&&DUEL_TECHNIQUES[f.form]?.trace?.bolt&&
+    f.x+spatial.aim.forward>=45&&f.x+spatial.aim.forward<=915){
+   f.pending={action:'special',command:'trace',aim:spatial.aim,frame:m.frames,expires:m.frames+12};
+  }
+ }
  f.previous=input;f.input=input;
 }
 function inputFrame(m,i){
@@ -175,10 +193,10 @@ export function stepDuel(m,inputs=[{},{}],frames=1){if(!Number.isInteger(frames)
  if(m.phase==='finisher'){if(--m.breakFrames<=0){m.phase='finished';emit(m,'match',{winner:m.winner});}continue;}
  if(m.phase==='round-end'){if(--m.breakFrames>0)continue;if(m.roundWinner!==null&&m.fighters[m.roundWinner].rounds>=2){m.winner=m.roundWinner;const winner=m.fighters[m.winner],loser=m.fighters[1-m.winner];if(loser.hp/loser.maxHp<.1&&winner.meter>0){m.phase='finisher';m.breakFrames=120;winner.meter=0;emit(m,'finisher',{winner:m.winner,loser:1-m.winner});}else{m.phase='finished';emit(m,'match',{winner:m.winner});}}else{if(m.roundWinner===null&&m.replay===0)m.replay=1;else{m.round++;m.replay=0;}nextRound(m);}continue;}
  const source=[inputs[0]??{},m.bot?duelBotInput(m):inputs[1]??{}];for(let i=0;i<2;i++)captureInput(m,i,m.profile==='mobile'&&!m.bot&&i!==m.turn?{}:source[i]);resolveDuelContact(m);if(m.freeze>0){m.freeze--;continue;}if(m.cinematic>0)m.cinematic--;else m.clock=m.clock<=F+1e-8?0:m.clock-F;
- for(let i=0;i<2;i++){const f=m.fighters[i];f.combo.display=Math.max(0,f.combo.display-1);if(f.stun===0&&f.y===0){f.comboOwner=null;f.juggles=0;}f.meter=clamp(f.meter+m.rules.drip*F,0,100);for(const key of ['stun','root','cooldown','guard','overclock','flash','focusBoost'])f[key]=Math.max(0,f[key]-1);if(f.focusGuard>0&&--f.focusGuard===0&&!f.focusConnected){f.meter=clamp(f.meter-10,0,100);emit(m,'focus-whiff',{player:i});}inputFrame(m,i);}
+ for(let i=0;i<2;i++){const f=m.fighters[i];f.combo.display=Math.max(0,f.combo.display-1);if(f.stun===0&&f.y===0){f.comboOwner=null;f.juggles=0;}f.meter=clamp(f.meter+m.rules.drip*F,0,100);if(m.spatial){f.dodgeCooldown=Math.max(0,(f.dodgeCooldown??0)-1);f.dodgeTime=Math.max(0,(f.dodgeTime??0)-1);if(!f.dodgeTime)f.dodgeOffset=0;}for(const key of ['stun','root','cooldown','guard','overclock','flash','focusBoost'])f[key]=Math.max(0,f[key]-1);if(f.focusGuard>0&&--f.focusGuard===0&&!f.focusConnected){f.meter=clamp(f.meter-10,0,100);emit(m,'focus-whiff',{player:i});}inputFrame(m,i);}
  if(m.throw&&++m.throw.frames>8){const {owner,target}=m.throw;m.throw=null;addDamage(m,owner,target,14,{throwing:true});m.fighters[owner].stun=20;}
  for(let i=0;i<2;i++){const f=m.fighters[i];if(f.y>0||f.vy>0){f.y=Math.max(0,f.y+f.vy*F);f.vy-=1500*m.rules.gravity*F;if(f.y===0)f.vy=0;}}resolveDuelContact(m);for(let i=0;i<2;i++)advanceAttack(m,i);
- for(const bolt of m.bolts){bolt.trail??=[];bolt.trail.push({x:bolt.x,y:bolt.y});if(bolt.trail.length>5)bolt.trail.shift();bolt.x+=bolt.vx;bolt.life--;const other=m.fighters[1-bolt.owner];if(Math.abs(bolt.x-other.x)<65&&Math.abs(bolt.y-(other.y+(bolt.low?15:65)))<(bolt.low?30:60)){addDamage(m,bolt.owner,1-bolt.owner,bolt.damage,{special:true,low:!!bolt.low,root:bolt.root??0});bolt.life=0;}}m.bolts=m.bolts.filter(b=>b.life>0&&b.x>0&&b.x<960);
+ for(const bolt of m.bolts){bolt.trail??=[];bolt.trail.push({x:bolt.x,y:bolt.y});if(bolt.trail.length>5)bolt.trail.shift();const from={x:bolt.x,y:bolt.y,z:bolt.z??0};bolt.x+=bolt.vx;if(m.spatial){bolt.y+=bolt.vy??0;bolt.z=(bolt.z??0)+(bolt.vz??0);}bolt.life--;const other=m.fighters[1-bolt.owner];if(m.spatial?duelSpatialCollision(from,bolt,duelBody(other)):Math.abs(bolt.x-other.x)<65&&Math.abs(bolt.y-(other.y+(bolt.low?15:65)))<(bolt.low?30:60)){addDamage(m,bolt.owner,1-bolt.owner,bolt.damage,{special:true,low:!!bolt.low,root:bolt.root??0});bolt.life=0;}}m.bolts=m.bolts.filter(b=>b.life>0&&b.x>0&&b.x<960&&(!m.spatial||duelSpatialBoltInBounds(b)));
  resolveDuelContact(m);const [a,b]=m.fighters;
  if(a.hp<=0||b.hp<=0)endRound(m,a.hp<=0&&b.hp<=0?null:a.hp>0?0:1);else if(m.clock===0)endRound(m,a.hp/a.maxHp===b.hp/b.maxHp?null:a.hp/a.maxHp>b.hp/b.maxHp?0:1);
  else if(m.profile==='mobile'&&!m.bot&&--m.turnFrames<=0){m.turn=1-m.turn;m.phase='handoff';emit(m,'handoff',{player:m.turn});}

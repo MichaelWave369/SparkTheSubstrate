@@ -14,7 +14,17 @@ export const QUEST_ACCEPTANCE_CASES=Object.freeze([
   Object.freeze({id:'save',label:'VR-only checkpoint restores and original saves are untouched'}),
   Object.freeze({id:'progression',label:'Glass to Machine and a real karma/gift choice work'}),
   Object.freeze({id:'recovery',label:'Tracking/controller interruption pauses without losing progress'}),
-  Object.freeze({id:'exit',label:'Exiting immersive mode safely returns to the browser'})
+  Object.freeze({id:'exit',label:'Exiting immersive mode safely returns to the browser'}),
+  Object.freeze({id:'ascension-hands',label:'Ascension: both energy hands follow tracked grip position and orientation'}),
+  Object.freeze({id:'ascension-cast',label:'Ascension: both hands charge/release, gesture aim and stationary trigger fallback work'}),
+  Object.freeze({id:'ascension-authority',label:'Ascension: missed casts still recover, simultaneous casts share canonical cooldown'}),
+  Object.freeze({id:'ascension-dodge',label:'Ascension: small physical lean/duck avoids a locked bolt; grip/A dodge and left-grip duck work'}),
+  Object.freeze({id:'ascension-windup',label:'Ascension: amber windup, traveling bolt, impact and optional spatial sound/haptics are readable'}),
+  Object.freeze({id:'ascension-encounter',label:'Ascension: complete a best-of-three encounter, then restart and repeat'}),
+  Object.freeze({id:'ascension-comfort',label:'Ascension: headset menu changes posture, speed, snap turn, vignette and reduced intensity'}),
+  Object.freeze({id:'ascension-recovery',label:'Ascension: each missing controller pose, tracking jump, reference reset and visibility loss pauses; held triggers never fire on resume'}),
+  Object.freeze({id:'ascension-boundary',label:'Ascension: bounded head/hand poses cannot shoot through arena edges; recenter and explicit resume recover'}),
+  Object.freeze({id:'ascension-exit',label:'Ascension: B and pause-menu exit return to browser; repeat XR entry without duplicate input/audio'})
 ]);
 const MAX_SAMPLES=480;
 const EVENTS=Object.freeze([

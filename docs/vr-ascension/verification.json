@@ -1,0 +1,83 @@
+{
+  "schema": "spark.xr.rung1.verification.v1",
+  "candidate": "Rung 1 / spark.xr.runtime.v1",
+  "date": "2026-10-29",
+  "baseCommit": "a26b94efd5aa7787e390bc50254bce97588608f1",
+  "controllingBriefSHA256": "c9c4a915f01f443bb544245e9033293bc45973e2dbea59659a9616bb365576ac",
+  "implementationStatus": "Implemented, integrated, executed locally in software",
+  "independentVerification": false,
+  "physicalHardwareVerification": "NOT_PERFORMED",
+  "node": "v24.22.1",
+  "browser": "Chromium 153.0.8010.0 / software rendering",
+  "checks": [
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "tests": 412,
+      "baselineTests": 386,
+      "newTests": 26,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node scripts/check-runtime-bridge.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node scripts/build-pages.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node --test tests/pages-static.test.mjs",
+      "status": "PASS",
+      "tests": 7
+    },
+    {
+      "command": "node --check public/vr/*.js (each file), public/duel-engine.js, public/duel-spatial.js, browser checker",
+      "status": "PASS"
+    },
+    {
+      "command": "node scripts/check-vr-ascension-browser.mjs (installed Playwright and Chromium selected through environment)",
+      "status": "PASS",
+      "receipt": "browser-results.json"
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    }
+  ],
+  "preservedFindings": [
+    {
+      "finding": "Strict tracking cadence also paused a slow software-rendered desktop preview",
+      "observed": "Tracking cadence interrupted; Archon 100; recovery 5.0s",
+      "resolution": "Desktop synthetic samples tolerate slow render cadence; physical XR still rejects long gaps; covered by regression."
+    },
+    {
+      "finding": "Shared renderer cleared the first eye when drawing the second",
+      "observed": "gl.clear ignores viewport; identified while adding stereo coverage",
+      "resolution": "Clear once before both views; browser checker reads retained geometry in both eye regions."
+    },
+    {
+      "finding": "Browser QA initially accepted an early Descent placeholder screenshot",
+      "resolution": "Require completed navigation, module load and hidden intro overlay before capturing actual Descent geometry."
+    },
+    {
+      "finding": "Exact Throw mode label selector included option text",
+      "resolution": "Browser QA targets the known control ID."
+    }
+  ],
+  "dependencyChanges": {
+    "app": [],
+    "optionalBrowserTool": "Playwright 1.62.1, isolated outside the app"
+  },
+  "saveMigrations": [],
+  "scopeDeviations": [],
+  "documentedImplementationChoices": [
+    "Opt-in canonical spatial Duel geometry",
+    "42-frame Archon windup",
+    "Canonical spatial dodge timers; no immunity",
+    "Ephemeral training encounter"
+  ],
+  "releaseAuthority": "MichaelWave369; no automatic merge or deployment",
+  "questAcceptance": "MANUAL_QUEST_ACCEPTANCE_REQUIRED"
+}
