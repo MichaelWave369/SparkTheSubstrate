@@ -107,6 +107,11 @@
     {
       "finding": "Initial test browser executable had been cleaned from scratch",
       "resolution": "Provisioned isolated recognized Chromium development tooling; no app dependency or shipped binary was added."
+    },
+    {
+      "finding": "First hosted browser job asserted wrist pause after a fixed 150 ms delay, before a slow software-rendered frame sampled Tab",
+      "observed": "GitHub run 40923803443 / browser job 123623816194: false !== true at wrist-open assertion; original engine, Pages and Rung 1 browser checks passed",
+      "resolution": "Keyboard acceptance now waits for actual movement and actual wrist paused state before asserting, preserving the same behavior requirement. Corrected full browser suite executed locally and passed."
     }
   ]
 }

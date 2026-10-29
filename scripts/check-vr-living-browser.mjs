@@ -44,10 +44,14 @@ try{
   await page.waitForFunction(()=>document.querySelector('#intro-overlay').hidden);
   const canvas=page.locator('#world');await canvas.focus();
   const before=await page.evaluate(async()=>(await import('./spark-living-app.js')).host.descent.snapshot().player.y);
-  await page.keyboard.down('KeyW');await page.waitForTimeout(250);await page.keyboard.up('KeyW');
+  await page.keyboard.down('KeyW');
+  await page.waitForFunction(async before=>(await import('./spark-living-app.js')).host.descent.snapshot().player.y<before,before);
+  await page.keyboard.up('KeyW');
   const moved=await page.evaluate(async()=>(await import('./spark-living-app.js')).host.descent.snapshot().player.y);
   assert.ok(moved<before,'actual keyboard moves through the shared runtime');
-  await page.keyboard.down('Tab');await page.waitForTimeout(150);await page.keyboard.up('Tab');
+  await page.keyboard.down('Tab');
+  await page.waitForFunction(async()=>(await import('./spark-living-app.js')).runtime.paused===true);
+  await page.keyboard.up('Tab');
   assert.equal(await page.evaluate(async()=>(await import('./spark-living-app.js')).runtime.paused),true);
   await mkdir(output,{recursive:true});await canvas.screenshot({path:resolve(output,'wrist.png')});
   // Drive the actual exported app instance. Only inputs, genuine choices, explicit
