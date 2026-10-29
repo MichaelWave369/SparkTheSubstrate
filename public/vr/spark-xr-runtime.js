@@ -3,6 +3,8 @@ import {SparkVRRenderer} from './spark-vr-renderer.js';
 import {readXRFrame} from './spark-xr-input.js';
 import {duelWorldPoint} from './spark-xr-adapters.js';
 import {worldRoot4, multiply4, projection4, lookAt4} from './spark-vr-math.js';
+import {targetDescent} from './spark-xr-targeting.js';
+import {XR_QUALITY} from './spark-room-themes.js';
 import {XRFeedback} from './spark-xr-feedback.js';
 
 export const XR_RUNTIME_VERSION = 'spark.xr.runtime.v1';
@@ -11,7 +13,7 @@ export function xrWorldRoot(scene, input) {
   if (!input.head) return worldRoot4(0, 0);
   const head = input.head, yaw = input.yaw || 0, c = Math.cos(yaw), s = Math.sin(yaw);
   const eye = scene.playerBody ? duelWorldPoint(scene.playerBody.x, scene.playerBody.y, scene.playerBody.z) :
-    [(scene.player.x - 480) / 100, 1.65, (scene.player.y - 300) / 100];
+    [(scene.player.x - 480) / 100, 1.65+(input.body?Math.max(-.5,Math.min(.3,(input.body.height-65)/100)):0), (scene.player.y - 300) / 100];
   const root = worldRoot4(eye[0], eye[2], yaw, head[13] - eye[1]);
   root[12] += head[12]; root[14] += head[14];
   return root;
@@ -24,7 +26,7 @@ export class SparkXRRuntime {
     onMode = () => {}, onFrame = () => {}, onSession = () => {}, onSettings = () => {},
     xr = () => globalThis.navigator?.xr,
     makeRenderer = c => new SparkVRRenderer(c),
-    makeLayer = (s, g) => new globalThis.XRWebGLLayer(s, g, {antialias: false, framebufferScaleFactor: .85}),
+    makeLayer = (s, g, scale=.85) => new globalThis.XRWebGLLayer(s, g, {antialias: false, framebufferScaleFactor: scale}),
     raf = cb => globalThis.requestAnimationFrame(cb), caf = id => globalThis.cancelAnimationFrame(id),
     feedback = new XRFeedback()} = {}) {
     if (adapter?.version !== XR_ADAPTER_VERSION) throw Error('Unsupported XR mode adapter.');
@@ -36,7 +38,7 @@ export class SparkXRRuntime {
   }
   menu() {
     const cycle = (key, values) => { const index = values.indexOf(this.settings[key]); this.configure({[key]: values[(index + 1) % values.length]}); };
-    return [
+    const entries=[
       ['Resume encounter', () => this.pause(false)],
       ['Recenter here', () => this.recenter()],
       ['Posture: ' + this.settings.posture, () => { cycle('posture', ['seated', 'standing']); this.recenter(); }],
@@ -50,6 +52,11 @@ export class SparkXRRuntime {
       ['Restart isolated encounter', () => { this.adapter.restart?.(); this.recenter(); }],
       ['Exit VR / preview', () => { void this.exit(); }]
     ];
+    const extra=this.menuExtras?.()||[];
+    if(this.adapter.id==='descent'){entries[0][0]='Resume journey';entries.splice(10,1);}
+    entries.splice(1,0,...extra);
+    entries.splice(entries.length-1,0,['Quality: '+this.settings.quality,()=>cycle('quality',['performance','balanced','high'])]);
+    return entries;
   }
   configure(patch) { this.settings = xrSettings({...this.settings, ...patch}); this.input.interrupt(); this.queued = {}; this.onSettings(this.settings); }
   pause(value = !this.paused, reason = '') {
@@ -62,34 +69,44 @@ export class SparkXRRuntime {
     const input = this.input.poll(sample, now, {active: !this.paused, settings: this.settings, synthetic:this.mode==='desktop'});
     if (input.exit) { void this.exit(); return {input, scene: this.adapter.snapshot()}; }
     if (input.recenter) this.recenter();
+    if(input.valid&&input.wrist)this.pause(!this.paused,'Spark wrist');
     if (!input.valid) this.pause(true, input.reason);
     else if (input.pause) this.pause(!this.paused);
     else if (this.paused) {
       const menu = this.menu();
       this.menuIndex = (this.menuIndex + input.menuMove + menu.length) % menu.length;
-      if (input.confirm) menu[this.menuIndex][1]();
+      if (input.confirm){try{menu[this.menuIndex][1]();}catch(error){this.onStatus(error.message);this.pauseReason=error.message;}this.input.interrupt();this.queued={};}
     }
     const delta = this.last === null ? 0 : (now - this.last) / 1000;
     this.last = now;
-    if (!this.paused && input.valid && !input.pause && !input.confirm && !input.recenter) {
+    if (!this.paused && input.valid && !input.pause && !input.confirm && !input.recenter && !input.wrist && input.ready!==false) {
       // Retain release/dodge edges across high-refresh render frames until one sim tick consumes them.
       if (input.cast) this.queued.cast ||= input.cast;
+      for(const key of ['interact','dash','cycleForm'])if(input[key])this.queued[key]=true;
+      const physical=this.queued.physicalDelta||{x:0,y:0};
+      this.queued.physicalDelta={x:physical.x+(input.physicalDelta?.x||0),y:physical.y+(input.physicalDelta?.y||0)};
       if (input.dodge) { this.queued.dodge = true; this.queued.dodgeDirection = input.dodgeDirection; }
       this.accum = Math.min(.08, this.accum + Math.max(0, Math.min(.05, delta)));
       let ticks = 0;
       while (this.accum + 1e-9 >= STEP && ticks++ < 4) {
         this.adapter.step({...input, cast: this.queued.cast || null, dodge: !!this.queued.dodge,
-          dodgeDirection: this.queued.dodgeDirection}, STEP);
+          dodgeDirection: this.queued.dodgeDirection,interact:!!this.queued.interact,dash:!!this.queued.dash,
+          cycleForm:!!this.queued.cycleForm,physicalDelta:this.queued.physicalDelta||{x:0,y:0}}, STEP);
         this.queued = {}; this.accum -= STEP;
       }
     } else { this.accum = 0; this.queued = {}; }
     const scene = this.adapter.snapshot();
+    if(scene.living&&scene.choices?.length&&!this.paused){this.menuIndex=1;this.pause(true,'Choose the next chapter');}
+    if(scene.living&&input.valid)scene.target=targetDescent(scene,input.hands,xrWorldRoot(scene,input));
+    scene.eyeHeight=1.65+(scene.living&&input.body?(input.body.height-65)/100:0);
+    scene.quality=this.settings.quality;scene.reduced=this.settings.reduced;
     scene.paused = this.paused; scene.pauseReason = this.pauseReason;
     scene.menuIndex = this.menuIndex; scene.menuLabels = this.menu().map(item => item[0]);
     if (this.settings.reduced && scene.effects) scene.effects = scene.effects.slice(-1);
     this.feedback.listener(scene, input.head, input.yaw || 0);
     for (const event of this.adapter.drainEvents?.() || [])
       this.feedback.event(event, scene, this.settings, Array.from(this.session?.inputSources || []));
+    if(scene.living)input.hands=this.adapter.presentation.hands(input.hands,scene.form,scene.cooldown);
     this.onSnapshot(scene);
     return {input, scene};
   }
@@ -119,8 +136,8 @@ export class SparkXRRuntime {
       const renderer = this.ensureRenderer();
       await renderer.gl.makeXRCompatible?.();
       if (this.session !== session) return false;
-      this.layer = this.makeLayer(session, renderer.gl);
-      session.updateRenderState({baseLayer: this.layer, depthNear: .04, depthFar: 25});
+      this.layer = this.makeLayer(session, renderer.gl,XR_QUALITY[this.settings.quality].scale);
+      session.updateRenderState({baseLayer: this.layer, depthNear: .04, depthFar: XR_QUALITY[this.settings.quality].far});
       let kind = 'local-floor';
       let space;
       try { space = await session.requestReferenceSpace(kind); }
@@ -141,7 +158,7 @@ export class SparkXRRuntime {
     const session = this.session; if (!session || this.mode !== 'xr') return;
     try {
       if (session.visibilityState !== 'visible') this.pause(true, 'Headset visibility interrupted');
-      const sample = readXRFrame(frame, this.space, session.inputSources);
+      const sample = readXRFrame(frame, this.space, session.inputSources);sample.visible=session.visibilityState==='visible';
       const {input, scene} = this.advance(now, sample);
       if (this.session !== session) return;
       if (sample.viewer && input.head) {
@@ -168,20 +185,23 @@ export class SparkXRRuntime {
       try {
         const {input, scene} = this.advance(now, readSample(now));
         if (this.mode !== 'desktop') return;
+        this.drawPreview({input,scene});
+        this.desktopId = this.raf(draw);
+      } catch (error) { this.pause(true, 'Preview error: ' + error.message); }
+    };
+    this.desktopId = this.raf(draw); return true;
+  }
+  drawPreview({input,scene}){
         const ratio = Math.min(globalThis.devicePixelRatio || 1, 2);
         const w = Math.max(2, Math.floor(this.canvas.clientWidth * ratio)), h = Math.max(2, Math.floor(this.canvas.clientHeight * ratio));
         this.canvas.width = w; this.canvas.height = h;
-        const projection = projection4(Math.PI / 2.7, w / h, .04, 25);
+        const projection = projection4(Math.PI / 2.7, w / h, .04, XR_QUALITY[this.settings.quality].far);
         const head = input.head, direction = head ? [-head[8], -head[9], -head[10]] : [0, 0, -1];
         const eye = head ? [head[12], head[13], head[14]] : [0, 1.65, 0];
         const inverse = lookAt4(eye, eye.map((v, i) => v + direction[i]));
         this.renderer.render([{viewport: {x: 0, y: 0, width: w, height: h}, projection, inverse,
           matrix: multiply4(projection, multiply4(inverse, xrWorldRoot(scene, input)))}], scene,
         {hudPose: head, hands: input.hands, reduced: this.settings.reduced, vignette: this.settings.vignette});
-        this.desktopId = this.raf(draw);
-      } catch (error) { this.pause(true, 'Preview error: ' + error.message); }
-    };
-    this.desktopId = this.raf(draw); return true;
   }
   stopDesktop() { if (this.desktopId != null) this.caf(this.desktopId); this.desktopId = null; }
   async exit() {

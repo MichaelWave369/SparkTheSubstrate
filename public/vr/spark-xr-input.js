@@ -2,12 +2,12 @@
 export const XR_INPUT_VERSION = 'spark.xr.input.v1';
 export const XR_ADAPTER_VERSION = 'spark.xr.adapter.v1';
 export const XR_DEFAULTS = Object.freeze({posture: 'seated', movement: .5, turn: 30,
-  vignette: .4, reduced: false, haptics: true, sound: true, throwMode: 'gesture'});
+  vignette: .4, reduced: false, haptics: true, sound: true, throwMode: 'gesture', quality:'balanced'});
 export function xrSettings(raw = {}) {
   const s = {...XR_DEFAULTS};
   for (const [key, values] of Object.entries({posture: ['seated', 'standing'],
     movement: [.5, .75, 1], turn: [30, 45, 60], vignette: [0, .4, .75],
-    throwMode: ['gesture', 'trigger']})) if (values.includes(raw[key])) s[key] = raw[key];
+    throwMode: ['gesture', 'trigger'],quality:['performance','balanced','high']})) if (values.includes(raw[key])) s[key] = raw[key];
   for (const k of ['reduced', 'haptics', 'sound']) if (typeof raw[k] === 'boolean') s[k] = raw[k];
   return s;
 }
@@ -57,6 +57,7 @@ export class SparkXRInput {
   interrupt() {
     this.triggers = {left: {armed: false, down: false}, right: {armed: false, down: false}};
     this.previousHands = {}; this.last = null;
+    this.motionArmed=false;
   }
   recenter() { this.base = null; this.yaw = 0; this.previousHead = null; this.interrupt(); }
   edge(key, down) { const was = this.ui[key]; this.ui[key] = !!down; return !!down && !was; }
@@ -68,6 +69,7 @@ export class SparkXRInput {
     settings = xrSettings(settings);
     const {head, hands = {}} = sample, l = hands.left, r = hands.right;
     const ui = {pause: this.edge('pause', button(r, 3)), exit: this.edge('exit', button(r, 5)),
+      wrist:this.edge('wrist',button(l,4)),cycleForm:this.edge('cycleForm',sample.cycleForm===true),
       recenter: this.edge('recenter', button(l, 5)),
       confirm: this.edge('confirm', button(r, 0) || button(l, 0))};
     const menuAxis = axis(l, 1);
@@ -77,6 +79,7 @@ export class SparkXRInput {
     const out = {version: XR_INPUT_VERSION, ...ui, head, hands: {}, valid: false,
       yaw:this.yaw,move: 0, cast: null, dodge: false, duck: false, body: null};
     const fail = reason => { this.interrupt(); out.reason = reason; return out; };
+    if(sample.visible===false)return fail('Headset visibility interrupted');
     if (!Number.isFinite(now) || !trackedMatrix(head)) return fail('Head tracking unavailable');
     let dt = this.last === null ? 0 : (now - this.last) / 1000;
     // Software-rendered desktop frames have no physical tracking cadence to qualify.
@@ -111,11 +114,27 @@ export class SparkXRInput {
     out.body = {forward: clamp(-bodyOffset[2] * 100, -35, 35),
       lateral: clamp(bodyOffset[0] * 100, -55, 55), height: clamp(65 + bodyOffset[1] * 100, 15, 95)};
     out.valid = true; out.yaw = this.yaw; out.base = [...this.base];
+    const neutral=![button(l,0),button(r,0),button(l,1),button(r,1),button(r,4),button(l,3)].some(Boolean)&&
+      Math.abs(axis(l,0))<.18&&Math.abs(axis(l,1))<.18&&Math.abs(axis(r,0))<.25;
+    if(!active)this.motionArmed=false;else if(neutral)this.motionArmed=true;
+    out.ready=this.motionArmed;
+    out.physicalDelta={x:0,y:0};
+    if(active&&out.ready&&this.previousHead){
+      const d=this.local([head[12]-this.previousHead[12],0,head[14]-this.previousHead[14]]);
+      out.physicalDelta={x:d[0]*100,y:d[2]*100};
+    }
+    const sx=axis(l,0),sy=axis(l,1),fx=-head[8],fz=-head[10],fl=Math.hypot(fx,fz)||1;
+    const wx=sx*head[0]-sy*fx/fl,wz=sx*head[2]-sy*fz/fl;
+    const c=Math.cos(this.yaw),s=Math.sin(this.yaw),length=Math.max(1,Math.hypot(wx,wz));
+    out.movement=active&&out.ready?{x:(c*wx-s*wz)/length*settings.movement,y:(s*wx+c*wz)/length*settings.movement}:{x:0,y:0};
+    out.motionScale=settings.movement;
     out.move = active ? -axis(l, 1) * settings.movement : 0;
     out.duck = active && button(l, 1);
     if (out.duck) out.body.height = Math.min(out.body.height, 35);
     const dodge = this.edge('dodge', button(r, 1) || button(r, 4));
     out.dodge = active && dodge; out.dodgeDirection = axis(l, 0) > .2 ? 1 : -1;
+    out.interact=out.dodge;
+    out.dash=active&&out.ready&&this.edge('dash',button(l,3));
     for (const name of ['right', 'left']) {
       const h = hands[name], t = this.triggers[name], pressed = button(h, 0);
       if (!pressed) t.armed = true;
@@ -124,7 +143,7 @@ export class SparkXRInput {
       if (!active) { t.armed = false; t.down = false; }
       if (active && t.armed && pressed && !t.down) { t.started = now; t.down = true; }
       const charge = t.down ? clamp((now - t.started) / 900, 0, 1) : 0;
-      out.hands[name] = {matrix: h.grip, charge, color: name === 'left' ? '#f6c66c' : '#6cebe2'};
+      out.hands[name] = {matrix: h.grip, ray:h.ray, charge, color: name === 'left' ? '#f6c66c' : '#6cebe2'};
       if (active && t.armed && t.down && !pressed) {
         let aim = direction, gesture = false;
         const previous = this.previousHands[name];

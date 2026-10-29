@@ -1,0 +1,152 @@
+{
+  "schema": "spark.xr.rung2.artifacts.v1",
+  "baseCommit": "025e98c2ae0b84f7f3117dabccddfee5edc47ead",
+  "algorithm": "sha256",
+  "scope": "Candidate changed/new files except self-referential manifest",
+  "files": [
+    {
+      "path": ".github/workflows/immersive-vr.yml",
+      "sha256": "e5c62e1ffafe12c5ca369b29f9df8c2d2c885946908703648a76165f3bd00b12"
+    },
+    {
+      "path": "ASSETS_AND_ATTRIBUTION.md",
+      "sha256": "7a73d4ccb45c1481dcdf1e3610d9204172868181715812c0138bbe3af91d7435"
+    },
+    {
+      "path": "README.md",
+      "sha256": "b6d0a62afa85ff6cb90a2f79f4622d4ce4b8da06f42fc99096961100304de501"
+    },
+    {
+      "path": "docs/vr-living/browser-results.json",
+      "sha256": "3c604b3f8f670c04809b36b60e140bd0ea508c3e5b1d107caf5cbf58f954e868"
+    },
+    {
+      "path": "docs/vr-living/glass.png",
+      "sha256": "4e4ab0ba087afb16c455717d86269933d35d6e1f615ea0a3f671cf9981f6f86d"
+    },
+    {
+      "path": "docs/vr-living/machine.png",
+      "sha256": "40a9f1cc8ba09d69b2b0734010761be145e8e5bae16f3aa1aabfd080ff13f2de"
+    },
+    {
+      "path": "docs/vr-living/rung-2.md",
+      "sha256": "f57c1a9db5b2d4443905bb69d4bc3e3c2ee43745b9f8d28d0c5f03b30591b51e"
+    },
+    {
+      "path": "docs/vr-living/threshold.png",
+      "sha256": "0df81ffeb591ebf3990e707661c7c946d0d562dc4b1dac0c41c12a1dba920749"
+    },
+    {
+      "path": "docs/vr-living/tree-transformation.png",
+      "sha256": "383bf7449082c00c48fbda2bb1f4e27e106665cc79175a73bb4ccfafd4c4afe4"
+    },
+    {
+      "path": "docs/vr-living/verification.json",
+      "sha256": "26a05cdf80a4f8f901359830323b06b34bec8ef918ed1b8434f619868440b534"
+    },
+    {
+      "path": "docs/vr-living/vessel-animal.png",
+      "sha256": "d4bf7268503249b76751ede8012396b7f1f30038b63a7b38f135af0b65747a21"
+    },
+    {
+      "path": "docs/vr-living/vessel-computer.png",
+      "sha256": "4ee4bd72ef84c9aafa4ee21da34f73f0c1c3298a644397cc896f694094e1affb"
+    },
+    {
+      "path": "docs/vr-living/vessel-human.png",
+      "sha256": "0f985ad35d4aa6e0caa1fa8a263c5345757a62494c7f5463b5c79c04e653444c"
+    },
+    {
+      "path": "docs/vr-living/vessel-rock.png",
+      "sha256": "bf20b7ae053147bf865ed8abbee9387b4a49263a3f56aa29f97850cfc788e147"
+    },
+    {
+      "path": "docs/vr-living/vessel-spark.png",
+      "sha256": "9eb91c1de03213a789b1bf428a07ca27a3dfb2393b3fec13513fb2ef60a700f5"
+    },
+    {
+      "path": "docs/vr-living/wrist.png",
+      "sha256": "ec6bfe707a6911170c5d04ab10deadb47732ddc24ce02a070580fbddaf8e6797"
+    },
+    {
+      "path": "public/vr/ascension.html",
+      "sha256": "55498761f99194254411b4ca41466796639eee2252af67ad425bf12528ff0909"
+    },
+    {
+      "path": "public/vr/index.html",
+      "sha256": "f71efe0be203ccf3abe442cae95a2e687c47123684b012bbc549e06ffd2fe782"
+    },
+    {
+      "path": "public/vr/living.html",
+      "sha256": "f35562c8a533b040d014f37c8b8603bcad2b6d43cd4d08601ae96c6fa24dcfd0"
+    },
+    {
+      "path": "public/vr/spark-living-app.js",
+      "sha256": "a09b74f4b8c60cb0d145c2b1ea96c2368df30d63cc2032dc86006295bec639de"
+    },
+    {
+      "path": "public/vr/spark-living-host.js",
+      "sha256": "5b5379efbe03b1a3538366c42a3b72541e3a018d0c08d6e74b25920d63516ecd"
+    },
+    {
+      "path": "public/vr/spark-room-themes.js",
+      "sha256": "cfa68945cc206dbcc300edf580b985ca37598779edb9e98475f03b5dfc2c9863"
+    },
+    {
+      "path": "public/vr/spark-vessel-presentation.js",
+      "sha256": "d52c35138a5338600a24756f5e1cccfcb3b46a61188d8699eb3a0380dad8c7a0"
+    },
+    {
+      "path": "public/vr/spark-vr-diagnostics.js",
+      "sha256": "ae96b58a5565fffb77a96263ca43d8d7fc154b4027b5f5e984556c19e1b0d56d"
+    },
+    {
+      "path": "public/vr/spark-vr-geometry.js",
+      "sha256": "c72b16bd41671e175995b0e76b94d76d6d6d294295ad9ca02711fb00bb5c1aac"
+    },
+    {
+      "path": "public/vr/spark-vr-renderer.js",
+      "sha256": "75aa71e0b6454893953e77bc8a599880cb80e5a5a3dbda2217b9eacaecdde997"
+    },
+    {
+      "path": "public/vr/spark-xr-adapters.js",
+      "sha256": "89591eaca4ec47473beb9b28909e65dd89f27d972599af5cf81299eb7ed14734"
+    },
+    {
+      "path": "public/vr/spark-xr-feedback.js",
+      "sha256": "3f279de2ec61d45538811fe2f8fc35f4130e8d219512c1742e75c652fcc31e86"
+    },
+    {
+      "path": "public/vr/spark-xr-input.js",
+      "sha256": "f2bbec8702cce9502822eba73d9e8695c3a6d0e35406148992868c009a5e4751"
+    },
+    {
+      "path": "public/vr/spark-xr-preview.js",
+      "sha256": "62a1ce8f633f6f37a3d52da0b288ca10ac6e4420210e432faccc1e1f5120f9cc"
+    },
+    {
+      "path": "public/vr/spark-xr-runtime.js",
+      "sha256": "73bbaa611720dec5eb39d5688ac677b3b46cd28fbf9de339f2d7a30a05e85bba"
+    },
+    {
+      "path": "public/vr/spark-xr-targeting.js",
+      "sha256": "2cf75e40037a633f75627ab41fb12d9c4b8951124b867359ea261f24ab648bff"
+    },
+    {
+      "path": "scripts/build-pages.mjs",
+      "sha256": "5760a01e942e4d83d97f8e5220a4d901d9148b59c7fe670ee79a00991b1313f2"
+    },
+    {
+      "path": "scripts/check-vr-living-browser.mjs",
+      "sha256": "929aceeff097c38060cbd9386507f61e0794539d397da523de9cd10318e61fbc"
+    },
+    {
+      "path": "tests/vr-living-path.mjs",
+      "sha256": "b6974faf1c9ec721fab3971397500606dd0a055c0fc49e1274729e4ac7401e6d"
+    },
+    {
+      "path": "tests/vr-living.test.mjs",
+      "sha256": "071f41186024a65c5e1b64a3832197271a2206c52077204aa1cfca81d016a4bf"
+    }
+  ]
+}

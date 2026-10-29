@@ -30,6 +30,20 @@ performance, controller compatibility, comfort or a full physical campaign
 playthrough. See the [VR progress and headset acceptance guide](docs/vr-first-slice.md)
 for the remaining finish gates. The existing 2D modes remain unchanged.
 
+## SPARK VR: The Living Substrate · Rung 2
+
+The [shared immersive hub](public/vr/living.html) hosts the actual seven-world
+Descent campaign and Elemental Ascension through the same XR runtime. Descent
+keeps its original battles, legal gates, karma/gifts, earned resonance, endings,
+reincarnation and VR checkpoint format. Six distinct vessel hands, three showcase
+room treatments, three quality presets and a deliberate wrist menu present real
+game state. Native Descent attacks remain automatic; trigger release uses the
+canonical vessel power. The [established Descent path](public/vr/index.html) remains
+available as a fallback.
+
+[Implementation, acceptance, screenshots and remaining limits](docs/vr-living/rung-2.md).
+Software-browser playthroughs are verified; physical Quest 3 acceptance is pending.
+
 ## SPARK VR: Elemental Ascension · Rung 1
 
 The [Ascension arena](public/vr/ascension.html) adds two tracked energy gauntlets,

@@ -25,7 +25,7 @@ export function renderPagesIndex(source){
     '<aside id="pages-edition-notice" role="note" aria-label="Static edition details">',
     '<strong>FREE · OPEN SOURCE · LOCAL FIRST</strong>',
     '<span>This GitHub Pages edition supports solo journeys, Duel, Sideways,',
-    ' Memory Arcade and the experimental two-room VR preview.',
+    ' Memory Arcade, seven-world Descent VR and Elemental Ascension.',
     ' Saves are stored in this browser. Online co-op and cloud backup',
     ' are available only in the separate fully hosted version.</span>',
     '</aside>'

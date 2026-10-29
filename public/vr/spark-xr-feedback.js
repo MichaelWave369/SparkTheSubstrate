@@ -1,3 +1,4 @@
+import {worldAt} from './spark-vr-model.js';
 import {duelWorldPoint} from './spark-xr-adapters.js';
 
 // Original synthesized tones; audio is optional and starts only after a user gesture.
@@ -11,7 +12,7 @@ export class XRFeedback {
     } catch { /* Silent browsers retain visual windups and impacts. */ }
   }
   event(event, snapshot, settings, sources = []) {
-    if (settings.haptics && ['power', 'hit', 'chip', 'dodge'].includes(event.type)) {
+    if (settings.haptics && ['power', 'hit', 'chip', 'dodge','morph','collect','damage'].includes(event.type)) {
       for (const source of sources) {
         if (event.type === 'power' && event.player === 1) continue;
         try {
@@ -22,12 +23,12 @@ export class XRFeedback {
     }
     const c = this.context;
     if (!settings.sound || !c || c.state !== 'running' || this.voices.size >= 8 ||
-        !['attack', 'power', 'hit', 'chip', 'ko', 'dodge'].includes(event.type)) return;
+        !['attack', 'power', 'hit', 'chip', 'ko', 'dodge','morph','collect','damage','gate','ambient'].includes(event.type)) return;
     try {
       const oscillator = c.createOscillator(), gain = c.createGain();
       const enemy = event.player === 1 || event.defender === 1;
       const b = enemy ? snapshot.enemies[0] : snapshot.playerBody;
-      const point = duelWorldPoint(b.x, b.y, b.z);
+      const point = snapshot.living?worldAt(event.x??snapshot.player.x,event.y??snapshot.player.y,.9):duelWorldPoint(b.x, b.y, b.z);
       const panner = c.createPanner?.();
       if (panner) {
         panner.panningModel = 'HRTF'; panner.distanceModel = 'inverse'; panner.refDistance = 1;
@@ -35,9 +36,9 @@ export class XRFeedback {
         else panner.setPosition?.(...point);
         gain.connect(panner); panner.connect(c.destination);
       } else gain.connect(c.destination);
-      oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(event.type === 'attack' ? 220 : event.type === 'hit' ? 100 : 440, c.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(event.type === 'hit' ? 45 : 660, c.currentTime + .12);
-      gain.gain.setValueAtTime(.0001, c.currentTime); gain.gain.exponentialRampToValueAtTime(.045, c.currentTime + .012);
+      oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(event.tone??(event.type === 'attack' ? 220 : event.type === 'hit' ? 100 : 440), c.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(event.type==='ambient'?(event.tone||110)*.8:event.type === 'hit' ? 45 : (event.tone||440)*1.5, c.currentTime + .12);
+      gain.gain.setValueAtTime(.0001, c.currentTime); gain.gain.exponentialRampToValueAtTime(event.type==='ambient'?.008:.035, c.currentTime + .012);
       gain.gain.exponentialRampToValueAtTime(.0001, c.currentTime + .16);
       oscillator.connect(gain); this.voices.add(oscillator);
       oscillator.onended = () => { this.voices.delete(oscillator); oscillator.disconnect(); gain.disconnect(); panner?.disconnect(); };
@@ -46,8 +47,8 @@ export class XRFeedback {
   }
   listener(snapshot, head, yaw) {
     const listener = this.context?.listener;
-    if (!listener || !head || !snapshot.playerBody) return;
-    const point = duelWorldPoint(snapshot.playerBody.x, snapshot.playerBody.y, snapshot.playerBody.z);
+    if (!listener || !head || (!snapshot.playerBody&&!snapshot.living)) return;
+    const point = snapshot.living?worldAt(snapshot.player.x,snapshot.player.y,snapshot.eyeHeight||1.65):duelWorldPoint(snapshot.playerBody.x, snapshot.playerBody.y, snapshot.playerBody.z);
     const c = Math.cos(yaw), s = Math.sin(yaw);
     const forward = [c * -head[8] - s * -head[10], -head[9], s * -head[8] + c * -head[10]];
     try {
@@ -58,6 +59,6 @@ export class XRFeedback {
       } else { listener.setPosition?.(...point); listener.setOrientation?.(...forward, 0, 1, 0); }
     } catch { /* Older audio implementations may remain non-spatial. */ }
   }
-  stop() { for (const oscillator of this.voices) { try { oscillator.stop(); } catch {} } this.voices.clear(); }
+  stop() { for (const oscillator of this.voices) { try { oscillator.stop(); } catch {} oscillator.onended?.();oscillator.onended=null; } this.voices.clear(); }
   dispose() { this.stop(); void this.context?.close?.()?.catch?.(() => {}); this.context = null; }
 }
