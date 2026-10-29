@@ -6,6 +6,16 @@ on:
       - "public/vr/**"
       - "public/duel-engine.js"
       - "public/duel-spatial.js"
+      - "public/action-engine.js"
+      - "public/attack-intent.js"
+      - "public/more-bounce-field.js"
+      - "tests/more-bounce.test.mjs"
+      - "tests/attack-intent.test.mjs"
+      - "tests/legacy-combat-scenario.mjs"
+      - "tests/fixtures/legacy-combat-rung2.json"
+      - "tests/vr-awakening*.mjs"
+      - "scripts/check-vr-awakening-browser.mjs"
+      - "docs/vr-awakening/**"
       - "tests/vr-ascension.test.mjs"
       - "tests/vr-living*.mjs"
       - "scripts/check-vr-living-browser.mjs"
@@ -25,6 +35,16 @@ on:
       - "public/vr/**"
       - "public/duel-engine.js"
       - "public/duel-spatial.js"
+      - "public/action-engine.js"
+      - "public/attack-intent.js"
+      - "public/more-bounce-field.js"
+      - "tests/more-bounce.test.mjs"
+      - "tests/attack-intent.test.mjs"
+      - "tests/legacy-combat-scenario.mjs"
+      - "tests/fixtures/legacy-combat-rung2.json"
+      - "tests/vr-awakening*.mjs"
+      - "scripts/check-vr-awakening-browser.mjs"
+      - "docs/vr-awakening/**"
       - "tests/vr-ascension.test.mjs"
       - "tests/vr-living*.mjs"
       - "scripts/check-vr-living-browser.mjs"
@@ -83,6 +103,7 @@ jobs:
         run: |
           node scripts/check-vr-ascension-browser.mjs
           node scripts/check-vr-living-browser.mjs
+          node scripts/check-vr-awakening-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -90,3 +111,4 @@ jobs:
           path: |
             work/vr-browser/
             work/vr-living-browser/
+            work/vr-awakening-browser/

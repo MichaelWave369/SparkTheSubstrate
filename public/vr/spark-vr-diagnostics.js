@@ -32,7 +32,16 @@ export const QUEST_ACCEPTANCE_CASES=Object.freeze([
   Object.freeze({id:'living-checkpoint',label:'Living Descent: old VR checkpoint restores; save/restore/continue keeps earned progress'}),
   Object.freeze({id:'living-motion',label:'Living Descent: bounded physical lean uses native collision; controller alternatives work seated'}),
   Object.freeze({id:'living-hub',label:'Living hub: mode change ends XR cleanly, relaunch works, audio/listeners do not duplicate'}),
-  Object.freeze({id:'living-quality',label:'Living Descent: all three quality presets and reduced intensity are comfortable on the tested headset'})
+  Object.freeze({id:'living-quality',label:'Living Descent: all three quality presets and reduced intensity are comfortable on the tested headset'}),
+  Object.freeze({id:'awakening-profile',label:'Awakening: Classic and Spellcraft switch in wrist; held inputs cannot cast across the change'}),
+  Object.freeze({id:'awakening-aim',label:'Awakening: selected legal enemy is hit, aiming away misses, cover and range stop directed basics'}),
+  Object.freeze({id:'awakening-hands',label:'Awakening: controller-ray origins, all six attack animations and actual recovery feel aligned'}),
+  Object.freeze({id:'awakening-left',label:'Awakening: left-handed casting and separate other-trigger native powers work seated'}),
+  Object.freeze({id:'awakening-cantor',label:'Awakening: real Cantor six/eight-note windups, aimed pair, ground seals and health are readable'}),
+  Object.freeze({id:'awakening-victory',label:'Awakening: defeat native Cantor, receive Ash Cloak, save/restore and continue legally'}),
+  Object.freeze({id:'awakening-rearm',label:'Awakening: tracking loss/recenter cancels charge; all controls must neutralize before fresh casting'}),
+  Object.freeze({id:'awakening-performance',label:'Awakening: active Cantor volley and wrist are comfortable in both eyes at all three quality presets'}),
+  Object.freeze({id:'awakening-bounce',label:'Awakening: optional earned after-battle celebration is comfortable, expires cleanly and changes no combat state'})
 ]);
 const MAX_SAMPLES=480;
 const EVENTS=Object.freeze([

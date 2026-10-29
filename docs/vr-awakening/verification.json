@@ -1,0 +1,267 @@
+{
+  "schema": "spark.xr.rung3.verification.v1",
+  "candidate": "SPARK Awakening Hands Rung 3",
+  "date": "2026-10-29",
+  "baseCommit": "2672a66cb07871b4d3ffc6127aeeb7d5fd31e9e0",
+  "controllingMission": "User attachment: WORK MODE BUILD MISSION / SPARK VR: THE AWAKENING HANDS / Rung 3",
+  "controllingMissionSHA256": "5cdd0a609356d95ee9909b9e782b5d029437eed0753074e7db54c57c91418e14",
+  "status": "Implemented, integrated and demonstrated locally in software",
+  "independentVerification": false,
+  "physicalQuestVerification": "NOT_PERFORMED",
+  "releaseAuthority": "MichaelWave369; reviewable PR only; no automatic merge or deployment",
+  "checks": [
+    {
+      "command": "npm test",
+      "result": "PASS",
+      "tests": 450,
+      "baseline": 423,
+      "new": 27,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node scripts/check-runtime-bridge.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/build-pages.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node --test tests/pages-static.test.mjs",
+      "result": "PASS",
+      "tests": 7
+    },
+    {
+      "command": "node --check (VR modules, action-engine, attack-intent, more-bounce-field, new browser script)",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/check-vr-ascension-browser.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/check-vr-living-browser.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts/check-vr-awakening-browser.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "environment": {
+    "node": "v24.22.1",
+    "browser": "Chromium 153.0.8010.0",
+    "renderer": "Software WebGL / SwiftShader",
+    "playwright": "1.62.1",
+    "isolatedBrowserBinary": "@sparticuz/chromium 153.0.0 development tooling; not shipped"
+  },
+  "scope": {
+    "P0": "Canonical opt-in directed solo input, actual browser selected hit/miss/cadence/cover/range/Classic/save acceptance",
+    "P1": "Six accepted native form casts/animations and genuine Cantor second-movement fight/victory/rewards/continuation",
+    "P2": "Wrist/handedness/aim/comfort/feedback and three-quality software stereo submission/cleanup observations",
+    "P3": "Portable bounded More Bounce contract; earned post-encounter celebration only"
+  },
+  "authority": {
+    "noXRDamageArithmetic": true,
+    "classicGoldenTraces": 48,
+    "goldenSourceCommit": "2672a66cb07871b4d3ffc6127aeeb7d5fd31e9e0",
+    "canonicalActionEngineSHA256Before": "e50df192e97dad3c5f5cf73e175dddafa98113fa0a69677aebb5067077ae4b93",
+    "checkpointEnvelopeOrNamespaceChanged": false,
+    "optionalValidatedDirectedShotMetadata": true,
+    "campaignRunPreferences": false,
+    "newAppDependencies": [],
+    "remoteRuntimeAssets": [],
+    "otherRepositoriesModified": []
+  },
+  "executedBrowser": {
+    "receipt": "browser-results.json",
+    "screenshotCount": 13,
+    "chosenHP": [
+      30,
+      7.32
+    ],
+    "otherHP": [
+      36,
+      36
+    ],
+    "directedBoss": {
+      "serial": 71,
+      "damage": 970.200000000001,
+      "hits": 35,
+      "casts": 36,
+      "misses": 0
+    },
+    "nativeBossReward": [
+      "prism",
+      "bell",
+      "ash"
+    ],
+    "continuation": {
+      "restored": true,
+      "room": "cistern"
+    },
+    "earnedResonance": {
+      "room": "nursery",
+      "abilities": [
+        "phase",
+        "morph"
+      ],
+      "keyring": [
+        "ivory"
+      ],
+      "source": "Native Reliquary fight, contact Ivory pickup, legal Nursery gate and native clear reward"
+    },
+    "moreBounce": {
+      "schema": "more-bounce.field.v1",
+      "remaining": 5.9166666666658845,
+      "dancers": 6,
+      "bubbles": 9,
+      "source": "Native Cantor victory, nine distinct mercy decisions, legitimately earned resonance, six canonical transformations and legal return",
+      "activationChangedGameState": false,
+      "celebrationOnly": true
+    },
+    "moreBounceExpiry": {
+      "expired": true,
+      "matchesCanonical": true,
+      "ticks": 430,
+      "noSaveFields": true
+    },
+    "stereo": {
+      "eyes": [
+        319906,
+        319906
+      ],
+      "error": 0
+    },
+    "remoteRequests": 0,
+    "browserErrors": 0
+  },
+  "performanceLimits": "Software CPU render submission, submitted geometry/uploads and WebGL object handles only; no total JS/driver/GPU allocations, GPU frame-time or headset FPS measurement",
+  "questFieldLab": {
+    "newManualCases": 9,
+    "allDefaultTo": "not-tested",
+    "physicalAcceptance": "Required; never auto-passed"
+  },
+  "deferred": [
+    "Physical Quest testing",
+    "Second guardian showcase",
+    "Untriggered/free-hand melee",
+    "Optical hands/anatomical 3D collisions",
+    "Seamless XR mode switching",
+    "Active-combat More Bounce pacification",
+    "Sideways XR conversion"
+  ],
+  "preservedFiles": [
+    {
+      "path": "public/duel-engine.js",
+      "sha256": "502697e0166f43989ea4057a3f500d22d9b0f9e3605b2d107e54b8ad81f7ef70"
+    },
+    {
+      "path": "public/duel-spatial.js",
+      "sha256": "9d54b9baf210c1a46b6f355a5921d647c76bca034dcef7c5e231ddb8c3d293fb"
+    },
+    {
+      "path": "public/worlds.js",
+      "sha256": "fbd52951cbc3cb96fc3ba339dd57782026b73e94667bdc7620ff5b1055e0e04e"
+    },
+    {
+      "path": "public/equipment.js",
+      "sha256": "f6840fd6fd6bef600952243a9b7482e472025a6d5fdb448b61ff46c036b74f2b"
+    },
+    {
+      "path": "public/mastery.js",
+      "sha256": "4a7360ccb52c6a7c80a9d1f38731dbe6a4bf96b231744304234bc9133371867e"
+    },
+    {
+      "path": "public/story.js",
+      "sha256": "c0a67ba643094705c75c57a6a6d99cb76747af59a7069e66d40af036a7108957"
+    },
+    {
+      "path": "public/engine.js",
+      "sha256": "10b0695fd2d45819305cab2e827be81d1ffb47d662d49d63fcd6a7340e49b137"
+    },
+    {
+      "path": "public/sideways-engine.js",
+      "sha256": "80df2855a54b5a93e8ec9201931f9fd7f21426a8dc6c29417963b849c2ed8589"
+    },
+    {
+      "path": "public/vr/spark-vr-save.js",
+      "sha256": "33517e928286b1e65e9e630124728be6bbab675e1e759ebff3ab2692fc50c3c8"
+    },
+    {
+      "path": "public/descent.js",
+      "sha256": "da164c0b5fb2d61037e850c1a42703a7805ed20d558eb442aa2738691ba22738"
+    },
+    {
+      "path": "public/settings.js",
+      "sha256": "ccbc1fff3995785946e5178e577e786ba5038347c0806f926b257002362c53e6"
+    },
+    {
+      "path": "public/online.js",
+      "sha256": "6e0236351ec7ddf9e38a96390dc262ce0e124db757dcca9b1ef46af66ec08cfa"
+    },
+    {
+      "path": "public/progress.js",
+      "sha256": "32d494ca15b05e4e5cb4792d2e5e39afa59f8a83ee1ab46da5927ff7d75c957f"
+    },
+    {
+      "path": "public/memory-arcade.js",
+      "sha256": "a8837272a3631f3a943451a368284ee8904989050fe69a07258e690a4ad3ba7e"
+    },
+    {
+      "path": "public/table-engine.js",
+      "sha256": "ee630597ac8e68b696a223b0a06616b8b8d370fa6231ed7c561dde2a6739df57"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "24a731247da58720e7245cc29aa815c686206736eb4ec711395466eca295ed82"
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "sha256": "0990adc1d3e3c6d9f6eb486ce7b484c4c3a45b6065111dafe10de135e960b855"
+    }
+  ],
+  "preservedFindings": [
+    {
+      "finding": "Initial native damage assertion compared a decimal against a subtraction with floating-point rounding",
+      "resolution": "Use 1e-9 tolerance for arithmetic equality; no gameplay values changed."
+    },
+    {
+      "finding": "Legacy co-op golden fixture attempted a gate with the partner away from it",
+      "resolution": "Place both controlled actors at the canonical gate before recording the baseline. All 48 complete traces match unmodified main exactly."
+    },
+    {
+      "finding": "Initial range fixture placed an enemy beyond its legal boundary; native movement clamped it nearer",
+      "resolution": "Use legal in-room positions with a genuine body-to-enemy range excess; native sweep/range checks remain unchanged."
+    },
+    {
+      "finding": "First keyboard browser probe released before native startup recovery finished",
+      "resolution": "Wait for actual neutral readiness and actual basic recovery before pressing F; preserve startup cooldown."
+    },
+    {
+      "finding": "Synthetic driver did not invert calibrated root yaw after restore/recenter and a later walk stalled",
+      "resolution": "Inverse-transform driver movement and rays with the actual current root; turn through bounded pose samples. Tracking/collision safeguards were retained."
+    },
+    {
+      "finding": "Initial directed browser chosen-target probe did not register its expected hit",
+      "resolution": "Use current observed geometry with bounded view changes and record the actual chosen canonical hit, genuine miss and rejected recast; do not infer hits from recovery alone."
+    },
+    {
+      "finding": "Initial six-form screenshots released during native post-morph recovery; a positive clock alone was insufficient cast evidence",
+      "resolution": "Wait for post-morph readiness and require a fresh accepted cast ID/form plus actual changing hand animation for each form. Re-captured all six from legitimately earned resonance."
+    },
+    {
+      "finding": "Initial More Bounce evidence camera faced away from the celebration",
+      "resolution": "Use ordinary canonical walking and bounded synthetic head turns to frame the real geometry; no position or engine-state injection."
+    },
+    {
+      "finding": "Integration audit identified mixed legacy surge/fire flags as an alternate path while directed mode was selected",
+      "resolution": "Restrict the legacy surge path to absent attackMode and add a regression proving invalid/mixed requests cannot create extra shots."
+    }
+  ]
+}

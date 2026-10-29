@@ -1,0 +1,31 @@
+{
+  "schema": "spark.xr.rung3.intake.v1",
+  "candidate": "SPARK Awakening Hands Rung 3",
+  "base": "2672a66cb07871b4d3ffc6127aeeb7d5fd31e9e0",
+  "authority": "User attachment: WORK MODE BUILD MISSION / Rung 3",
+  "milestone": "Opt-in canonical directed solo combat, six-vessel controls, real Cantor showcase and repeatable software evidence",
+  "order": [
+    "P0 combat authority and playable acceptance",
+    "P1 vessel and Cantor presentation",
+    "P2 wrist/comfort/performance",
+    "P3 only after stable core"
+  ],
+  "preserve": [
+    "Classic automatic behavior",
+    "126-room seven-world campaign",
+    "all prior modes",
+    "existing checkpoint envelope and namespaces",
+    "offline Pages",
+    "MIT and service boundaries"
+  ],
+  "deferredAtIntake": [
+    "Physical Quest verification",
+    "Sideways VR conversion",
+    "Second guardian unless primary encounter is complete"
+  ],
+  "releaseAuthority": "MichaelWave369; reviewable PR only, no automatic merge or deploy",
+  "independentVerification": false,
+  "controllingMissionSHA256": "5cdd0a609356d95ee9909b9e782b5d029437eed0753074e7db54c57c91418e14",
+  "P3": "Portable More Bounce presentation contract and genuinely earned post-encounter celebration included",
+  "status": "Implemented and demonstrated locally in software; physical acceptance and independent human review pending"
+}

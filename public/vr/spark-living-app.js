@@ -4,6 +4,7 @@ import {LivingSparkHost} from './spark-living-host.js';
 import {desktopXRSample} from './spark-xr-preview.js';
 import {clamp} from './spark-xr-input.js';
 import {loadVRComfort,storeVRComfort} from './spark-vr-comfort.js';
+import {loadSpellcraftPreferences,storeSpellcraftPreferences} from './spark-spellcraft-preferences.js';
 import {QUEST_ACCEPTANCE_CASES,createQuestDiagnostics,beginQuestDiagnostics,endQuestDiagnostics,recordQuestFrame,questAcceptanceReport,summarizeQuestDiagnostics} from './spark-vr-diagnostics.js';
 const $=id=>document.getElementById(id),canvas=$('world'),keys=new Set(),latch={};
 const descentGuide=$('living-guide').innerHTML;
@@ -12,18 +13,20 @@ let host,pointer=false,drag=null,yaw=0,pitch=0,lean=0,duck=0,lastPreview=null,ch
 const diagnostics=createQuestDiagnostics(),checks={};
 let storage;try{storage=window.localStorage;}catch{storage=null;}
 export const runtime=new SparkXRRuntime({canvas,adapter:new DescentXRAdapter(),
-  settings:{...loadVRComfort(storage),reduced:matchMedia('(prefers-reduced-motion: reduce)').matches},
+  settings:{...loadVRComfort(storage),...loadSpellcraftPreferences(storage),reduced:matchMedia('(prefers-reduced-motion: reduce)').matches},
   onStatus:message=>{$('living-status').textContent=message;},
   onMode:mode=>{keys.clear();pointer=false;drag=null;lastPreview=null;for(const k of Object.keys(latch))delete latch[k];
     $('intro-overlay').hidden=mode!=='idle';$('living-vr').disabled=mode==='xr';$('living-desktop').disabled=mode==='xr';},
   onSettings:settings=>{for(const [key,value]of Object.entries(settings)){const control=$('living-'+key);if(!control)continue;
     if(control.type==='checkbox')control.checked=value;else control.value=String(value);}
-    try{storeVRComfort(storage,settings);}catch{}},
+    try{storeVRComfort(storage,settings);storeSpellcraftPreferences(storage,settings);}catch{}},
   onSnapshot:scene=>{
-    const stamp=[scene.roomId,scene.form,Math.ceil(scene.health),scene.phase,scene.level,scene.keys?.join(),scene.seals?.join(),Math.ceil(scene.cooldown)].join('|');
+    const stamp=[scene.roomId,scene.form,Math.ceil(scene.health),scene.phase,scene.level,scene.keys?.join(),scene.seals?.join(),Math.ceil(scene.cooldown),scene.combatProfile,scene.dominantHand,scene.attackCooldown?.toFixed(1),scene.aim?.targetId,scene.aim?.reason].join('|');
     if(stamp!==factsStamp){factsStamp=stamp;$('living-facts').textContent=scene.worldName+' · '+scene.roomName+' · '+scene.form.toUpperCase()+
-      ' · HP '+Math.ceil(scene.health)+' / '+scene.maxHealth+' · '+scene.phase+' · power '+scene.cooldown.toFixed(1)+'s';
-      $('living-objective').textContent=scene.target?scene.target.label+' · '+scene.target.reason:scene.notice||scene.roomDescription||'';}
+      ' · HP '+Math.ceil(scene.health)+' / '+scene.maxHealth+' · '+scene.phase+' · '+(scene.combatProfile||'arena')+
+      ' · basic '+Math.max(0,scene.attackCooldown||0).toFixed(1)+'s · power '+scene.cooldown.toFixed(1)+'s';
+      $('living-objective').textContent=scene.combatProfile==='spellcraft'?(scene.aim?.blocked?'Cover blocks the ray':scene.aim?.targetId?'Observed enemy '+scene.aim.targetId:scene.aim?.reason||'Point, hold and release · a direction can miss')+
+        ' · '+(scene.attackCooldown>0?'Basic recovering':'Basic ready'):scene.target?scene.target.label+' · '+scene.target.reason:scene.notice||scene.roomDescription||'';}
     const choices=scene.choices||[],next=choices.map(x=>x.id).join('|');
     if(next!==choiceStamp){choiceStamp=next;$('living-choices').replaceChildren();
       for(const choice of choices){const button=document.createElement('button');button.textContent=choice.title;
@@ -49,7 +52,8 @@ function preview(now){
   duck+=(((keys.has('ControlLeft')||keys.has('ControlRight')) ? .3 : 0)-duck)*Math.min(1,dt*12);
   const s=desktopXRSample({yaw,pitch,lean,duck,move:(keys.has('KeyW')?1:0)-(keys.has('KeyS')?1:0),
     strafe:(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0),turn:(keys.has('ArrowRight')?1:0)-(keys.has('ArrowLeft')?1:0),
-    rightTrigger:pointer||keys.has('KeyF')||keys.has('Enter')||latch.trigger,leftTrigger:false,
+    rightTrigger:host.mode==='descent'&&runtime.settings.combatProfile==='spellcraft'&&runtime.settings.dominantHand==='left'?keys.has('KeyG')||latch.power:pointer||keys.has('KeyF')||keys.has('Enter')||latch.trigger,
+    leftTrigger:host.mode==='descent'&&runtime.settings.combatProfile==='spellcraft'?(runtime.settings.dominantHand==='left'?pointer||keys.has('KeyF')||keys.has('Enter')||latch.trigger:keys.has('KeyG')||latch.power):false,
     dash:keys.has('Space')||latch.dash,dodge:host.mode==='duel'&&(keys.has('KeyX')||latch.dodge),
     interact:keys.has('KeyE')||latch.interact,wrist:keys.has('Tab')||latch.wrist,
     cycleForm:keys.has('KeyQ')||latch.cycle,pause:keys.has('Escape')||latch.pause,recenter:keys.has('KeyR')||latch.recenter,
@@ -67,9 +71,9 @@ $('living-new').addEventListener('click',()=>host.newJourney());
 $('living-exit').addEventListener('click',act(()=>host.returnToHub()));
 for(const id of ['descent','duel'])$('mode-'+id).addEventListener('click',act(()=>host.setMode(id)));
 for(const key of Object.keys(runtime.settings)){const control=$('living-'+key);if(!control)continue;
-  control.addEventListener('change',()=>{runtime.configure({[key]:control.type==='checkbox'?control.checked:['movement','turn','vignette'].includes(key)?Number(control.value):control.value});if(key==='posture')runtime.recenter();});}
+  control.addEventListener('change',()=>{runtime.configure({[key]:control.type==='checkbox'?control.checked:['movement','turn','vignette','aimAssist'].includes(key)?Number(control.value):control.value});if(key==='posture')runtime.recenter();});}
 runtime.onSettings(runtime.settings);
-const bindings={KeyF:'trigger',Enter:'trigger',Space:'dash',KeyE:'interact',KeyX:'dodge',Tab:'wrist',KeyQ:'cycle',Escape:'pause',KeyR:'recenter',KeyB:'exit'};
+const bindings={KeyF:'trigger',KeyG:'power',Enter:'trigger',Space:'dash',KeyE:'interact',KeyX:'dodge',Tab:'wrist',KeyQ:'cycle',Escape:'pause',KeyR:'recenter',KeyB:'exit'};
 window.addEventListener('keydown',event=>{
   if(event.target?.closest?.('button,input,select,a'))return;
   if(['Space','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.code))event.preventDefault();

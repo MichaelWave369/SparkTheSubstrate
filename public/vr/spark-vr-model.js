@@ -132,6 +132,7 @@ export function stepVRPreview(state,input={},dt=VR_SIM_STEP){
   const next={x:Number(input.x)||0,y:Number(input.y)||0,
     dash:input.dash===true,power:input.power===true,interact:input.interact===true,
     fireMode:'auto'};
+  if(input.attackMode!==undefined){next.attackMode=input.attackMode;if(input.attackIntent)next.attackIntent=input.attackIntent;}
   if(input.morph!==undefined){
     if(!VR_FORMS.includes(input.morph))throw Error('Unknown Spark vessel.');
     next.morph=input.morph;

@@ -30,6 +30,19 @@ performance, controller compatibility, comfort or a full physical campaign
 playthrough. See the [VR progress and headset acceptance guide](docs/vr-first-slice.md)
 for the remaining finish gates. The existing 2D modes remain unchanged.
 
+## SPARK VR: The Awakening Hands · Rung 3
+
+The [shared VR hub](public/vr/living.html) now offers **Classic** automatic combat
+and opt-in **Spellcraft**. Point and release the casting-hand trigger for a real
+canonical basic attack; the other trigger uses native power. Left-handed controls,
+bounded assistance, actual misses, cover, native recovery and earned six-vessel
+transformations work through the original engine. The Echo Forge presents the real
+Cantor's windups, volleys, health, victory and rewards. An earned, optional More Bounce
+celebration changes no combat state. The established VR paths and other modes remain.
+
+[Contracts, playable evidence, screenshots, exact limits and Quest checklist](docs/vr-awakening/rung-3.md).
+Physical headset acceptance remains pending; browser evidence is synthetic.
+
 ## SPARK VR: The Living Substrate · Rung 2
 
 The [shared immersive hub](public/vr/living.html) hosts the actual seven-world
@@ -37,7 +50,7 @@ Descent campaign and Elemental Ascension through the same XR runtime. Descent
 keeps its original battles, legal gates, karma/gifts, earned resonance, endings,
 reincarnation and VR checkpoint format. Six distinct vessel hands, three showcase
 room treatments, three quality presets and a deliberate wrist menu present real
-game state. Native Descent attacks remain automatic; trigger release uses the
+game state. Classic Descent attacks remain automatic; trigger release uses the
 canonical vessel power. The [established Descent path](public/vr/index.html) remains
 available as a fallback.
 
