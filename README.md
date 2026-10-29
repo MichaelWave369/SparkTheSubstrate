@@ -30,6 +30,19 @@ performance, controller compatibility, comfort or a full physical campaign
 playthrough. See the [VR progress and headset acceptance guide](docs/vr-first-slice.md)
 for the remaining finish gates. The existing 2D modes remain unchanged.
 
+## SPARK VR: Elemental Ascension · Rung 1
+
+The [Ascension arena](public/vr/ascension.html) adds two tracked energy gauntlets,
+charge/release casting with a pointing fallback, bounded physical lean/duck,
+controller dodge, telegraphed moving bolts and a repeatable best-of-three encounter.
+Combat resolves in the canonical Duel engine through an opt-in spatial input path;
+charge never adds damage or bypasses recovery. The arena keeps no saved progress.
+
+Desktop preview needs no headset. The versioned XR input/runtime and mode adapters
+share the existing WebGL presentation layer. An in-headset pause menu exposes
+comfort options, recenter, restart and exit. Quest 3 hardware verification is
+pending. See [architecture, coverage, test evidence and manual acceptance steps](docs/vr-ascension/rung-1.md).
+
 
 Version 0.17.0 · **guardian memories** finishes the remaining Sideways routes: **39 rooms**, **five relics**, all six matching equipment sets, and three optional branches through the existing worlds. Nacre’s Feather opens the Door Behind Sleep; the Unmade Thread returns from the Room Without a Name to the Outside Window in Pale Orbit. Night Hunter, Pale Horizon and Before the Law add movement, reach, attack-speed and recovery options.
 

@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "browser": "153.0.8010.0",
+  "checks": [
+    "project subpath imports",
+    "desktop canonical cast hit",
+    "pause freezes combat",
+    "comfort controls",
+    "tracking interruption pauses",
+    "real WebGL simulated stereo and hands",
+    "Descent desktop still renders",
+    "zero remote requests",
+    "no browser errors"
+  ],
+  "stereo": {
+    "frames": 3,
+    "error": 0,
+    "eyePixels": [
+      128891,
+      128792
+    ],
+    "mode": "xr"
+  },
+  "hardwareVerification": "NOT PERFORMED; synthetic input and software-rendered Chromium only"
+}

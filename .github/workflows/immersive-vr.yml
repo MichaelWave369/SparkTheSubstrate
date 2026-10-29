@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "public/vr/**"
+      - "public/duel-engine.js"
+      - "public/duel-spatial.js"
+      - "tests/vr-ascension.test.mjs"
+      - "scripts/check-vr-ascension-browser.mjs"
+      - "docs/vr-ascension/**"
       - "public/index.html"
       - "tests/vr-first-slice.test.mjs"
       - "tests/vr-full-descent.test.mjs"
@@ -15,6 +20,11 @@ on:
     branches: [main]
     paths:
       - "public/vr/**"
+      - "public/duel-engine.js"
+      - "public/duel-spatial.js"
+      - "tests/vr-ascension.test.mjs"
+      - "scripts/check-vr-ascension-browser.mjs"
+      - "docs/vr-ascension/**"
       - "public/index.html"
       - "tests/vr-first-slice.test.mjs"
       - "docs/vr-first-slice.md"
@@ -35,6 +45,7 @@ jobs:
           node-version: 22
       - name: Parse browser and headset modules
         run: |
+          for f in public/vr/*.js public/duel-spatial.js public/duel-engine.js; do node --check "$f"; done
           node --check public/vr/spark-vr-app.js
           node --check public/vr/spark-vr-renderer.js
           node --check public/vr/spark-vr-model.js
@@ -43,6 +54,29 @@ jobs:
           node --check public/vr/spark-vr-navigation.js
           node --check public/vr/spark-vr-diagnostics.js
       - name: Prove all canonical worlds, karma, gifts, vessel morphs and isolated VR saves
-        run: node --test tests/vr-first-slice.test.mjs tests/vr-full-descent.test.mjs tests/vr-navigation-comfort.test.mjs tests/vr-quest-field-lab.test.mjs
+        run: node --test tests/vr-*.test.mjs
       - name: Preserve all existing Spark engine and save regressions
         run: npm test
+
+  vr-browser:
+    name: VR / desktop WebGL + simulated stereo + offline imports
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install isolated browser test tooling (no app dependencies)
+        run: |
+          npm install --prefix /tmp/spark-xr-qa --no-audit --no-fund playwright@1.62.1
+          node /tmp/spark-xr-qa/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Check real browser rendering with synthetic input, never hardware certification
+        env:
+          SPARK_PLAYWRIGHT_MODULE: /tmp/spark-xr-qa/node_modules/playwright/index.mjs
+        run: node scripts/check-vr-ascension-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spark-xr-browser-evidence
+          path: work/vr-browser/
