@@ -1,0 +1,461 @@
+{
+  "schema": "spark.xr.rung3.browser.v1",
+  "status": "PASS",
+  "browser": "153.0.8010.0",
+  "pair": {
+    "chosen": 4,
+    "other": 6,
+    "beforeHP": 30,
+    "otherHP": 36,
+    "enemies": [
+      {
+        "id": 2,
+        "hp": 30,
+        "x": 648.9282759288219,
+        "y": 384.6370315661344
+      },
+      {
+        "id": 3,
+        "hp": 48,
+        "x": 400.2748057009918,
+        "y": 74.18773780669088
+      },
+      {
+        "id": 4,
+        "hp": 30,
+        "x": 154.01370043074354,
+        "y": 278.182948695615
+      },
+      {
+        "id": 6,
+        "hp": 36,
+        "x": 262.0621384198597,
+        "y": 70.13955346970029
+      }
+    ],
+    "profile": "spellcraft"
+  },
+  "combat": {
+    "hit": {
+      "id": 2,
+      "time": 5.866666666666651,
+      "room": "glass",
+      "type": "hit",
+      "cast": 1,
+      "targetId": 4,
+      "x": 212.47045892257512,
+      "y": 283.141291604839,
+      "form": "spark",
+      "damage": 22.68
+    },
+    "miss": {
+      "id": 5,
+      "time": 6.633333333333315,
+      "room": "glass",
+      "type": "miss",
+      "cast": 3,
+      "x": 446.89793543251295,
+      "y": 561,
+      "form": "spark",
+      "reason": "World boundary"
+    },
+    "chosenBefore": 30,
+    "chosenAfter": 7.32,
+    "otherBefore": 36,
+    "otherAfter": 36,
+    "requestedCasts": 2,
+    "acceptedCasts": 1,
+    "damage": 22.68
+  },
+  "legacy": {
+    "before": 22.68,
+    "after": 82.67999999999998,
+    "restored": true,
+    "schema": "spark.vr.local-checkpoint.v1",
+    "preferencesInSave": false
+  },
+  "collisionFixtures": {
+    "label": "Separate controlled canonical engine fixtures, not campaign progress or unlocks",
+    "cover": {
+      "valid": false,
+      "reason": "Observed target is out of aim, range or behind cover"
+    },
+    "coverDamage": 0,
+    "blocked": true,
+    "range": {
+      "valid": false,
+      "reason": "Observed target is out of aim, range or behind cover"
+    }
+  },
+  "reached": {
+    "room": "forge",
+    "health": 1100,
+    "level": 9,
+    "playerHealth": 162
+  },
+  "windup": {
+    "id": 708,
+    "kind": "cantor",
+    "x": 472.39208469666085,
+    "y": 238.4144108654849,
+    "hp": 520.4399999999995,
+    "maxHp": 1100,
+    "stage": 2,
+    "windup": 0.9,
+    "windupTotal": 0.9,
+    "angles": [
+      38.72499999999846,
+      39.510398163395905,
+      40.29579632679336,
+      41.0811944901908,
+      41.866592653588256,
+      42.6519908169857,
+      43.43738898038315,
+      44.2227871437806,
+      2.111601332401817,
+      2.4716013324018173
+    ],
+    "volleys": 2,
+    "marks": []
+  },
+  "volley": {
+    "volleys": 3,
+    "enemyShots": 10,
+    "health": 464.99999999999943,
+    "stage": 2
+  },
+  "victory": {
+    "boss": {
+      "name": "The Cantor",
+      "room": "forge"
+    },
+    "loot": [
+      "prism",
+      "bell",
+      "ash"
+    ],
+    "essence": 22,
+    "health": 162,
+    "maxHealth": 162,
+    "directedBasic": {
+      "serial": 71,
+      "damage": 970.200000000001,
+      "hits": 35,
+      "casts": 36,
+      "misses": 0
+    },
+    "celebration": 2.5,
+    "phase": "resolve",
+    "damage": 4942,
+    "kills": 89
+  },
+  "continuation": {
+    "restored": true,
+    "room": "cistern"
+  },
+  "earnedVessels": {
+    "room": "nursery",
+    "abilities": [
+      "phase",
+      "morph"
+    ],
+    "keyring": [
+      "ivory"
+    ],
+    "source": "Native Reliquary fight, contact Ivory pickup, legal Nursery gate and native clear reward"
+  },
+  "vesselEvidence": [
+    {
+      "form": "human",
+      "style": "cleave",
+      "attackRecovery": 0.28030303030303033,
+      "morphRecovery": 2.7333333333333343,
+      "cast": {
+        "id": 1,
+        "time": 188.35000000004203,
+        "room": "nursery",
+        "type": "cast",
+        "x": 339.82067979182267,
+        "y": 149.00042617214157,
+        "dx": -0.06257764784594454,
+        "dy": -0.9980400983878699,
+        "form": "human",
+        "style": "cleave",
+        "hand": "right",
+        "targetId": null,
+        "recovery": 0.36363636363636365
+      },
+      "animation": "human",
+      "scene": "Cleared canonical Nursery; intentional native misses demonstrate all six form animations"
+    },
+    {
+      "form": "computer",
+      "style": "volley",
+      "attackRecovery": 0.3841991341991342,
+      "morphRecovery": 2.700000000000001,
+      "cast": {
+        "id": 3,
+        "time": 191.73333333337806,
+        "room": "nursery",
+        "type": "cast",
+        "x": 339.82067979182267,
+        "y": 149.00042617214157,
+        "dx": -0.06257764784594454,
+        "dy": -0.9980400983878699,
+        "form": "computer",
+        "style": "volley",
+        "hand": "right",
+        "targetId": null,
+        "recovery": 0.4675324675324675
+      },
+      "animation": "computer",
+      "scene": "Cleared canonical Nursery; intentional native misses demonstrate all six form animations"
+    },
+    {
+      "form": "animal",
+      "style": "cleave",
+      "attackRecovery": 0.12445887445887446,
+      "morphRecovery": 2.8000000000000007,
+      "cast": {
+        "id": 7,
+        "time": 195.016666666714,
+        "room": "nursery",
+        "type": "cast",
+        "x": 339.82067979182267,
+        "y": 149.00042617214157,
+        "dx": -0.06257764784594454,
+        "dy": -0.9980400983878699,
+        "form": "animal",
+        "style": "cleave",
+        "hand": "right",
+        "targetId": null,
+        "recovery": 0.20779220779220778
+      },
+      "animation": "animal",
+      "scene": "Cleared canonical Nursery; intentional native misses demonstrate all six form animations"
+    },
+    {
+      "form": "tree",
+      "style": "wave",
+      "attackRecovery": 0.6179653679653677,
+      "morphRecovery": 2.6000000000000014,
+      "cast": {
+        "id": 9,
+        "time": 198.5000000000501,
+        "room": "nursery",
+        "type": "cast",
+        "x": 339.82067979182267,
+        "y": 149.00042617214157,
+        "dx": -0.06257764784594454,
+        "dy": -0.9980400983878699,
+        "form": "tree",
+        "style": "wave",
+        "hand": "right",
+        "targetId": null,
+        "recovery": 0.7012987012987013
+      },
+      "animation": "tree",
+      "scene": "Cleared canonical Nursery; intentional native misses demonstrate all six form animations"
+    },
+    {
+      "form": "rock",
+      "style": "wave",
+      "attackRecovery": 0.6439393939393937,
+      "morphRecovery": 2.6000000000000014,
+      "cast": {
+        "id": 11,
+        "time": 201.9833333333862,
+        "room": "nursery",
+        "type": "cast",
+        "x": 339.82067979182267,
+        "y": 149.00042617214157,
+        "dx": -0.06257764784594454,
+        "dy": -0.9980400983878699,
+        "form": "rock",
+        "style": "wave",
+        "hand": "right",
+        "targetId": null,
+        "recovery": 0.7272727272727273
+      },
+      "animation": "rock",
+      "scene": "Cleared canonical Nursery; intentional native misses demonstrate all six form animations"
+    },
+    {
+      "form": "spark",
+      "style": "homing",
+      "attackRecovery": 0.26731601731601734,
+      "morphRecovery": 2.7333333333333343,
+      "cast": {
+        "id": 13,
+        "time": 205.33333333338888,
+        "room": "nursery",
+        "type": "cast",
+        "x": 339.82067979182267,
+        "y": 149.00042617214157,
+        "dx": -0.06257764784594454,
+        "dy": -0.9980400983878699,
+        "form": "spark",
+        "style": "homing",
+        "hand": "right",
+        "targetId": null,
+        "recovery": 0.35064935064935066
+      },
+      "animation": "spark",
+      "scene": "Cleared canonical Nursery; intentional native misses demonstrate all six form animations"
+    }
+  ],
+  "moreBounce": {
+    "schema": "more-bounce.field.v1",
+    "remaining": 5.9166666666658845,
+    "dancers": 6,
+    "bubbles": 9,
+    "source": "Native Cantor victory, nine distinct mercy decisions, legitimately earned resonance, six canonical transformations and legal return",
+    "activationChangedGameState": false,
+    "celebrationOnly": true
+  },
+  "bounceExpiry": {
+    "expired": true,
+    "matchesCanonical": true,
+    "ticks": 430,
+    "noSaveFields": true
+  },
+  "stereo": {
+    "eyes": [
+      319906,
+      319906
+    ],
+    "error": 0
+  },
+  "performance": [
+    {
+      "label": "two-enemy canonical combat",
+      "quality": "performance",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 6,
+      "enemyProjectiles": 0,
+      "playerProjectiles": 1,
+      "canonicalEffects": 2,
+      "warningAngles": 0,
+      "samples": 8,
+      "medianSubmissionMs": 4.900000000372529,
+      "p95SubmissionMs": 6.900000000372529,
+      "drawCalls": 10,
+      "verticesSubmitted": 16824,
+      "geometryUploadBytes": 76320,
+      "newGPUObjects": 0,
+      "limit": "CPU software-WebGL submission only; not GPU frame time, headset FPS or total JS heap allocation"
+    },
+    {
+      "label": "two-enemy canonical combat",
+      "quality": "balanced",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 6,
+      "enemyProjectiles": 0,
+      "playerProjectiles": 1,
+      "canonicalEffects": 2,
+      "warningAngles": 0,
+      "samples": 8,
+      "medianSubmissionMs": 3.300000000745058,
+      "p95SubmissionMs": 4.2999999998137355,
+      "drawCalls": 10,
+      "verticesSubmitted": 18456,
+      "geometryUploadBytes": 87264,
+      "newGPUObjects": 0,
+      "limit": "CPU software-WebGL submission only; not GPU frame time, headset FPS or total JS heap allocation"
+    },
+    {
+      "label": "two-enemy canonical combat",
+      "quality": "high",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 6,
+      "enemyProjectiles": 0,
+      "playerProjectiles": 1,
+      "canonicalEffects": 2,
+      "warningAngles": 0,
+      "samples": 8,
+      "medianSubmissionMs": 6.7000000001862645,
+      "p95SubmissionMs": 12.5,
+      "drawCalls": 10,
+      "verticesSubmitted": 20568,
+      "geometryUploadBytes": 101088,
+      "newGPUObjects": 0,
+      "limit": "CPU software-WebGL submission only; not GPU frame time, headset FPS or total JS heap allocation"
+    },
+    {
+      "label": "Cantor strongest native volley",
+      "quality": "performance",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 1,
+      "enemyProjectiles": 10,
+      "playerProjectiles": 1,
+      "canonicalEffects": 0,
+      "warningAngles": 0,
+      "samples": 8,
+      "medianSubmissionMs": 3.900000000372529,
+      "p95SubmissionMs": 5.7000000001862645,
+      "drawCalls": 10,
+      "verticesSubmitted": 27408,
+      "geometryUploadBytes": 105696,
+      "newGPUObjects": 0,
+      "limit": "CPU software-WebGL submission only; not GPU frame time, headset FPS or total JS heap allocation"
+    },
+    {
+      "label": "Cantor strongest native volley",
+      "quality": "balanced",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 1,
+      "enemyProjectiles": 10,
+      "playerProjectiles": 1,
+      "canonicalEffects": 0,
+      "warningAngles": 0,
+      "samples": 8,
+      "medianSubmissionMs": 3.900000000372529,
+      "p95SubmissionMs": 4.199999999254942,
+      "drawCalls": 10,
+      "verticesSubmitted": 39552,
+      "geometryUploadBytes": 132192,
+      "newGPUObjects": 0,
+      "limit": "CPU software-WebGL submission only; not GPU frame time, headset FPS or total JS heap allocation"
+    },
+    {
+      "label": "Cantor strongest native volley",
+      "quality": "high",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 1,
+      "enemyProjectiles": 10,
+      "playerProjectiles": 1,
+      "canonicalEffects": 0,
+      "warningAngles": 0,
+      "samples": 8,
+      "medianSubmissionMs": 4.6000000005587935,
+      "p95SubmissionMs": 5.400000000372529,
+      "drawCalls": 10,
+      "verticesSubmitted": 55680,
+      "geometryUploadBytes": 166752,
+      "newGPUObjects": 0,
+      "limit": "CPU software-WebGL submission only; not GPU frame time, headset FPS or total JS heap allocation"
+    }
+  ],
+  "cleanup": {
+    "gpu": [
+      {
+        "buffers": 0,
+        "textures": 0,
+        "programs": 0
+      }
+    ],
+    "voices": 0,
+    "fieldClearedOnExit": true
+  },
+  "remoteRequests": 0,
+  "browserErrors": 0,
+  "source": "Actual exported application/runtime with synthetic current tracked poses; fresh native campaign and real choices; no gameplay state injection",
+  "collisionEvidence": "Separate labeled canonical engine fixtures in this browser and tests/attack-intent.test.mjs; no fixture unlocks in the campaign journey",
+  "hardwareVerification": "NOT PERFORMED; software Chromium/WebGL does not establish Quest comfort, tracking or FPS"
+}

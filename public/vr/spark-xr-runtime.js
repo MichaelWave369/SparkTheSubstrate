@@ -35,6 +35,7 @@ export class SparkXRRuntime {
     this.settings = xrSettings(settings); this.input = new SparkXRInput();
     this.mode = 'idle'; this.paused = true; this.last = null; this.accum = 0;
     this.pending = false; this.listeners = []; this.menuIndex = 0; this.queued = {};
+    this.adapter.configureCombat?.(this.settings);
   }
   menu() {
     const cycle = (key, values) => { const index = values.indexOf(this.settings[key]); this.configure({[key]: values[(index + 1) % values.length]}); };
@@ -58,7 +59,8 @@ export class SparkXRRuntime {
     entries.splice(entries.length-1,0,['Quality: '+this.settings.quality,()=>cycle('quality',['performance','balanced','high'])]);
     return entries;
   }
-  configure(patch) { this.settings = xrSettings({...this.settings, ...patch}); this.input.interrupt(); this.queued = {}; this.onSettings(this.settings); }
+  configure(patch) { this.settings = xrSettings({...this.settings, ...patch}); this.adapter.configureCombat?.(this.settings);this.input.interrupt(); this.queued = {}; this.onSettings(this.settings);
+    if(['combatProfile','dominantHand','aimAssist','throwMode'].some(k=>Object.hasOwn(patch,k)))this.pause(true,'Combat controls changed · release controls, then resume');}
   pause(value = !this.paused, reason = '') {
     this.paused = value; this.pauseReason = reason; this.last = null; this.accum = 0;
     this.queued = {}; this.input.interrupt(); this.feedback.stop();
@@ -82,6 +84,7 @@ export class SparkXRRuntime {
     if (!this.paused && input.valid && !input.pause && !input.confirm && !input.recenter && !input.wrist && input.ready!==false) {
       // Retain release/dodge edges across high-refresh render frames until one sim tick consumes them.
       if (input.cast) this.queued.cast ||= input.cast;
+      for(const hand of ['left','right'])if(input.casts?.[hand]){this.queued.casts||={};this.queued.casts[hand]||=input.casts[hand];}
       for(const key of ['interact','dash','cycleForm'])if(input[key])this.queued[key]=true;
       const physical=this.queued.physicalDelta||{x:0,y:0};
       this.queued.physicalDelta={x:physical.x+(input.physicalDelta?.x||0),y:physical.y+(input.physicalDelta?.y||0)};
@@ -90,12 +93,14 @@ export class SparkXRRuntime {
       let ticks = 0;
       while (this.accum + 1e-9 >= STEP && ticks++ < 4) {
         this.adapter.step({...input, cast: this.queued.cast || null, dodge: !!this.queued.dodge,
+          casts:this.queued.casts||{},
           dodgeDirection: this.queued.dodgeDirection,interact:!!this.queued.interact,dash:!!this.queued.dash,
           cycleForm:!!this.queued.cycleForm,physicalDelta:this.queued.physicalDelta||{x:0,y:0}}, STEP);
         this.queued = {}; this.accum -= STEP;
       }
     } else { this.accum = 0; this.queued = {}; }
     const scene = this.adapter.snapshot();
+    if(scene.living&&input.valid&&!this.paused){this.adapter.observeInput?.(input);scene.aim=this.adapter.aim;}
     if(scene.living&&scene.choices?.length&&!this.paused){this.menuIndex=1;this.pause(true,'Choose the next chapter');}
     if(scene.living&&input.valid)scene.target=targetDescent(scene,input.hands,xrWorldRoot(scene,input));
     scene.eyeHeight=1.65+(scene.living&&input.body?(input.body.height-65)/100:0);
@@ -104,9 +109,9 @@ export class SparkXRRuntime {
     scene.menuIndex = this.menuIndex; scene.menuLabels = this.menu().map(item => item[0]);
     if (this.settings.reduced && scene.effects) scene.effects = scene.effects.slice(-1);
     this.feedback.listener(scene, input.head, input.yaw || 0);
-    for (const event of this.adapter.drainEvents?.() || [])
+    for (const event of this.adapter.drainEvents?.() || [])if(!this.paused)
       this.feedback.event(event, scene, this.settings, Array.from(this.session?.inputSources || []));
-    if(scene.living)input.hands=this.adapter.presentation.hands(input.hands,scene.form,scene.cooldown);
+    if(scene.living)input.hands=this.adapter.presentation.hands(input.hands,scene.form,scene.cooldown,scene);
     this.onSnapshot(scene);
     return {input, scene};
   }
@@ -219,6 +224,7 @@ export class SparkXRRuntime {
     this.mode = 'idle'; this.pause(true, 'Session ended · encounter remains in memory'); this.input.recenter();
     this.canvas?.removeEventListener?.('webglcontextlost', this.contextLost);
     this.renderer?.dispose(); this.renderer = null;
+    this.adapter.onSessionEnd?.();
     if (wasXR) this.onSession('end'); this.onMode(this.mode);
   }
   async dispose() { await this.exit(); this.feedback.dispose(); this.adapter.dispose?.(); }

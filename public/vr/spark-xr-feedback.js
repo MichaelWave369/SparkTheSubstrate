@@ -12,18 +12,19 @@ export class XRFeedback {
     } catch { /* Silent browsers retain visual windups and impacts. */ }
   }
   event(event, snapshot, settings, sources = []) {
-    if (settings.haptics && ['power', 'hit', 'chip', 'dodge','morph','collect','damage'].includes(event.type)) {
+    if (settings.haptics && ['attack','power', 'hit', 'chip', 'dodge','morph','collect','damage','blocked','giggle'].includes(event.type)) {
       for (const source of sources) {
+        if(event.hand&&source.handedness!==event.hand)continue;
         if (event.type === 'power' && event.player === 1) continue;
         try {
           const actuator = source.gamepad?.hapticActuators?.[0];
-          actuator?.pulse?.(event.type === 'hit' ? .35 : .18, 45)?.catch?.(() => {});
+          actuator?.pulse?.(event.type==='giggle'?.08:event.type === 'hit' ? .35 : .18,event.type==='giggle'?25:45)?.catch?.(() => {});
         } catch { /* Haptics are optional. */ }
       }
     }
     const c = this.context;
     if (!settings.sound || !c || c.state !== 'running' || this.voices.size >= 8 ||
-        !['attack', 'power', 'hit', 'chip', 'ko', 'dodge','morph','collect','damage','gate','ambient'].includes(event.type)) return;
+        !['attack', 'power', 'hit', 'chip', 'ko', 'dodge','morph','collect','damage','gate','ambient','miss','blocked','windup','victory','giggle','bounce-note'].includes(event.type)) return;
     try {
       const oscillator = c.createOscillator(), gain = c.createGain();
       const enemy = event.player === 1 || event.defender === 1;
@@ -36,9 +37,10 @@ export class XRFeedback {
         else panner.setPosition?.(...point);
         gain.connect(panner); panner.connect(c.destination);
       } else gain.connect(c.destination);
-      oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(event.tone??(event.type === 'attack' ? 220 : event.type === 'hit' ? 100 : 440), c.currentTime);
+      oscillator.type = event.type==='giggle'?'triangle':'sine'; oscillator.frequency.setValueAtTime(event.tone??(event.type === 'attack' ? 220 : event.type === 'hit' ? 100 : 440), c.currentTime);
       oscillator.frequency.exponentialRampToValueAtTime(event.type==='ambient'?(event.tone||110)*.8:event.type === 'hit' ? 45 : (event.tone||440)*1.5, c.currentTime + .12);
-      gain.gain.setValueAtTime(.0001, c.currentTime); gain.gain.exponentialRampToValueAtTime(event.type==='ambient'?.008:.035, c.currentTime + .012);
+      if(event.type==='giggle')for(let i=1;i<=3;i++)oscillator.frequency.setValueAtTime((event.tone||392)*(i%2?2.5:1.8),c.currentTime+i*.035);
+      gain.gain.setValueAtTime(.0001, c.currentTime); gain.gain.exponentialRampToValueAtTime(event.type==='ambient'?.008:['giggle','bounce-note'].includes(event.type)?.018*(settings.reduced?.6:1):.035, c.currentTime + .012);
       gain.gain.exponentialRampToValueAtTime(.0001, c.currentTime + .16);
       oscillator.connect(gain); this.voices.add(oscillator);
       oscillator.onended = () => { this.voices.delete(oscillator); oscillator.disconnect(); gain.disconnect(); panner?.disconnect(); };

@@ -79,3 +79,15 @@ No BTM engines or assets were copied; its runtime/equipment patterns informed th
 design. No new app dependency, runtime download, CDN, paid API or remote telemetry.
 Browser evidence uses isolated Playwright/Chromium development tools; those
 executables and packages are not distributed with Spark.
+
+## SPARK VR: The Awakening Hands — Rung 3
+
+The six attack animations, planar targeting guides, Echo Forge architecture and
+rotors, Cantor model, canonical warning/health geometry, impact/victory presentation,
+More Bounce dancing echoes and bubbles are original procedural artwork. The short
+vessel cues, three-note celebration rhythm and triangle-oscillator giggles are
+original Web Audio synthesis, with no sampled voice or commercial music. These
+additions use the repository's MIT license. MoreBounceLabs' hosted music catalog
+and other repositories' assets are not imported. Evidence PNGs are captures of the
+actual software-WebGL application, not generated mockups or headset photographs.
+No additional app dependency, remote runtime asset, paid service or telemetry.

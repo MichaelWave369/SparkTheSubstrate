@@ -7,6 +7,7 @@ import {recordArrival,recordDecision} from './story.js?v=0.17.0';
 import {FORM_ORDER,FORMS,affinity} from './engine.js?v=0.17.0';
 import {blankTraining,prepareTraining,skillStats,bankMastery,validTraining,validEarned} from './mastery.js?v=0.17.0';
 import {dailySeed,validDaily,runRecord,rememberRecord,endingFor} from './run-record.js?v=0.17.0';
+import {DIRECTED_ATTACK_MODE,validateAttackIntent,attackJournal,attackEvent,attackObservations,blockedSegment,segmentBox,segmentCircle,validDirectedShot} from './attack-intent.js?v=0.17.0';
 
 export const WIDTH=960,HEIGHT=600;
 export const REVIVE_RADIUS=110,REVIVE_SECONDS=1.8,RESCUE_SECONDS=30;
@@ -197,15 +198,29 @@ function damageEnemy(run,enemy,amount,form=run.form,partner=run.player===run.par
   if(enemy.hp<=0){run.marks=run.marks.filter(mark=>mark.sourceId!==enemy.id);run.kills++;run.roomKills=(run.roomKills??0)+1;const value=enemy.kind==='warden'||WORLD_GUARDIANS[enemy.kind]?30:['cantor','sentinel'].includes(enemy.kind)?18:enemy.kind==='archon'?3:2;run.fragments.push({id:randomId(run),x:enemy.x,y:enemy.y,value,r:5});effect(run,'burst',enemy.x,enemy.y,enemy.kind==='warden'?'#f7cb79':'#8bc7c2',32);}
 }
 function hurt(run,amount,target=run.player){if(target.hp<=0||target.iframes>0)return;const form=target===run.partner?run.partnerForm:run.form,skills=skillStats(run.training,form),armor=form==='rock'?.7:1;const before=target.hp;target.hp=Math.max(0,target.hp-amount*armor*Math.max(.1,1-(run.gear?.armor??0)-skills.armor)*(target.guardTime>0?.5:1)*(encounterFor(run)?.damage??1));actorStats(run,target===run.partner).damageTaken+=before-target.hp;target.iframes=.7;target.hurtFlash=.32;run.damageFlash=.32;effect(run,'damage',target.x,target.y-42,'#ffad8f',0,Math.ceil(before-target.hp));if(target.hp<=0){if(!run.partner||[run.player,run.partner].every(p=>p.hp<=0)){run.phase='dead';if(run.partner)run.endReason='both-fallen';run.notice='The bodies end. The sparks return.';}else{target.downedFor=RESCUE_SECONDS;run.fallSerial=(run.fallSerial??0)+1;target.fallId=run.fallSerial;target.fellAt=run.time;target.revive=0;target.dashTime=0;const survivor=target===run.player?run.partner:run.player;survivor.iframes=Math.max(survivor.iframes,1.5);run.notice='A spark is down · 30 seconds. Stand close and hold E to rekindle your partner.';run.noticeTime=6;}}}
-function fire(run,x,y,angle,damage,enemy=false,speed=430,range=700,homing=false,source=null){if(run.shots.length>=(run.dungeon||run.swarmPact?360:240))return;const form=source?.form??run.form,partner=source?.partner??(run.player===run.partner);run.shots.push({id:randomId(run),x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,damage,enemy,r:enemy?6:5,life:range/speed,homing,...(homing?{homingSpeed:speed}:{}),color:enemy?(['cantor','warden','sentinel'].includes(run.shotRole)||WORLD_GUARDIANS[run.shotRole]?'#f3ba63':'#71e5e4'):BODIES[form].color,...(!enemy?{sourceForm:form,sourcePartner:partner}:{sourceKind:run.shotRole??'archon'})});}
+function fire(run,x,y,angle,damage,enemy=false,speed=430,range=700,homing=false,source=null){if(run.shots.length>=(run.dungeon||run.swarmPact?360:240))return;const form=source?.form??run.form,partner=source?.partner??(run.player===run.partner);run.shots.push({id:randomId(run),x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,damage,enemy,r:enemy?6:5,life:range/speed,homing,...(homing?{homingSpeed:speed}:{}),color:enemy?(['cantor','warden','sentinel'].includes(run.shotRole)||WORLD_GUARDIANS[run.shotRole]?'#f3ba63':'#71e5e4'):BODIES[form].color,...(!enemy?{sourceForm:form,sourcePartner:partner}:{sourceKind:run.shotRole??'archon'}),...(source?.directed?{directed:{...source.directed}}:{})});}
 export function attackProfile(run,form=run.form){const body=BODIES[form],item=EQUIPMENT[run.loadout?.weapon];return item?.attack?{...item.attack,name:item.name}:{damage:body.damage,interval:body.interval,range:body.range,name:body.weapon,style:form==='spark'?'homing':form==='computer'?'volley':['human','animal'].includes(form)?'cleave':'wave'};}
+export function attackInterval(run,form=run.form){const p=run.player,skills=skillStats(run.training,form);return attackProfile(run,form).interval/Math.min(3,1+run.boons.cadence*.18+run.memoryHaste+(run.gear?.haste??0)+skills.haste)/(p.overclockTime>0?2:1);}
+export function attackReach(run,form=run.form){return attackProfile(run,form).range*(1+(run.gear?.range??0)+skillStats(run.training,form).range);}
+export function queryAttackIntent(run,intent){
+ const range=attackReach(run),boxes=obstacles(run.room,run),result=validateAttackIntent(run,intent,range,boxes);
+ if(result.valid){const target=run.enemies.find(e=>e.id===result.targetId),length=target?Math.hypot(target.x-result.origin.x,target.y-result.origin.y):range,
+  end={x:result.origin.x+result.direction.x*length,y:result.origin.y+result.direction.y*length};let first=1;
+  for(const box of boxes){const t=segmentBox(result.origin,end,box,5);if(t!==null)first=Math.min(first,t);}
+  if(first<1){result.blocked=true;result.blockedPoint={x:result.origin.x+(end.x-result.origin.x)*first,y:result.origin.y+(end.y-result.origin.y)*first};}
+ }
+ return result;
+}
+export {attackObservations};
 export function powerProfile(run,form=run?.form??'spark'){const base=VESSEL_POWERS[form],skills=skillStats(run?.training,form),heal=({human:18,tree:12}[form]??0)+skills.powerHeal;let desc={spark:'Pulse light through nearby foes and clear nearby enemy bolts.'+(skills.pulseHeal?' Clearing bolts restores up to '+skills.pulseHeal+' HP.':''),human:'Restore up to '+heal+' HP, strike nearby foes, and guard for '+(3+skills.guardExtra)+' seconds.',computer:'Double attack speed for '+(4+skills.overclockExtra)+' seconds and launch a seeking volley.'+(skills.firewall?' Clear nearby enemy bolts and guard for two seconds.':''),animal:'Leap along your facing direction and strike where you land.'+(heal?' Restore up to '+heal+' HP.':''),tree:'Root nearby foes for '+(2.5+skills.rootExtra)+' seconds and restore up to '+heal+' HP. Guardians resist rooting.',rock:'Guard for '+(4+skills.guardExtra)+' seconds and send a heavy shockwave around you.'+(skills.clearBolts?' Clear nearby enemy bolts.':'')}[form];if(skills.partnerHeal)desc+=' Restore up to '+skills.partnerHeal+' HP to a nearby living partner.';return {...base,desc,cooldown:base.cooldown*(1-skills.powerCooldown)};}
-function attack(run){
-  const p=run.player,body=BODIES[run.form],skills=skillStats(run.training,run.form),profile=attackProfile(run),range=profile.range*(1+(run.gear?.range??0)+skills.range),enemies=run.enemies.filter(e=>e.hp>0),target=enemies.sort((a,b)=>dist(p,a)-dist(p,b))[0];if(!target||dist(p,target)>range)return;
-  const melee=['cleave','wave'].includes(profile.style),damage=profile.damage*(1+run.boons.edge*.24+run.memoryEdge+(run.gear?.damage??0)+skills.damage+(p.hp/p.maxHp>.7?skills.healthyDamage:0)+(melee?run.gear?.melee??0:0)),angle=Math.atan2(target.y-p.y,target.x-p.x);p.facingX=Math.cos(angle);p.facingY=Math.sin(angle);
-  if(profile.style==='homing')fire(run,p.x,p.y,angle,damage,false,390,range,true);
-  else if(profile.style==='volley')for(const a of [-.17,0,.17])fire(run,p.x,p.y,angle+a,damage,false,500,range,!!skills.homingVolley);
-  else {const radius=range;for(const enemy of enemies){const distance=dist(p,enemy);if(distance<radius+enemy.r){if(profile.style==='cleave'){const a=Math.atan2(enemy.y-p.y,enemy.x-p.x);if(Math.cos(a-angle)>.05)damageEnemy(run,enemy,damage);}else damageEnemy(run,enemy,damage);}}effect(run,profile.style==='cleave'?'slash':'wave',p.x,p.y,body.color,radius);}
+function attack(run,aim=null){
+  const p=run.player,body=BODIES[run.form],skills=skillStats(run.training,run.form),profile=attackProfile(run),range=profile.range*(1+(run.gear?.range??0)+skills.range),enemies=run.enemies.filter(e=>e.hp>0),target=aim?null:enemies.sort((a,b)=>dist(p,a)-dist(p,b))[0];if(!aim&&(!target||dist(p,target)>range))return;
+  const melee=['cleave','wave'].includes(profile.style),damage=profile.damage*(1+run.boons.edge*.24+run.memoryEdge+(run.gear?.damage??0)+skills.damage+(p.hp/p.maxHp>.7?skills.healthyDamage:0)+(melee?run.gear?.melee??0:0)),angle=aim?Math.atan2(aim.direction.y,aim.direction.x):Math.atan2(target.y-p.y,target.x-p.x);p.facingX=Math.cos(angle);p.facingY=Math.sin(angle);
+  const event=aim?attackEvent(run,'cast',{x:aim.origin.x,y:aim.origin.y,dx:p.facingX,dy:p.facingY,form:run.form,style:profile.style,hand:aim.hand,targetId:aim.targetId,recovery:attackInterval(run)}):null;
+  const origin=aim?.origin??p,source=aim?{directed:{version:1,cast:event.id,x:p.x,y:p.y,range,remaining:Math.max(0,range-dist(p,origin)),targetId:aim.targetId}}:null;
+  if(profile.style==='homing')fire(run,origin.x,origin.y,angle,damage,false,390,range,true,source);
+  else if(profile.style==='volley')for(const a of [-.17,0,.17])fire(run,origin.x,origin.y,angle+a,damage,false,500,range,!!skills.homingVolley,source);
+  else {const radius=range;let hits=0;for(const enemy of enemies){const distance=dist(p,enemy);if(distance<radius+enemy.r){if(aim&&blockedSegment(p,enemy,obstacles(run.room,run)))continue;if(profile.style==='cleave'){const a=Math.atan2(enemy.y-p.y,enemy.x-p.x);if(Math.cos(a-angle)<=.05)continue;}const before=enemy.hp;damageEnemy(run,enemy,damage);hits++;if(aim)attackEvent(run,'hit',{cast:event.id,targetId:enemy.id,x:enemy.x,y:enemy.y,form:run.form,damage:Math.min(before,before-enemy.hp)});}}effect(run,profile.style==='cleave'?'slash':'wave',p.x,p.y,body.color,radius);if(aim&&!hits)attackEvent(run,'miss',{cast:event.id,x:p.x,y:p.y,form:run.form,reason:'No enemy in native reach/cone'});}
 }
 export function useVesselPower(run,partner=false){
  const actor=partner?run.partner:run.player,form=partner?run.partnerForm:run.form,power=VESSEL_POWERS[form],skills=skillStats(run.training,form);if(run.phase!=='playing'||!actor||actor.hp<=0)throw Error('This vessel cannot use its power right now.');if((actor.powerCooldown??0)>0)throw Error('The vessel power is recovering.');actor.powerCooldown=power.cooldown*(1-skills.powerCooldown);actorStats(run,partner).powers++;
@@ -251,6 +266,22 @@ function stepFirstGuardian(run,enemy,target,dt){
  }}else if(enemy.attack<=0){enemy.windup=kind==='cantor'?.9:.8;enemy.volleyAngle=run.time*(kind==='sentinel'?.45:.3);enemy.aimAngle=Math.atan2(target.y-enemy.y,target.x-enemy.x);effect(run,'wave',enemy.x,enemy.y,'#ebc68e',70);}
  enemy.markClock-=dt;if(enemy.markClock<=0){run.marks.push({x:target.x,y:target.y,r:kind==='cantor'?62:70,timer:kind==='cantor'?1.2:1.1,life:kind==='cantor'?1.2:1.1,sourceId:enemy.id});enemy.markClock=stage===2?2.6:3.6;}
  if(d<target.r+enemy.r)hurt(run,kind==='warden'?22:9,target);
+}
+// Read-only warnings use the locked angles/counts the original AI releases.
+export function guardianThreats(run){
+ return run.enemies.filter(e=>e.hp>0&&['cantor','sentinel','warden'].includes(e.kind)).map(e=>{
+  const stage=e.hp<e.maxHp*.5?2:1,angles=[];
+  if(e.windup>0){
+   if(e.kind==='cantor'||e.kind==='sentinel'){
+    const count=e.kind==='cantor'?(stage===1?6:8):(stage===1?8:12);
+    for(let i=0;i<count;i++){if(e.kind==='sentinel'&&stage===2&&i%6===0)continue;angles.push(e.volleyAngle+i*Math.PI*2/count);}
+    if(e.kind==='cantor'&&stage===2)for(const spread of [-.18,.18])angles.push(e.aimAngle+spread);
+   }else for(const spread of stage===2?[-.36,-.18,0,.18,.36]:[-.2,0,.2])angles.push(e.aimAngle+spread);
+  }
+  return {id:e.id,kind:e.kind,x:e.x,y:e.y,hp:e.hp,maxHp:e.maxHp,stage,windup:Math.max(0,e.windup??0),
+   windupTotal:e.kind==='cantor'?.9:.8,angles,volleys:e.volleys??0,
+   marks:run.marks.filter(m=>m.sourceId===e.id).map(m=>({x:m.x,y:m.y,r:m.r,remaining:m.timer,total:m.life}))};
+ });
 }
 function offerBoons(run){const list=Object.keys(BOONS).filter(id=>id!=='orbit'||run.boons.orbit<4);run.choices=[];while(run.choices.length<3&&list.length){const i=Math.floor(rand(run)*list.length);run.choices.push(list.splice(i,1)[0]);}run.phase='boon';effect(run,'level',run.player.x,run.player.y,'#c2dfbc',90);}
 export function chooseBoon(run,id){
@@ -304,6 +335,31 @@ export function relicContact(item){return item?.relic==='ivory-feather'?68:40;}
 function collectRelic(run){const item=pendingRelic(run);if(!item||![run.player,run.partner].some(p=>p&&p.hp>0&&dist(p,item)<=relicContact(item)))return;const relic=ROUTE_RELICS[item.relic];run.relics??=[];run.relics.push(item.relic);run.notice=relic.name+' found. Opens '+relic.opens+'. Travel back from a checkpoint.';run.noticeTime=10;rewardBanner(run,'key',relic.name+' acquired','Opens '+relic.opens+'.',relic.color);run.journal??=[];run.journal.push({id:run.room+':relic',room:run.room,speaker:'A road between worlds',title:relic.name,text:run.notice});}
 export function pendingSecret(run){if(run.dungeon||run.rematch)return null;const secret=ROOMS[run.room].secret;return secret&&run.cleared.includes(run.room)&&!(run.secrets??[]).includes(secret)?{secret,...EASTER_EGGS[secret],x:730,y:300}:null;}
 function discoverSecret(run,actor,form){const item=pendingSecret(run);if(!item||dist(actor,item)>65)return false;if(form!==item.vessel){run.notice=item.hint+' Press Q to borrow that vessel.';run.noticeTime=5;return true;}run.secrets??=[];run.secrets.push(item.secret);run.essence+=item.essence;run.notice=item.text+' +'+item.essence+' essence.';run.noticeTime=14;rewardBanner(run,'unlock',item.name,'A hidden memory · +'+item.essence+' essence. Remembered in your journal.','#e8c780');run.journal??=[];run.journal.push({id:run.room+':secret',room:run.room,speaker:'An impossible little discovery',title:item.name,text:item.text});return true;}
+function stepDirectedShot(run,shot,dt){
+ const meta=shot.directed,miss=reason=>{shot.life=0;attackEvent(run,reason==='Cover intercepted'?'blocked':'miss',{cast:meta.cast,x:shot.x,y:shot.y,form:shot.sourceForm,reason});};
+ shot.life-=dt;if(shot.life<=0||meta.remaining<=0){miss('Projectile range spent');return;}
+ // Only weapons/training that grant homing may steer, toward the observed target.
+ if(shot.homing&&meta.targetId!==null){const target=run.enemies.find(e=>e.id===meta.targetId&&e.hp>0);if(target){const angle=Math.atan2(target.y-shot.y,target.x-shot.x),speed=shot.homingSpeed??390;shot.vx=shot.vx*.88+Math.cos(angle)*speed*.12;shot.vy=shot.vy*.88+Math.sin(angle)*speed*.12;}}
+ const a={x:shot.x,y:shot.y},length=Math.hypot(shot.vx,shot.vy)*dt,scale=length?Math.min(1,meta.remaining/length):0,
+  b={x:a.x+shot.vx*dt*scale,y:a.y+shot.vy*dt*scale};
+ let wall=1,reason=null;
+ for(const box of obstacles(run.room,run)){const t=segmentBox(a,b,box,shot.r);if(t!==null&&t<=wall){wall=t;reason='Cover intercepted';}}
+ for(const [key,lo,hi]of [['x',34+shot.r,WIDTH-34-shot.r],['y',34+shot.r,HEIGHT-34-shot.r]]){
+  if(a[key]<lo||a[key]>hi){wall=0;reason='World boundary';}
+  else if(b[key]<lo||b[key]>hi){const t=((b[key]<lo?lo:hi)-a[key])/(b[key]-a[key]);if(t<=wall){wall=t;reason='World boundary';}}
+ }
+ let hit=null,hitAt=wall;
+ for(const enemy of run.enemies){if(enemy.hp<=0)continue;
+  const t=segmentCircle(a,b,enemy,shot.r+enemy.r);if(t===null||t>=hitAt)continue;
+  const point={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
+  if(Math.hypot(point.x-meta.x,point.y-meta.y)>meta.range+enemy.r)continue;
+  hit=enemy;hitAt=t;
+ }
+ const fraction=hit?hitAt:wall;shot.x=a.x+(b.x-a.x)*fraction;shot.y=a.y+(b.y-a.y)*fraction;
+ meta.remaining=Math.max(0,meta.remaining-Math.hypot(shot.x-a.x,shot.y-a.y));
+ if(hit){const before=hit.hp;damageEnemy(run,hit,shot.damage,shot.sourceForm??run.form,shot.sourcePartner??false);shot.life=0;attackEvent(run,'hit',{cast:meta.cast,targetId:hit.id,x:hit.x,y:hit.y,form:shot.sourceForm,damage:Math.min(before,before-hit.hp)});}
+ else if(reason)miss(reason);else if(scale<1||meta.remaining<=1e-8)miss('Projectile range spent');
+}
 function stepActor(run,p,form,input,dt){
  const x=Number(input.x??0),y=Number(input.y??0);if(!Number.isFinite(x)||!Number.isFinite(y))throw Error('Movement must be finite.');p.gateGrace=Math.max(0,(p.gateGrace??0)-dt);if(p.hp<=0)return;
  const length=Math.hypot(x,y),mx=length>1?x/length:x,my=length>1?y/length:y,body=BODIES[form],skills=skillStats(run.training,form);p.iframes=Math.max(0,p.iframes-dt);p.morphCooldown=Math.max(0,(p.morphCooldown??0)-dt);p.hurtFlash=Math.max(0,(p.hurtFlash??0)-dt);p.powerCooldown=Math.max(0,(p.powerCooldown??0)-dt);p.guardTime=Math.max(0,(p.guardTime??0)-dt);p.overclockTime=Math.max(0,(p.overclockTime??0)-dt);p.dashCooldown=Math.max(0,p.dashCooldown-dt);
@@ -314,8 +370,16 @@ function stepActor(run,p,form,input,dt){
  if(other&&other.hp<=0){if(input.interact&&dist(p,other)<=REVIVE_RADIUS){other.revive=(other.revive??0)+dt;if(other.revive>=REVIVE_SECONDS){other.hp=other.maxHp*.4;other.iframes=2;other.revive=0;other.downedFor=0;effect(run,'wave',other.x,other.y,'#dfe5a7',65);run.notice='The spark answers. Your partner is rekindled.';run.noticeTime=4;}}else other.revive=0;}
  else if(input.interact&&!p.gateLatched){if(discoverSecret(run,p,form)){p.gateLatched=true;}else{const gate=nearestGate(run,p);if(gate){const status=gateEntryStatus(run,gate.direction,p);if(status.available)enterGate(run,gate.direction,p);else{run.notice=status.reason;run.noticeTime=2.5;}}}}
  p.surgeCooldown=Math.max(0,(p.surgeCooldown??0)-dt);p.attackClock=Math.max(-.05,p.attackClock-dt);const mode=['auto','manual','surge'].includes(input.fireMode)?input.fireMode:run.fireMode??'auto';
- if(p.attackClock<=0&&(mode!=='manual'||input.fire)){const previousPlayer=run.player,previousForm=run.form;run.player=p;run.form=form;attack(run);const interval=attackProfile(run,form).interval;run.player=previousPlayer;run.form=previousForm;p.attackClock=interval/Math.min(3,1+run.boons.cadence*.18+run.memoryHaste+(run.gear?.haste??0)+skills.haste)/(p.overclockTime>0?2:1);}
- if(mode==='surge'&&input.fire&&p.surgeCooldown===0){const target=run.enemies.filter(e=>e.hp>0).sort((a,b)=>dist(p,a)-dist(p,b))[0];if(target){const profile=attackProfile(run,form),angle=Math.atan2(target.y-p.y,target.x-p.x),damage=profile.damage*.7*(1+run.boons.edge*.24+run.memoryEdge+(run.gear?.damage??0)+skills.damage);for(const spread of [-.2,0,.2])fire(run,p.x,p.y,angle+spread,damage,false,460,Math.max(450,profile.range),profile.style==='homing',{form,partner:p===run.partner});p.surgeCooldown=4;effect(run,'wave',p.x,p.y,body.color,35);}}
+ if(input.attackMode!==undefined){
+  if(input.attackIntent){
+   const aim=input.attackMode===DIRECTED_ATTACK_MODE?queryAttackIntent(run,input.attackIntent):{valid:false,reason:'Unsupported attack control profile'},journal=attackJournal(run);
+   if(!aim.valid)attackEvent(run,'rejected',{reason:aim.reason});
+   else if(aim.sequence<=journal.sequence)attackEvent(run,'rejected',{reason:'Attack sequence already consumed'});
+   else {journal.sequence=aim.sequence;if(p.attackClock>0)attackEvent(run,'rejected',{reason:'Basic attack recovering',remaining:p.attackClock});
+    else{attack(run,aim);p.attackClock=attackInterval(run);}}
+  }
+ }else if(p.attackClock<=0&&(mode!=='manual'||input.fire)){const previousPlayer=run.player,previousForm=run.form;run.player=p;run.form=form;attack(run);const interval=attackProfile(run,form).interval;run.player=previousPlayer;run.form=previousForm;p.attackClock=interval/Math.min(3,1+run.boons.cadence*.18+run.memoryHaste+(run.gear?.haste??0)+skills.haste)/(p.overclockTime>0?2:1);}
+ if(input.attackMode===undefined&&mode==='surge'&&input.fire&&p.surgeCooldown===0){const target=run.enemies.filter(e=>e.hp>0).sort((a,b)=>dist(p,a)-dist(p,b))[0];if(target){const profile=attackProfile(run,form),angle=Math.atan2(target.y-p.y,target.x-p.x),damage=profile.damage*.7*(1+run.boons.edge*.24+run.memoryEdge+(run.gear?.damage??0)+skills.damage);for(const spread of [-.2,0,.2])fire(run,p.x,p.y,angle+spread,damage,false,460,Math.max(450,profile.range),profile.style==='homing',{form,partner:p===run.partner});p.surgeCooldown=4;effect(run,'wave',p.x,p.y,body.color,35);}}
 
 }
 export function stepRun(run,input={},dt=1/60){
@@ -370,7 +434,7 @@ export function stepRun(run,input={},dt=1/60){
     if(orbitCount&&enemy.orbitHit===0){for(const actor of living)for(let i=0;i<orbitCount;i++){const angle=run.time*2.9+i*Math.PI*2/orbitCount,orb={x:actor.x+Math.cos(angle)*68,y:actor.y+Math.sin(angle)*68};if(dist(enemy,orb)<enemy.r+16){damageEnemy(run,enemy,13*(1+run.boons.edge*.15),actor===run.partner?run.partnerForm:run.form,actor===run.partner);enemy.orbitHit=.3;break;}}}
   }
   delete run.shotRole;
-  for(const shot of run.shots){shot.life-=dt;if(shot.life<=0)continue;
+  for(const shot of run.shots){if(shot.directed&&!shot.enemy){stepDirectedShot(run,shot,dt);continue;}shot.life-=dt;if(shot.life<=0)continue;
     if(shot.homing){let closest=null;for(const enemy of run.enemies)if(enemy.hp>0&&(!closest||dist(shot,enemy)<dist(shot,closest)))closest=enemy;if(closest){const angle=Math.atan2(closest.y-shot.y,closest.x-shot.x),speed=shot.homingSpeed??390;shot.vx=shot.vx*.88+Math.cos(angle)*speed*.12;shot.vy=shot.vy*.88+Math.sin(angle)*speed*.12;}}
     shot.x+=shot.vx*dt;shot.y+=shot.vy*dt;
     if(shot.enemy){for(const actor of living)if(shot.life>0&&dist(shot,actor)<shot.r+actor.r){hurt(run,shot.damage,actor);shot.life=0;}}
@@ -418,6 +482,7 @@ export function validRun(run){
   if(run.enemies.length>128||run.shots.length>360||run.fragments.length>1000||run.effects.length>160||run.marks.length>50)return false;
   if(!run.enemies.every(e=>ENEMY_KINDS.includes(e.kind)&&['x','y','hp','maxHp','r','speed','attack','orbitHit','flash'].every(k=>Number.isFinite(e[k]))))return false;
   if(!run.shots.every(s=>['x','y','vx','vy','damage','r','life'].every(k=>Number.isFinite(s[k])))||!run.fragments.every(f=>['x','y','value','r'].every(k=>Number.isFinite(f[k]))))return false;
+  if(run.shots.some(s=>s.directed!==undefined&&(s.enemy||!validDirectedShot(s.directed)||s.r!==5||Math.hypot(s.vx,s.vy)>1000)))return false;
   if(run.shots.some(shot=>shot.sourceForm!==undefined&&!Object.hasOwn(BODIES,shot.sourceForm)||shot.sourcePartner!==undefined&&typeof shot.sourcePartner!=='boolean'||shot.homingSpeed!==undefined&&(!Number.isFinite(shot.homingSpeed)||shot.homingSpeed<100||shot.homingSpeed>1000)))return false;
   if(run.gear&&(!Object.entries(run.gear).every(([key,n])=>['health','damage','range','speed','melee','haste','dash','armor','regen'].includes(key)&&Number.isFinite(n)&&n>=0&&n<=(key==='health'?100:['armor','dash'].includes(key)?.9:2))||!validEquipment({inventory:Object.fromEntries(Object.values(run.loadout??{}).filter(Boolean).map(id=>[id,0])),loadout:run.loadout})))return false;
   if(run.loot&&(!Array.isArray(run.loot)||!run.loot.every(id=>EQUIPMENT[id])))return false;

@@ -2,12 +2,14 @@
 export const XR_INPUT_VERSION = 'spark.xr.input.v1';
 export const XR_ADAPTER_VERSION = 'spark.xr.adapter.v1';
 export const XR_DEFAULTS = Object.freeze({posture: 'seated', movement: .5, turn: 30,
-  vignette: .4, reduced: false, haptics: true, sound: true, throwMode: 'gesture', quality:'balanced'});
+  vignette: .4, reduced: false, haptics: true, sound: true, throwMode: 'gesture', quality:'balanced',
+  combatProfile:'classic',dominantHand:'right',aimAssist:3});
 export function xrSettings(raw = {}) {
   const s = {...XR_DEFAULTS};
   for (const [key, values] of Object.entries({posture: ['seated', 'standing'],
     movement: [.5, .75, 1], turn: [30, 45, 60], vignette: [0, .4, .75],
-    throwMode: ['gesture', 'trigger'],quality:['performance','balanced','high']})) if (values.includes(raw[key])) s[key] = raw[key];
+    throwMode: ['gesture', 'trigger'],quality:['performance','balanced','high'],
+    combatProfile:['classic','spellcraft'],dominantHand:['right','left'],aimAssist:[0,3,6]})) if (values.includes(raw[key])) s[key] = raw[key];
   for (const k of ['reduced', 'haptics', 'sound']) if (typeof raw[k] === 'boolean') s[k] = raw[k];
   return s;
 }
@@ -77,7 +79,7 @@ export class SparkXRInput {
     ui.menuMove = Math.abs(menuAxis) > .7 && !this.ui.menu ? Math.sign(menuAxis) : 0;
     if (ui.menuMove) this.ui.menu = true;
     const out = {version: XR_INPUT_VERSION, ...ui, head, hands: {}, valid: false,
-      yaw:this.yaw,move: 0, cast: null, dodge: false, duck: false, body: null};
+      yaw:this.yaw,move: 0, cast: null, casts:{}, dodge: false, duck: false, body: null};
     const fail = reason => { this.interrupt(); out.reason = reason; return out; };
     if(sample.visible===false)return fail('Headset visibility interrupted');
     if (!Number.isFinite(now) || !trackedMatrix(head)) return fail('Head tracking unavailable');
@@ -140,7 +142,7 @@ export class SparkXRInput {
       if (!pressed) t.armed = true;
       const localGrip = this.local([h.grip[12] - this.base[0], h.grip[13] - this.base[1], h.grip[14] - this.base[2]]);
       const direction = this.local([-h.ray[8], -h.ray[9], -h.ray[10]]);
-      if (!active) { t.armed = false; t.down = false; }
+      if (!active || !out.ready) { t.armed = false; t.down = false; }
       if (active && t.armed && pressed && !t.down) { t.started = now; t.down = true; }
       const charge = t.down ? clamp((now - t.started) / 900, 0, 1) : 0;
       out.hands[name] = {matrix: h.grip, ray:h.ray, charge, color: name === 'left' ? '#f6c66c' : '#6cebe2'};
@@ -159,8 +161,9 @@ export class SparkXRInput {
         const cast = {forward: -localGrip[2] * 100, lateral: localGrip[0] * 100,
           height: 65 + localGrip[1] * 100, dx: -aim[2], dy: aim[1], dz: aim[0], hand: name, gesture};
         // No untracked origin fallback, stale transform, damage or charge bonus.
-        if (Math.abs(cast.forward) <= 75 && Math.abs(cast.lateral) <= 90 && cast.height >= 5 && cast.height <= 170)
-          out.cast ||= cast;
+        if (Math.abs(cast.forward) <= 75 && Math.abs(cast.lateral) <= 90 && cast.height >= 5 && cast.height <= 170){
+          out.cast ||= cast;out.casts[name]=cast;
+        }
         t.down = false;
       }
       this.previousHands[name] = [...h.grip];

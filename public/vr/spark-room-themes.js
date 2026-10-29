@@ -17,10 +17,11 @@ export const ROOM_THEMES=Object.freeze({
 });
 const WORLD_IDS=['stratum','tideglass','verdant','cinder','prism','orbit','uncreated'];
 const SHOWCASE={threshold:{stone:'#303239',light:'#f4d08a',glow:'#b5dbc5'},
-  glass:{stone:'#1d3549',light:'#b2e9f0',glow:'#59c4dd'},machine:{stone:'#272c3d',light:'#e4ab64',glow:'#69dfc5'}};
+  glass:{stone:'#1d3549',light:'#b2e9f0',glow:'#59c4dd'},machine:{stone:'#272c3d',light:'#e4ab64',glow:'#69dfc5'},
+  forge:{stone:'#392c32',light:'#f3c181',glow:'#ef874c'}};
 export function roomTheme(scene){return {version:ROOM_THEME_VERSION,...(ROOM_THEMES[scene.worldId]||ROOM_THEMES[WORLD_IDS[scene.worldRank]]||ROOM_THEMES.stratum),
   ...(SHOWCASE[scene.roomId]||{}),
-  showcase:['threshold','glass','machine'].includes(scene.roomId)?scene.roomId:'world'};}
+  showcase:['threshold','glass','machine','forge'].includes(scene.roomId)?scene.roomId:'world'};}
 const cache=new Map();
 export function clearRoomGeometryCache(){cache.clear();}
 export function roomGeometryKey(s){return JSON.stringify([ROOM_THEME_VERSION,s.roomId,s.worldId,s.quality||'balanced',
@@ -98,6 +99,19 @@ export function livingRoomGeometry(s){
     pushRing(v,0,2.75,0,1.65,tint(glow,.7),q.detail);
     pushRing(v,0,2.75,0,1.9,tint(light,.5),q.detail);
     for(let z=-2.45;z<=2.45;z+=.18)for(const x of [-3.9,3.9])pushBox(v,x,.012,z,.035,.015,.09,tint(glow,.5));
+  }else if(s.roomId==='forge'){
+    // All forge structures are overhead or outside the legal body footprint.
+    for(const side of [-1,1])for(const z of [-2.15,0,2.15]){
+      const x=side*4.5;
+      pushBox(v,x,1.7,z,.34,3.4,.5,tint(stone,1.7));
+      pushBeam(v,[x,3.25,z],[side*2.0,4.1,z],.28,tint(stone,2));
+      pushBox(v,x,1.8,z,.37,2.2,.06,glow);
+      for(let i=0;i<3;i++)pushRing(v,x,.6+i*.9,z,.30,light,q.detail);
+    }
+    pushRing(v,0,3.5,0,2.2,tint(light,.7),q.detail);
+    pushRing(v,0,3.7,0,1.55,tint(glow,.7),q.detail);
+    for(const radius of [1,1.5,2.15])pushRing(v,0,.012,0,radius,tint(light,.35),q.detail);
+    for(const z of [-2.55,2.55])pushBeam(v,[-4.25,.025,z],[4.25,.025,z],.045,glow);
   }else{
     for(let i=0;i<q.detail/2;i++){
       const a=i/Math.max(1,q.detail/2)*Math.PI*2;
@@ -114,6 +128,15 @@ export function livingDynamicGeometry(v,s){
     const a=i/6*Math.PI*2+(s.reduced?0:s.time*.18);
     pushBeam(v,[Math.cos(a)*.45,2.77,Math.sin(a)*.45],[Math.cos(a)*1.75,2.77,Math.sin(a)*1.75],.09,light);
     pushGem(v,Math.cos(a)*1.75,2.77,Math.sin(a)*1.75,.1,.25,glow);
+  }
+  if(s.roomId==='forge'){
+    const boss=s.guardians?.find(g=>g.kind==='cantor'),second=boss?.stage===2,
+      spin=s.reduced?0:s.time*(second?.26:.14),heat=boss?.windup>0?1.25:.7;
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3+spin;
+      pushBeam(v,[Math.cos(a)*.65,3.55,Math.sin(a)*.65],[Math.cos(a)*2.15,3.55,Math.sin(a)*2.15],.13,tint(light,heat));
+      pushGem(v,Math.cos(a)*2.1,3.40,Math.sin(a)*2.1,.17,.4,glow);
+    }
   }
   for(const enemy of s.enemies.slice(0,24))if(enemy.windup>0){
     const [x,,z]=worldAt(enemy.x,enemy.y),r=(enemy.r||18)/100+.13;
@@ -137,4 +160,27 @@ export function livingDynamicGeometry(v,s){
     pushGem(v,x,y,z,.012,.035,tint(glow,.6));
   }
   if(s.target){const p=s.target.point;pushRing(v,p[0],.025,p[2],.28,s.target.available?glow:light,q.detail);}
+  if(s.combatProfile==='spellcraft'&&s.aim?.draft&&!s.paused){
+    const aim=s.aim,draft=aim.draft,target=s.enemies.find(e=>e.id===aim.targetId),
+      point=aim.blockedPoint||target||{x:draft.origin.x+draft.direction.x*Math.min(s.attackReach,450),y:draft.origin.y+draft.direction.y*Math.min(s.attackReach,450)},
+      origin=worldAt(draft.origin.x,draft.origin.y,aim.visualOriginHeight??.85),end=worldAt(point.x,point.y,.85),
+      col=!aim.valid||aim.blocked?[1,.4,.28]:target?[.55,1,.75]:[.38,.65,.68];
+    const count=s.reduced?4:8;
+    for(let i=0;i<count;i++){
+      const t=i/count,u=(i+.4)/count;
+      pushBeam(v,origin.map((v,k)=>v+(end[k]-v)*t),origin.map((v,k)=>v+(end[k]-v)*u),.009,col);
+    }
+    pushRing(v,end[0],.035,end[2],target?.28:.14,col,q.detail);
+    if(target){pushGem(v,end[0],1.4,end[2],.07,.16,col);}
+    if(['cleave','wave'].includes(s.weapon.style)){
+      const [x,,z]=worldAt(s.player.x,s.player.y),r=s.attackReach/100;
+      if(s.weapon.style==='wave')pushRing(v,x,.025,z,r,tint(col,.55),q.detail);
+      else for(const side of [-1,1]){const angle=Math.atan2(draft.direction.y,draft.direction.x)+side*1.52;
+        pushBeam(v,[x,.03,z],[x+Math.cos(angle)*r,.03,z+Math.sin(angle)*r],.015,tint(col,.65));}
+    }
+  }
+  if(s.attackResult?.life>0){const result=s.attackResult,[x,,z]=worldAt(result.x??s.player.x,result.y??s.player.y),
+    col=result.type==='hit'?[.7,1,.85]:[.9,.5,.33];
+    pushRing(v,x,.07,z,.12+(.5-result.life)*.45,col,s.reduced?6:q.detail);
+  }
 }

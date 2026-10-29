@@ -1,0 +1,192 @@
+{
+  "schema": "spark.xr.rung3.artifacts.v1",
+  "baseCommit": "2672a66cb07871b4d3ffc6127aeeb7d5fd31e9e0",
+  "algorithm": "sha256",
+  "scope": "All changed/new candidate files except self-referential manifest",
+  "files": [
+    {
+      "path": ".github/workflows/immersive-vr.yml",
+      "sha256": "9c0be17a20d7128357222904f72ce3c0f32dbee23ccca3fc4186b23471f20e3c"
+    },
+    {
+      "path": "ASSETS_AND_ATTRIBUTION.md",
+      "sha256": "295dbdc31e507e799aafd38e60d7c18fe55a2f74bea36f4fcf76d6ebd15f11c1"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a0c4ad6a890b4f099d6d87a840d0f98793b6dae0e1b422f00c2fc8294368c90c"
+    },
+    {
+      "path": "docs/vr-awakening/browser-results.json",
+      "sha256": "b795773138aba6fe2e65c3c6674e32e950c28e1c1cd449ccc3c87db7c7dc5d9e"
+    },
+    {
+      "path": "docs/vr-awakening/cantor-victory.png",
+      "sha256": "513e5d847bd8e8c8f5e4a8093d15360b7c032a9ff51acc33ac07669f8027bd9b"
+    },
+    {
+      "path": "docs/vr-awakening/cantor-volley.png",
+      "sha256": "03d99b554876d817d0048daa9290ab94b05bb9c29d3ec9b25030d0bd00d53adf"
+    },
+    {
+      "path": "docs/vr-awakening/cantor-windup.png",
+      "sha256": "34127469e2676af5dd9796e5e3872422bc9ac67a142639394bf1c48cd75f260f"
+    },
+    {
+      "path": "docs/vr-awakening/directed-casting.png",
+      "sha256": "c267ba8e999b8356738fcdb57fb4fd6e880c769907f74afb4e8cfebbc9f233ca"
+    },
+    {
+      "path": "docs/vr-awakening/forge-entry.png",
+      "sha256": "c4d0a01820c59e82b9e112ce6b4a74d9770506402a4d19360aebb8b4fa2cfbb2"
+    },
+    {
+      "path": "docs/vr-awakening/intake.json",
+      "sha256": "60794a3b46ab40dc5a7bb11b1748f11f31f796f549273b16ca3dbf0c9687ebc8"
+    },
+    {
+      "path": "docs/vr-awakening/more-bounce.png",
+      "sha256": "060c558c0034818a9c5abddc87ea8717a2de6782025f0eb092358353657e7aeb"
+    },
+    {
+      "path": "docs/vr-awakening/rung-3.md",
+      "sha256": "3a9bd5f631208d2c418c8edb93edddb7e33c46b9b7268207a6c4362077a8db6e"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-animal.png",
+      "sha256": "eb522efca7e9b1bb4f5082093116fb1c00b3502df57ab5c3a9c6107f4603aca9"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-computer.png",
+      "sha256": "2d8aa6ceb3d52040ede4fa9b1b9aacafbd20172b614a304a95dbf90369993e4c"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-human.png",
+      "sha256": "0adb5cc36021f08a6e68cdb226d631be9eb5a0a0addecb7f6effc2e0e1ac3e96"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-rock.png",
+      "sha256": "1999636fe437d7e27ed911d810923e18ebf3bf38a3ec040984f60865f4a8a8c1"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-spark.png",
+      "sha256": "f5b115573b5f5517435aa77d94fee58447f1996fbe5a9b6991bcdb9127917dd4"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-tree.png",
+      "sha256": "e6bbfbfd5745c449c7d036ae3e5c2d687e96ecc513bbdd09146eab96a879fd93"
+    },
+    {
+      "path": "docs/vr-awakening/spellcraft-wrist.png",
+      "sha256": "d8a754aab49f8abacab010b309c7f19cde91ecb465d466545195c588f24db751"
+    },
+    {
+      "path": "docs/vr-awakening/verification.json",
+      "sha256": "6553879d92d77e2ed2a44b7dde7e378522a9a4020f5520c7df833f89d53d6907"
+    },
+    {
+      "path": "public/action-engine.js",
+      "sha256": "4608e6ce0a5c92c0a7cd0e133d01b31b47aaea2132771c293e7077eb805fa4c2"
+    },
+    {
+      "path": "public/attack-intent.js",
+      "sha256": "70fe3d777410421e2642c91b139d88afb6058929473c087a4d0700f9c9d41bc3"
+    },
+    {
+      "path": "public/more-bounce-field.js",
+      "sha256": "c001f25cfc7a2820135c3e0192f723926ec57a64e36587401e4cc48a5d6229af"
+    },
+    {
+      "path": "public/vr/living.html",
+      "sha256": "206db1f89ca477aaf1a2cbcb5026e7830e69e4e43be9e35127175501b7dd90d2"
+    },
+    {
+      "path": "public/vr/spark-guardian-presentation.js",
+      "sha256": "c3360ebf1bcb94492bc127236ac6af611077beaf21833c50ad854b06a772ee56"
+    },
+    {
+      "path": "public/vr/spark-living-app.js",
+      "sha256": "79f46b03a57a46b41129d03f622d9606133cfcee8616c61f092e814608142f44"
+    },
+    {
+      "path": "public/vr/spark-living-host.js",
+      "sha256": "6ce571ee6bbf654a62f3be54b96c21fe7592792b0c6d27edd766849a35b89a73"
+    },
+    {
+      "path": "public/vr/spark-more-bounce.js",
+      "sha256": "ef9ac5f1b6361a482e9ad94d7265406fce220469064ba91556ae654eb0cbbb52"
+    },
+    {
+      "path": "public/vr/spark-room-themes.js",
+      "sha256": "018c59044857bba0d80936f0f9749ee766a6be626c69aabdd5243563f665f3ba"
+    },
+    {
+      "path": "public/vr/spark-spellcraft-preferences.js",
+      "sha256": "0d0ed48026c086a99b6e1a6ac8fd41717beee62c7edfa0e8f7b4508a044a1292"
+    },
+    {
+      "path": "public/vr/spark-vessel-presentation.js",
+      "sha256": "2cb742014842c19ce390527edf8555cf8327222fe829f878d1da617300644f12"
+    },
+    {
+      "path": "public/vr/spark-vr-diagnostics.js",
+      "sha256": "4e00cd30d35710613e7109e657c02a92c642efe63994fea65b4b59303f948adb"
+    },
+    {
+      "path": "public/vr/spark-vr-model.js",
+      "sha256": "e4f09e5220b8604ba82cf0b6442cff6185e929c15783bc1eef78a8bc8258ff65"
+    },
+    {
+      "path": "public/vr/spark-vr-renderer.js",
+      "sha256": "096f4730496f8ef6a31734d31a4770f7b5ceb1061406c93e1da4a062c80ee135"
+    },
+    {
+      "path": "public/vr/spark-xr-adapters.js",
+      "sha256": "43fec8ce5de79925ad686ab10b78ce175e3c7d29d6557d0d1b82ea531d0e7da8"
+    },
+    {
+      "path": "public/vr/spark-xr-feedback.js",
+      "sha256": "a26b0fa762f4d98a6ea77752c1ce070d86d3d2bed5fad10ff1a0c86baae1e604"
+    },
+    {
+      "path": "public/vr/spark-xr-input.js",
+      "sha256": "399d8121f925c5bd57bfc1602226b3173948c3d630e7411c53b3c1b54ed43049"
+    },
+    {
+      "path": "public/vr/spark-xr-runtime.js",
+      "sha256": "2c49015c240a9bb855da5358fea2aa88342868f6ed1c85946ec3212b55a8b839"
+    },
+    {
+      "path": "public/vr/spark-xr-targeting.js",
+      "sha256": "e3a3adbd42cfc393d0ec687535f4f4a1f55e7795e3171389dbeaebfa7e38cd58"
+    },
+    {
+      "path": "scripts/check-vr-awakening-browser.mjs",
+      "sha256": "4bae145b1717cdeb85f8f05318cf27b91b46770b59bd5a5a0a5e14fb73014dfb"
+    },
+    {
+      "path": "tests/attack-intent.test.mjs",
+      "sha256": "12f417501c35400787befbd88060f825ac27d85c85290ebfd36bbf5826bd59cd"
+    },
+    {
+      "path": "tests/fixtures/legacy-combat-rung2.json",
+      "sha256": "bf2a399d625cb237e55a65720dbd6c54d7ebce3770287d2ba6d64d838eb87246"
+    },
+    {
+      "path": "tests/legacy-combat-scenario.mjs",
+      "sha256": "507facd4229c422c045c71f619803d60feaa2facb81175d7e42ce0f30a60a3d5"
+    },
+    {
+      "path": "tests/more-bounce.test.mjs",
+      "sha256": "b1dfa274a4f64d5acdd05c4d1beacf12f9d355a729e5137b86a00241aa8296a8"
+    },
+    {
+      "path": "tests/vr-awakening-path.mjs",
+      "sha256": "0c2ed6e2dc391be98f9f5589e513162fe86122ed1e8a86d8709984a9132b47c8"
+    },
+    {
+      "path": "tests/vr-awakening.test.mjs",
+      "sha256": "494964993059540030dfc0448f2d47e56b04c5d7076674fa5e8d8a9f4f98bd43"
+    }
+  ]
+}
