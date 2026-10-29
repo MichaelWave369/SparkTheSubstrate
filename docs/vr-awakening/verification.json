@@ -13,9 +13,9 @@
     {
       "command": "npm test",
       "result": "PASS",
-      "tests": 450,
+      "tests": 451,
       "baseline": 423,
-      "new": 27,
+      "new": 28,
       "failed": 0,
       "skipped": 0
     },
@@ -139,7 +139,18 @@
       "error": 0
     },
     "remoteRequests": 0,
-    "browserErrors": 0
+    "browserErrors": 0,
+    "cleanup": {
+      "gpu": [
+        {
+          "buffers": 0,
+          "textures": 0,
+          "programs": 0
+        }
+      ],
+      "voices": 0,
+      "fieldClearedOnExit": true
+    }
   },
   "performanceLimits": "Software CPU render submission, submitted geometry/uploads and WebGL object handles only; no total JS/driver/GPU allocations, GPU frame-time or headset FPS measurement",
   "questFieldLab": {
@@ -262,6 +273,10 @@
     {
       "finding": "Integration audit identified mixed legacy surge/fire flags as an alternate path while directed mode was selected",
       "resolution": "Restrict the legacy surge path to absent attackMode and add a regression proving invalid/mixed requests cannot create extra shots."
+    },
+    {
+      "finding": "Final lifecycle review found an active celebration could survive ordinary hub exit in memory, and reset observation cursors could replay old presentation events on reentry",
+      "resolution": "An optional adapter onSessionEnd hook clears transient Descent presentation without resetting the run. Existing event IDs are seeded to prevent replay. A controlled native-state/no-replay regression and the actual browser active-field exit check pass."
     }
   ]
 }

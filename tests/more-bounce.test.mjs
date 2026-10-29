@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {createMoreBounceField,sampleMoreBounceField,validMoreBounceField} from '../public/more-bounce-field.js';
 import {MoreBouncePresentation,moreBounceEligible} from '../public/vr/spark-more-bounce.js';
 import {createVRPreview} from '../public/vr/spark-vr-model.js';
+import {DescentXRAdapter} from '../public/vr/spark-xr-adapters.js';
+import {SparkXRRuntime} from '../public/vr/spark-xr-runtime.js';
+import {stepRun} from '../public/action-engine.js';
 // Controlled presentation eligibility fixture; no assertion of earned progress.
 function ready(){const r=createVRPreview().run,rooms=['glass','machine','roots','quiet','conduit','cistern','forge','reliquary','nursery'];
  r.room='forge';r.cleared.push(...rooms);r.roomResolved=[...rooms];r.abilities.push('morph');r.visitedVessels=['spark','human','computer','animal','tree','rock'];
@@ -27,4 +30,17 @@ test('secret requires earned history and a clear forge; celebration never change
   const locked=ready();mutate(locked);assert.equal(moreBounceEligible(locked),false);assert.throws(()=>p.activate(locked,{}),/not answered/);
  }
  const active=ready();p.activate(active,{});active.enemies.push({hp:1});p.observe(active);assert.equal(p.snapshot(active),null,'never pacifies active combat');
+});
+test('plain session exit clears an active celebration and presentation without resetting the journey',async()=>{
+ const state=createVRPreview();state.run=ready();const a=new DescentXRAdapter(state),r=new SparkXRRuntime({adapter:a,
+  feedback:{stop(){},dispose(){},event(){},listener(){}}});
+ state.run.player.attackClock=0;
+ stepRun(state.run,{attackMode:'directed-v1',attackIntent:{version:'spark.attack-intent.v1',room:'forge',observedAt:state.run.time,
+  sequence:1,origin:{x:state.run.player.x,y:state.run.player.y},direction:{x:0,y:-1},targetId:null,assist:0}},1/60);
+ a.observePresentation();a.drainEvents();assert.ok(a.presentation.action);
+ a.moreBounce.activate(state.run,{});assert.ok(a.snapshot().moreBounce);const before=structuredClone(state.run);
+ r.mode='desktop';await r.exit();assert.equal(a.snapshot().moreBounce,null);assert.equal(a.moreBounce.variants,null);
+ assert.deepEqual(state.run,before);assert.equal(r.mode,'idle');assert.equal(r.paused,true);
+ a.observePresentation();assert.equal(a.presentation.action,null);
+ assert.equal(a.drainEvents().filter(e=>['attack','hit','miss'].includes(e.type)).length,0,'old observations cannot replay attacks on reentry');
 });

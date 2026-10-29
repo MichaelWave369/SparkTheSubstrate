@@ -22,7 +22,7 @@ path. XR cannot supply damage, HP, deaths, rewards or clock resets.
 | `spark.attack-intent.v1`, `attack-intent.js` | Canonical finite geometry, current room/enemy, freshness, replay and bounded-assistance checks; exact cover sweeps; transient event journal |
 | `action-engine.js` | Opt-in `directed-v1` basic attacks, native arithmetic, cadence, melee/radial rules, projectile movement and hit resolution; read-only guardian observations |
 | `spark.xr.planar-aim.v1` | Validated XR-to-canonical projection; current ray guides and observed target requests |
-| Existing input/runtime/adapter v1 | Additive per-hand release edges; one bounded 60 Hz clock; complete neutral rearm; session ownership and interruption protections |
+| Existing input/runtime/adapter v1 | Additive per-hand release edges and optional `onSessionEnd` presentation cleanup; one bounded 60 Hz clock; complete neutral rearm; session ownership and interruption protections |
 | Vessel / guardian presentation v1 | Six original animations; anticipation, release, recovery, hit/miss; actual Cantor warnings, health, chamber response and victory |
 | `spark.xr.spellcraft-preferences.v1` | Separate browser-local control preferences; no campaign-save settings |
 | `spark.xr.wrist-world.v1` | Additive combat/guardian observations for a future GenEWrist consumer; no cross-repository integration/dependency claimed |
@@ -173,7 +173,7 @@ not from expected values reconstructed from the new implementation.
 | P1 real guardian | Input-only Threshold → Glass → Machine → Quiet → Conduit → Cistern → Forge; real second-movement warnings/10-bolt volley, directed hits, defeat, Ash Cloak, save/restore and legal exit |
 | Tracking/lifecycle/preferences | Missing/invalid poses, root projection, held-control profile changes, both-hand 120 Hz edges, no resume bursts, recenter, separate preferences and unchanged save envelope |
 | P2 stereo/performance/cleanup | Both-eye pixels retained; all qualities with multiple enemies and native strongest Cantor volley plus wrist; zero WebGL errors; WebGL object balances/active audio voices zero after mode exit |
-| P3 celebration | Real nine-kindness/six-vessel route; no activation mutation; 430 native ticks exactly match a no-field control simulation; expiration and no save fields |
+| P3 celebration | Real nine-kindness/six-vessel route; no activation mutation; 430 native ticks exactly match a no-field control simulation; expiration, no save fields and active-field cleanup on ordinary hub exit |
 | Regressions/offline | Full npm suite, static Pages/path checks, runtime bridge and all three browser suites; zero unexpected remote requests |
 
 Receipts: [verification](verification.json), [actual browser results](browser-results.json),

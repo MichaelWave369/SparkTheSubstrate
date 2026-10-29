@@ -267,6 +267,13 @@ try{
     return {eyes,error:gl.getError()};
   });
   assert.equal(stereo.error,0);assert.ok(stereo.eyes.every(n=>n>15000));
+  await page.evaluate(()=>{const q=window.__awakening,entry=q.app.host.menu().find(([label])=>label==='Listen between the notes');
+    if(!entry)throw Error('Earned celebration unavailable for exit check');entry[1]();q.d.tick({});q.d.tick({});
+    if(!q.d.snapshot().moreBounce)throw Error('Exit check must begin with an active field');});
+  await page.getByRole('button',{name:'Return to hub / exit VR',exact:true}).click();
+  await page.waitForFunction(()=>window.__app.runtime.mode==='idle');
+  const fieldClearedOnExit=await page.evaluate(()=>window.__app.host.descent.snapshot().moreBounce===null);
+  assert.equal(fieldClearedOnExit,true);
   await page.getByRole('button',{name:/THE ARENA/}).click();
   await page.waitForFunction(()=>window.__app.host.mode==='duel');
   await page.getByRole('button',{name:'Desktop 3D preview',exact:true}).click();
@@ -278,7 +285,7 @@ try{
   assert.ok(final.metrics.every(m=>m.newGPUObjects===0&&m.drawCalls>0&&m.verticesSubmitted>0));
   assert.deepEqual(remote,[]);assert.deepEqual(errors,[]);
   const receipt={schema:'spark.xr.rung3.browser.v1',status:'PASS',browser:browser.version(),pair,combat,legacy,collisionFixtures,reached,windup,volley,victory,continuation,earnedVessels,vesselEvidence,moreBounce,bounceExpiry,
-    stereo,performance:final.metrics,cleanup:{gpu:final.gpu,voices:final.voices},remoteRequests:remote.length,browserErrors:errors.length,
+    stereo,performance:final.metrics,cleanup:{gpu:final.gpu,voices:final.voices,fieldClearedOnExit},remoteRequests:remote.length,browserErrors:errors.length,
     source:'Actual exported application/runtime with synthetic current tracked poses; fresh native campaign and real choices; no gameplay state injection',
     collisionEvidence:'Separate labeled canonical engine fixtures in this browser and tests/attack-intent.test.mjs; no fixture unlocks in the campaign journey',
     hardwareVerification:'NOT PERFORMED; software Chromium/WebGL does not establish Quest comfort, tracking or FPS'};

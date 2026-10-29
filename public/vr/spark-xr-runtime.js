@@ -224,6 +224,7 @@ export class SparkXRRuntime {
     this.mode = 'idle'; this.pause(true, 'Session ended · encounter remains in memory'); this.input.recenter();
     this.canvas?.removeEventListener?.('webglcontextlost', this.contextLost);
     this.renderer?.dispose(); this.renderer = null;
+    this.adapter.onSessionEnd?.();
     if (wasXR) this.onSession('end'); this.onMode(this.mode);
   }
   async dispose() { await this.exit(); this.feedback.dispose(); this.adapter.dispose?.(); }

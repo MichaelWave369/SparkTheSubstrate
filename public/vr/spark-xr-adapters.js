@@ -151,5 +151,12 @@ export class DescentXRAdapter {
     transform:this.presentation.transform,feedback:this.presentation.feedback,
     attackAnimation:this.presentation.action,attackResult:this.presentation.result,guardianVisual:this.guardian.describe(),moreBounce:this.moreBounce.snapshot(this.state.run,this.controls)};}
   drainEvents(){return [...this.presentation.drainEvents(),...this.guardian.drainEvents(),...this.moreBounce.drainEvents()];}
-  dispose(){this.presentation.reset();this.guardian.reset();this.moreBounce.reset();this.aim=null;this.launches.clear();this.castSerial=attackObservations(this.state.run).at(-1)?.id??0;}
+  onSessionEnd(){this.dispose();}
+  dispose(){
+    const run=this.state.run;this.castSerial=attackObservations(run).at(-1)?.id??0;
+    this.presentation.reset();this.presentation.combatSerial=this.castSerial;
+    this.presentation.seen=new Set([...run.effects.map(e=>e.id),...run.shots.map(s=>'shot:'+s.id)]);
+    this.guardian.reset();this.guardian.room=run.room;this.guardian.defeated=run.room==='forge'&&run.cleared.includes('forge');
+    this.moreBounce.reset();this.aim=null;this.launches.clear();
+  }
 }
