@@ -1,0 +1,114 @@
+{
+  "schema": "spark.xr.rung4.captures.v1",
+  "comparison": "hands-before-same-pose uses frozen Rung3.5 mesh in current stage/current pose; before/ room and wrist images use actual unmodified merged main",
+  "captures": {
+    "ascension-calibration.png": {
+      "sha256": "b1c5be0b0308159f827aff08136053c2e52ed46c40a1b9eec1a972c08a10f7f7",
+      "bytes": 87301,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "ascension-recovery.png": {
+      "sha256": "233446640b86bee1faa2e956c83c3019561265e73adbb6504e027053eadccb6b",
+      "bytes": 156777,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "ascension-xr-wrist.png": {
+      "sha256": "93f6758def5b34c614dc25b57e3cab4514dee6f2137db0c328137c4c54f16353",
+      "bytes": 148602,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "before/glass.png": {
+      "sha256": "26e822dd18285f9321a3da057f45e9da4e903fb0cc18f3e2f698494ef888d708",
+      "bytes": 197189,
+      "source": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+      "hardware": false
+    },
+    "before/machine.png": {
+      "sha256": "e79f9798c21a4a2a6b4e6f5ed0b3af39ea4d0d8131eafe9379f816d1b60dba71",
+      "bytes": 171015,
+      "source": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+      "hardware": false
+    },
+    "before/threshold.png": {
+      "sha256": "b5c636ce7cbc41dee092ed1049affd8afd7b7762ace74b680b2f483fdf97d034",
+      "bytes": 163397,
+      "source": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+      "hardware": false
+    },
+    "before/wrist.png": {
+      "sha256": "7114e1656e7a4d11f5258794bff1c5e82c2b4be59d7d8296d865a37b164dca12",
+      "bytes": 170929,
+      "source": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+      "hardware": false
+    },
+    "glass-combat-after.png": {
+      "sha256": "8e71aac4ba1b8d52ed226388c1b40980405befd0136f3dfbfd77c52aa9149d66",
+      "bytes": 233209,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "hands-after-same-pose.png": {
+      "sha256": "444c0ead01357eaad3ad45078c867c8be92a8e9e922f9fe2586ee4ebfbfabbbf",
+      "bytes": 247132,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "hands-before-same-pose.png": {
+      "sha256": "073f68f56c693b9939f45781beeb1438ff3675c348b43302566f220c6d7fa4f2",
+      "bytes": 264666,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "index-calibration.png": {
+      "sha256": "0614a1ba369b6e10846f22052887e894662dc2791f3c9884bee0132056457eff",
+      "bytes": 92294,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "index-recovery.png": {
+      "sha256": "90255dbe80363d08594c7a650c14016cbdd7908258b04a223695e4eab8e4021d",
+      "bytes": 241574,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "index-xr-wrist.png": {
+      "sha256": "8c5fe6503253bbb4335e378bf89f921990b3bb8fbeac9a1ed2c9f69ff1483ef4",
+      "bytes": 227875,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "living-calibration.png": {
+      "sha256": "826246bedde543f15343aa6446e32c4fb1e285b63bb2536242cf8b9071ad7bd7",
+      "bytes": 102071,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "living-recovery.png": {
+      "sha256": "9c433b78c364f8e06d034861f343e8a8f7b171772e42b1d28d93022cdb58a412",
+      "bytes": 264960,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "living-xr-wrist.png": {
+      "sha256": "e0670c15dd227706c7debb2f56cd1604222d56eb35021e86069e4bf7e1da36a7",
+      "bytes": 252879,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "machine-after.png": {
+      "sha256": "5069ddba423b2d151a2284c40cb31fcae840e5d9c3e23371622f77fda96fdc7f",
+      "bytes": 216758,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    },
+    "threshold-after.png": {
+      "sha256": "49ff7eecec1567d515bac519eaeda4ddbe30f00c80bc9dd3be2852ce40d9e0cb",
+      "bytes": 205645,
+      "source": "Rung 4 candidate software-WebGL",
+      "hardware": false
+    }
+  }
+}

@@ -84,7 +84,7 @@ test('VR comfort storage is independent from game checkpoints and rejects malfor
   storage.setItem(VR_COMFORT_KEY,'x'.repeat(1500));
   assert.deepEqual(loadVRComfort(storage),VR_COMFORT_DEFAULTS);
 });
-test('XR implementation wires per-eye comfort, canonical directions and map-on-left-Y with safe pause',()=>{
+test('shared XR implementation wires per-eye comfort, World page/recenter and preserves legacy desktop compass',()=>{
   const html=file('../public/vr/index.html');
   const app=file('../public/vr/spark-vr-app.js');
   const renderer=file('../public/vr/spark-vr-renderer.js');
@@ -94,15 +94,17 @@ test('XR implementation wires per-eye comfort, canonical directions and map-on-l
   assert.match(html,/id="navigation-panel"/);
   assert.match(html,/id="navigation-routes"/);
   assert.match(html,/id="toggle-navigation"/);
-  assert.match(app,/edge\('navigation',pad\(left,5\)\)/);
+  assert.match(app,/sharedXR\.focusPage\('World'\)/);
+  assert.match(file('../public/vr/spark-xr-input.js'),/recenter: this\.edge\('recenter', button\(l, 5\)\)/);
   assert.ok(app.includes("currentChoices().map(x=>x.id).join(',')"),'rebirth offers must refresh the actual choice buttons');
   assert.ok(app.includes('Boolean(state.pendingRebirth)'),'death settlement must update the UI choice cache');
   assert.ok(app.includes('if(navigationOpen)toggleNavigation(false)'),'mode transitions safely close navigation');
   assert.match(app,/event.code==='KeyM'/);
   assert.match(app,/if\(paused\|\|navigationOpen\|\|!dt\)return/);
   assert.match(app,/applyVRComfortToMovement\(/);
-  assert.match(app,/vrSnapRadians\(comfort\)/);
-  assert.match(app,/vignette:comfort.vignette/);
+  assert.match(file('../public/vr/spark-xr-input.js'),/settings\.turn \* Math\.PI \/ 180/);
+  assert.match(file('../public/vr/spark-xr-runtime.js'),/vignette: this\.settings\.vignette/);
+  assert.match(app,/sharedXR\.configure\(comfort\)/);
   assert.match(renderer,/drawComfortVignette/);
   assert.match(renderer,/gl_FragColor=vec4\(0.005,0.012,0.021,falloff\*amount\)/);
   assert.ok(!app.includes('/api/'));

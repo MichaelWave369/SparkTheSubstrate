@@ -127,7 +127,7 @@ test('public XR lab has manual explicit export, readable controls and report kep
   assert.match(app,/recordQuestFrame\(questDiagnostics/);
   assert.match(app,/beginQuestDiagnostics\(questDiagnostics/);
   assert.match(app,/endQuestDiagnostics\(questDiagnostics/);
-  assert.match(app,/performance\.now\(\)-renderStarted/);
+  assert.match(text('../public/vr/spark-xr-runtime.js'),/performance\.now\(\) - start/);
   assert.match(app,/QUEST_ACCEPTANCE_CASES/);
   assert.match(app,/fieldDownload\.addEventListener\('click'/);
   assert.match(app,/fieldCopy\.addEventListener\('click'/);

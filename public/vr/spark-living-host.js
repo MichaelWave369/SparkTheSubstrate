@@ -52,13 +52,14 @@ export class LivingSparkHost{
   }
   async setMode(id){
     if(!Object.hasOwn(this.adapters,id))throw Error('This XR mode is not implemented.');
-    if(this.switching)return false;
+    if(this.switching){this.status('Mode change in progress · wait for VR exit to finish');return false;}
+    if(id===this.mode){this.status((id==='descent'?'Descent':'Ascension')+' selected · press Enter immersive VR or Desktop 3D preview');return true;}
     this.switching=true;
     try{
       await this.returnToHub();this.runtime.adapter.dispose?.();
       this.mode=id;this.runtime.adapter=this.adapters[id];this.runtime.menuIndex=0;this.runtime.recenter();
       this.runtime.adapter.configureCombat?.(this.runtime.settings);
-      this.onMode(id);this.status((id==='descent'?'Descent journey':'Ascension encounter')+' ready · choose desktop or Enter VR');
+      this.onMode(id);this.status((id==='descent'?'Descent journey':'Ascension encounter')+' selected · previous VR session ended · press Enter immersive VR again (a new browser gesture is required)');
       return true;
     }finally{this.switching=false;}
   }

@@ -32,10 +32,12 @@ export class DuelXRAdapter {
     // The archon is a repeatable training opponent: visible, aimed windup then a moving bolt.
     // It uses the same trace command, startup, cooldown and damage path as the player.
     const foe = this.match.fighters[1];
+    const beforeX=this.match.fighters[0].x;
     const enemy = {spatial: {version: 1, body: {forward: 0, lateral: 0, height: 65},
       cast: foe.cooldown === 0 && !foe.attack && this.match.frames % 60 === 0,
       aim: this.enemyAim()}};
     stepDuel(this.match, [player, enemy], 1);
+    this.motionStatus={blocked:Math.abs(input.move||0)>.05&&Math.abs(this.match.fighters[0].x-beforeX)<.01,reason:'Native Duel combat movement / arena bounds'};
     for (const event of this.match.events.filter(e => e.id > this.serial)) {
       this.events.push(event);
       if (['hit', 'chip', 'block', 'focus-guard'].includes(event.type)) {
@@ -113,8 +115,11 @@ export class DescentXRAdapter {
     let y=(Number.isFinite(movement.y)?movement.y:0)+(Number.isFinite(physical.y)?physical.y:0)/(speed*dt);
     const max=Number.isFinite(input.motionScale)?clamp(input.motionScale,.5,1):1,n=Math.max(1,Math.hypot(x,y)/max);
     x/=n;y/=n;
+    const before={x:run.player.x,y:run.player.y,room:run.room,phase:run.phase};
     stepVRPreview(this.state,{x,y,dash:input.dash===true||(input.interact===undefined&&input.dodge===true),
       power,interact:input.interact===true,...(spellcraft?{attackMode:DIRECTED_ATTACK_MODE,attackIntent}:{})},dt);
+    this.motionStatus={blocked:before.room===run.room&&before.phase==='playing'&&run.phase==='playing'&&Math.hypot(x,y)>.05&&Math.hypot(run.player.x-before.x,run.player.y-before.y)<.01,
+      reason:run.phase!=='playing'?'Canonical '+run.phase+' decision pauses movement':'Native movement'};
     this.observeInput(input);
     for(const event of attackObservations(run,this.castSerial)){
       this.castSerial=event.id;if(event.type==='cast')this.launches.set(event.id,{at:event.time,

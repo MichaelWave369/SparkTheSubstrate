@@ -1,3 +1,5 @@
+import {FOUNDATION_ROOMS,foundationFloor,foundationArchitecture,foundationDynamics} from './spark-world-art.js';
+import {pushBevelBox} from './spark-vr-art.js';
 import {pushBox,pushBeam,pushGem,pushRing,hex,tint} from './spark-vr-geometry.js';
 import {worldAt} from './spark-vr-model.js';
 export const ROOM_THEME_VERSION='spark.xr.room-theme.v1';
@@ -32,8 +34,9 @@ export function livingRoomGeometry(s){
   pushBox(v,0,-.10,0,9.6,.20,6,tint(stone,.65));
   // Floor inlays are flush; all new solid architecture is beyond the legal body
   // footprint or above head height. Cover uses the exact canonical footprints.
-  for(let x=-4.25;x<4.3;x+=.5)pushBox(v,x,.004,0,.009,.008,5.18,tint(glow,.35));
-  for(let z=-2.5;z<2.6;z+=.5)pushBox(v,0,.005,z,8.6,.009,.008,tint(light,.22));
+  if(FOUNDATION_ROOMS.has(s.roomId))foundationFloor(v,s,stone,light,glow);
+  else for(let x=-4.25;x<4.3;x+=.5)pushBox(v,x,.004,0,.009,.008,5.18,tint(glow,.35));
+  if(!FOUNDATION_ROOMS.has(s.roomId))for(let z=-2.5;z<2.6;z+=.5)pushBox(v,0,.005,z,8.6,.009,.008,tint(light,.22));
   const sides=new Set(s.gates.map(g=>g.direction));
   for(const axis of ['x','z'])for(const side of [-1,1]){
     const dir=axis==='x'?(side<0?'west':'east'):(side<0?'north':'south'),edge=(axis==='x'?4.8:3)*side;
@@ -55,51 +58,24 @@ export function livingRoomGeometry(s){
   }
   for(const o of s.obstacles){
     const [x,,z]=worldAt(o.x+o.w/2,o.y+o.h/2);
-    pushBox(v,x,.58,z,o.w/100,1.16,o.h/100,tint(stone,1.6));
+    pushBevelBox(v,x,.58,z,o.w/100,1.16,o.h/100,tint(stone,1.6),.13);
     pushBox(v,x,.99,z,o.w/100,.045,o.h/100,glow);
     pushGem(v,x,1.16,z,Math.min(o.w,o.h)/240,.32,light);
   }
   // Tall peripheral ribs frame every real room across all seven worlds.
-  for(const x of [-4.55,4.55])for(let i=0;i<5;i++){
+  if(!FOUNDATION_ROOMS.has(s.roomId))for(const x of [-4.55,4.55])for(let i=0;i<5;i++){
     const z=-2.2+i*1.1;
-    if(s.roomId==='eye'&&Math.abs(z)<.01&&sides.has(x>0?'east':'west'))continue;
+    if(Math.abs(z)<.01&&sides.has(x>0?'east':'west'))continue;
     pushBox(v,x,1.65,z,.30,3.3,.28,tint(stone,1.6));
     pushBox(v,x,2.85,z,.36,.12,.38,light);
     pushBox(v,x,1.6,z,.035,2.3,.31,tint(glow,.8));
   }
-  for(const z of [-2.72,2.72])for(const x of [-3.8,-2.0,2.0,3.8]){
+  if(!FOUNDATION_ROOMS.has(s.roomId))for(const z of [-2.72,2.72])for(const x of [-3.8,-2.0,2.0,3.8]){
     pushBeam(v,[x,3.15,z],[x*.62,4.15,z],.14,tint(light,.6));
     pushGem(v,x,2.5,z,.17,.75,tint(glow,.9));
   }
-  if(s.roomId==='threshold'){
-    pushRing(v,0,2.8,0,1.55,light,q.detail);
-    pushRing(v,0,2.95,0,.9,glow,q.detail);
-    pushGem(v,0,2.8,0,.25,.55,light);
-    for(let i=0;i<q.detail;i++){
-      const a=i/q.detail*Math.PI*2;
-      pushGem(v,Math.cos(a)*1.2,2.7,Math.sin(a)*1.2,.075,.22,glow);
-    }
-    // An illuminated trail points to the genuine north gate without blocking it.
-    for(let z=-2.3;z<1.6;z+=.35)pushBox(v,0,.012,z,.10,.015,.075,tint(light,.7));
-  }else if(s.roomId==='glass'){
-    for(const x of [-4.55,4.55])for(let i=0;i<q.detail/2;i++){
-      const z=-2.3+i*4.6/Math.max(1,q.detail/2-1);
-      pushGem(v,x,1.5,z,.18,2.4,tint(glow,1.1));
-      pushBeam(v,[x,3.3,z],[0,3.95,z],.035,tint(light,.6));
-    }
-    for(const z of [-1.7,0,1.7]){
-      pushBeam(v,[-4.5,2.85,z],[4.5,2.85,z],.06,tint(glow,.8));
-      for(const x of [-1.8,1.8])pushGem(v,x,2.65,z,.11,.36,light);
-    }
-  }else if(s.roomId==='machine'){
-    for(const x of [-4.48,4.48])for(const z of [-2.15,0,2.15]){
-      pushBox(v,x,1.45,z,.24,2.9,.48,tint(stone,2));
-      for(let k=0;k<4;k++)pushBox(v,x,.5+k*.55,z,.30,.08,.56,k%2?glow:light);
-      pushBeam(v,[x,3.0,z],[x*.55,3.7,z],.20,tint(stone,2));
-    }
-    pushRing(v,0,2.75,0,1.65,tint(glow,.7),q.detail);
-    pushRing(v,0,2.75,0,1.9,tint(light,.5),q.detail);
-    for(let z=-2.45;z<=2.45;z+=.18)for(const x of [-3.9,3.9])pushBox(v,x,.012,z,.035,.015,.09,tint(glow,.5));
+  if(FOUNDATION_ROOMS.has(s.roomId)){
+    foundationArchitecture(v,s,q,stone,light,glow);
   }else if(s.roomId==='forge'){
     // All forge structures are overhead or outside the legal body footprint.
     for(const side of [-1,1])for(const z of [-2.15,0,2.15]){
@@ -143,11 +119,7 @@ export function livingRoomGeometry(s){
 }
 export function livingDynamicGeometry(v,s){
   const q=XR_QUALITY[s.quality]||XR_QUALITY.balanced,theme=roomTheme(s),glow=hex(theme.glow),light=hex(theme.light);
-  if(s.roomId==='machine')for(let i=0;i<6;i++){
-    const a=i/6*Math.PI*2+(s.reduced?0:s.time*.18);
-    pushBeam(v,[Math.cos(a)*.45,2.77,Math.sin(a)*.45],[Math.cos(a)*1.75,2.77,Math.sin(a)*1.75],.09,light);
-    pushGem(v,Math.cos(a)*1.75,2.77,Math.sin(a)*1.75,.1,.25,glow);
-  }
+  foundationDynamics(v,s,q,light,glow);
   if(s.roomId==='forge'){
     const boss=s.guardians?.find(g=>g.kind==='cantor'),second=boss?.stage===2,
       spin=s.reduced?0:s.time*(second?.26:.14),heat=boss?.windup>0?1.25:.7;

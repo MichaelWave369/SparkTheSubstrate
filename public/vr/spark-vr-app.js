@@ -1,5 +1,7 @@
+import {legacyXRBridge} from './spark-vr-legacy-xr.js';
+import {installXRControls} from './spark-xr-controls.js';
 import {
-  createVRPreview,resumeVRPreview,stepVRPreview,vrRoomSnapshot,worldAt,stickToGame,
+  createVRPreview,stepVRPreview,vrRoomSnapshot,worldAt,
   chooseVRPhase,nextVRForm,vrPhaseChoices,VR_SIM_STEP
 } from './spark-vr-model.js';
 import {saveVRCheckpoint,loadVRCheckpoint,clearVRCheckpoint} from './spark-vr-save.js';
@@ -7,13 +9,13 @@ import {multiply4,projection4,lookAt4,worldRoot4} from './spark-vr-math.js';
 import {SparkVRRenderer} from './spark-vr-renderer.js';
 import {
   QUEST_ACCEPTANCE_CASES,createQuestDiagnostics,noteQuestEvent,
-  beginQuestDiagnostics,setQuestReferenceSpace,recordQuestFrame,
+  beginQuestDiagnostics,recordQuestFrame,
   endQuestDiagnostics,summarizeQuestDiagnostics,questAcceptanceReport
 } from './spark-vr-diagnostics.js';
 import {vrCompass,closestVRGate} from './spark-vr-navigation.js';
 import {
   loadVRComfort,storeVRComfort,normalizeVRComfort,
-  applyVRComfortToMovement,vrSnapRadians
+  applyVRComfortToMovement
 } from './spark-vr-comfort.js';
 
 // This app owns presentation and a separate VR-only local save.
@@ -31,30 +33,18 @@ const fieldChecks=$('field-checks'),fieldMetrics=$('field-metrics'),
   fieldStatus=$('field-report-status'),
   fieldDownload=$('field-download'),fieldCopy=$('field-copy');
 let state=createVRPreview(),renderer=null,mode='idle',xr=null,
-  xrSpace=null,xrLayer=null,rootYaw=0,desktopYaw=0,desktopPitch=0,
-  desktopRAF=0,frameId=null,last=0,accum=0,paused=true,
-  floorShift=0,drag=null,outputStamp='',xrLatch={},
+  desktopYaw=0,desktopPitch=0,
+  desktopRAF=0,last=0,accum=0,paused=true,
+  drag=null,outputStamp='',
   keys=new Set(),desktopActions={},selectedChoice=0,phaseStamp='',
   lastSavedAt=0,lastSavedSignature='',navigationOpen=false,
   comfort=loadVRComfort(window.localStorage),
   questDiagnostics=createQuestDiagnostics(),questResults={},
-  fieldLastUpdate=-1,visibilityLossNoted=false,poseLossNoted=false,
-  controllerLossNoted=false;
+  fieldLastUpdate=-1;
 
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const show=message=>{status.textContent=message;};
-const pad=(source,index)=>!!(source?.gamepad?.buttons?.[index]?.pressed||
-  (source?.gamepad?.buttons?.[index]?.value||0)>.6);
-const stick=source=>{
-  if(!source?.gamepad)return [0,0];
-  const a=source.gamepad.axes||[];
-  return a.length>=4?[a[2]||0,a[3]||0]:[a[0]||0,a[1]||0];
-};
-const edge=(name,value)=>{
-  const previous=!!xrLatch[name];xrLatch[name]=!!value;
-  return !!value&&!previous;
-};
-const resetInputs=()=>{keys.clear();desktopActions={};xrLatch={};};
+const resetInputs=()=>{keys.clear();desktopActions={};};
 function initializeFieldLab(){
   const results=[
     ['not-tested','Not tested'],
@@ -146,6 +136,7 @@ function changeComfort(){
     vignette:vignetteSelect.value
   });
   comfort=selected;
+  if(sharedXR.mode==='xr')sharedXR.configure(comfort);
   try{storeVRComfort(window.localStorage,comfort);}
   catch{show('Comfort settings applied for this visit, but browser storage is unavailable.');}
 }
@@ -175,8 +166,7 @@ function toggleNavigation(value=!navigationOpen){
   navButton.textContent=navigationOpen?'Close room compass':'Show room compass';
   navPanel.hidden=!navigationOpen;
   last=0;accum=0;
-  // Preserve XR edge latches while a controller button is held, or Y
-  // would repeatedly open/close the compass every animation frame.
+  // Legacy desktop compass; immersive navigation uses the shared World page.
   keys.clear();desktopActions={};
   updateInfo(true);
 }
@@ -350,6 +340,8 @@ function drawDesktop(now){
   }catch(error){paused=true;show('Desktop preview paused: '+error.message);}
 }
 function startDesktop(){
+  if(sharedXR.pending){show('Finish or cancel the VR permission prompt first.');return;}
+  if(sharedXR.calibrating){show('Tracked desktop calibration is available in the Living hub; press Enter VR here to calibrate on Quest.');return;}
   if(xr){show('Exit immersive VR before entering desktop preview.');return;}
   try{
     ensureRenderer();mode='desktop';paused=false;accum=0;last=0;
@@ -359,180 +351,26 @@ function startDesktop(){
     stopDesktop();desktopRAF=requestAnimationFrame(drawDesktop);
   }catch(error){show('Desktop preview unavailable: '+error.message);}
 }
-function xrInput(pose,session){
-  const controllers=Array.from(session.inputSources||[]).filter(s=>s.gamepad?.mapping==='xr-standard');
-  const left=controllers.find(s=>s.handedness==='left'),
-    right=controllers.find(s=>s.handedness==='right');
-  const axes=stick(left),turn=stick(right)[0];
-  const toggleMap=edge('navigation',pad(left,5));
-  if(navigationOpen){
-    return {x:0,y:0,navigationToggle:toggleMap,
-      togglePause:edge('pause',pad(right,3))};
-  }
-  if(currentChoices().length){
-    if(Math.abs(axes[0])<.32)xrLatch.choiceAxis=false;
-    if(Math.abs(axes[0])>.78&&!xrLatch.choiceAxis){
-      changeChoice(axes[0]>0?1:-1);xrLatch.choiceAxis=true;
-    }
-    return {x:0,y:0,
-      confirmChoice:edge('confirmChoice',pad(right,0)||pad(right,4)),
-      navigationToggle:toggleMap,
-      togglePause:edge('pause',pad(right,3))};
-  }
-  // Explicitly clear choice trigger before returning to normal RT power input.
-  xrLatch.confirmChoice=false;
-  if(Math.abs(turn)<.3)xrLatch.turn=false;
-  if(Math.abs(turn)>.72&&!xrLatch.turn){
-    rootYaw+=Math.sign(turn)*vrSnapRadians(comfort);xrLatch.turn=true;
-  }
-  const movement=applyVRComfortToMovement(
-    stickToGame(axes[0],axes[1],pose.transform.matrix,rootYaw),comfort);
-  return {...movement,navigationToggle:toggleMap,
-    dash:edge('dash',pad(left,0)),
-    power:edge('power',pad(right,0)),
-    interact:edge('interact',pad(right,1)||pad(right,4)),
-    togglePause:edge('pause',pad(right,3)),
-    cycleForm:edge('cycleForm',pad(right,5))};
-}
-function onXRFrame(now,frame){
-  const session=xr;if(!session||mode!=='xr')return;
-  frameId=session.requestAnimationFrame(onXRFrame);
-  try{
-    if(session.visibilityState!=='visible'){
-      if(!visibilityLossNoted)noteQuestEvent(questDiagnostics,'visibility-paused');
-      visibilityLossNoted=true;
-      paused=true;resetInputs();saveProgress();
-      show('Headset not visible · VR paused.');return;
-    }
-    visibilityLossNoted=false;
-    const pose=frame.getViewerPose(xrSpace);
-    if(!pose){
-      if(!poseLossNoted)noteQuestEvent(questDiagnostics,'pose-unavailable');
-      poseLossNoted=true;
-      paused=true;resetInputs();show('Head tracking unavailable · VR paused.');return;
-    }
-    poseLossNoted=false;
-    const input=xrInput(pose,session);
-    if(input.navigationToggle)toggleNavigation();
-    if(input.togglePause){
-      paused=!paused;accum=0;last=0;
-      // Never clear xrLatch while the right stick button remains held:
-      // otherwise each XR frame toggles pause repeatedly.
-      keys.clear();desktopActions={};
-      show(paused?'VR paused · press right stick to resume':'VR resumed');
-    }
-    if(!session.inputSources?.length&&!paused){
-      if(!controllerLossNoted)noteQuestEvent(questDiagnostics,'controller-interrupted');
-      controllerLossNoted=true;
-      paused=true;show('Controllers disconnected · VR paused.');resetInputs();
-    }
-    if(session.inputSources?.length)controllerLossNoted=false;
-    if(input.confirmChoice)confirmChoice();
-    if(input.cycleForm)cycleForm();
-    simulate(now,input);
-    const snap=decorateSnapshot(vrRoomSnapshot(state));
-    const [px,,pz]=worldAt(snap.player.x,snap.player.y);
-    snap.selectedChoice=selectedChoice;
-    const root=worldRoot4(px,pz,rootYaw,floorShift);
-    const views=pose.views.map(v=>({
-      projection:v.projectionMatrix,
-      inverse:v.transform.inverse.matrix,
-      viewport:xrLayer.getViewport(v),
-      matrix:multiply4(v.projectionMatrix,multiply4(v.transform.inverse.matrix,root))
-    }));
-    const renderStarted=performance.now();
-    renderer.render(views,snap,{framebuffer:xrLayer.framebuffer,
-      hudPose:pose.transform.matrix,vignette:comfort.vignette});
-    // Only view counts and bounded timings are retained. Never serialize
-    // pose/transform matrices, controller axes or in-game state to receipts.
-    recordQuestFrame(questDiagnostics,{
-      timestamp:now,viewCount:views.length,
-      renderSubmissionMs:performance.now()-renderStarted,
-      left:session.inputSources?.some(c=>c.handedness==='left')??false,
-      right:session.inputSources?.some(c=>c.handedness==='right')??false
-    });
-    renderFieldMetrics();
-  }catch(error){
-    noteQuestEvent(questDiagnostics,'runtime-error');
-    paused=true;show('VR frame stopped safely: '+error.message);
-    renderFieldMetrics(true);
-    void leaveXR();
-  }
-}
+// Immersive ownership is shared; legacy desktop remains above unchanged.
+export const sharedXR=legacyXRBridge({canvas,getState:()=>state,setState:value=>{state=value;},settings:comfort,
+  onSettings:s=>{comfort=normalizeVRComfort(s);initializeComfort();try{storeVRComfort(window.localStorage,comfort);}catch{}},
+  save:()=>saveProgress(true),restore:()=>{const saved=loadVRCheckpoint(window.localStorage);if(!saved)throw Error('No VR checkpoint exists.');state=saved;},
+  onStatus:show,onMode:display=>{mode=display;xr=sharedXR.session||null;renderer=sharedXR.renderer||null;
+    enterVR.disabled=sharedXR.pending||display==='xr';exitVR.disabled=display!=='xr';pauseButton.disabled=display==='idle';
+    $('intro-overlay').hidden=display!=='idle';resetInputs();},
+  onSnapshot:()=>{paused=sharedXR.paused;updateInfo();saveProgress();},
+  onFrame:metrics=>{recordQuestFrame(questDiagnostics,metrics);renderFieldMetrics();},
+  onSession:(event,kind)=>{if(event==='start')beginQuestDiagnostics(questDiagnostics,kind);else{saveProgress(true);endQuestDiagnostics(questDiagnostics);}renderFieldMetrics(true);}
+});
+installXRControls(sharedXR,{legacyDesktop:true});
 async function beginXR(){
-  if(xr){show('VR is already active.');return;}
-  noteQuestEvent(questDiagnostics,'xr-start-requested');
-  if(!navigator.xr?.requestSession){
-    noteQuestEvent(questDiagnostics,'xr-start-failed');
-    show('WebXR unavailable. Use Quest Browser over HTTPS or desktop preview.');
-    renderFieldMetrics(true);return;
-  }
-  let session=null;
-  try{
-    ensureRenderer();
-    if(!globalThis.isSecureContext)throw Error('Immersive WebXR requires HTTPS.');
-    stopDesktop();paused=true;resetInputs();
-    session=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});
-    xr=session;mode='xr';rootYaw=0;accum=0;last=0;
-    visibilityLossNoted=false;poseLossNoted=false;controllerLossNoted=false;
-    if(navigationOpen)toggleNavigation(false);
-    session.addEventListener('end',()=>finishXR(session),{once:true});
-    session.addEventListener('visibilitychange',()=>{
-      if(session.visibilityState!=='visible'){paused=true;resetInputs();}
-    });
-    session.addEventListener('inputsourceschange',event=>{
-      if(event.removed?.length){
-        noteQuestEvent(questDiagnostics,'controller-interrupted');
-        paused=true;resetInputs();
-        show('Controller changed · VR paused.');
-        renderFieldMetrics(true);
-      }
-    });
-    await renderer.gl.makeXRCompatible?.();
-    xrLayer=new XRWebGLLayer(session,renderer.gl,{
-      antialias:false,alpha:false,framebufferScaleFactor:.85});
-    session.updateRenderState({baseLayer:xrLayer,depthNear:.05,depthFar:80});
-    let referenceKind='local-floor';
-    try{xrSpace=await session.requestReferenceSpace('local-floor');floorShift=0;}
-    catch{
-      referenceKind='local';
-      xrSpace=await session.requestReferenceSpace('local');floorShift=-1.6;
-    }
-    beginQuestDiagnostics(questDiagnostics,referenceKind);
-    xrSpace.addEventListener?.('reset',()=>{
-      noteQuestEvent(questDiagnostics,'tracking-reset');
-      paused=true;resetInputs();rootYaw=0;
-      show('Tracking reset · VR paused.');
-      renderFieldMetrics(true);
-    });
-    paused=false;$('intro-overlay').hidden=true;
-    show('IMMERSIVE SPARK · Canonical solo Descent · RT power/choose · B morph · A gate');
-    pauseButton.disabled=false;exitVR.disabled=false;enterVR.disabled=true;
-    mode='xr';frameId=session.requestAnimationFrame(onXRFrame);
-    renderFieldMetrics(true);
-  }catch(error){
-    noteQuestEvent(questDiagnostics,'xr-start-failed');
-    show('Unable to enter VR: '+error.message);
-    renderFieldMetrics(true);
-    if(session){try{await session.end();}catch{finishXR(session);}}
-    else{mode='idle';paused=true;}
-  }
+  if(sharedXR.pending){show('VR permission request pending · finish or cancel the browser prompt');return false;}
+  if(sharedXR.session){show('VR is already active.');return false;}
+  noteQuestEvent(questDiagnostics,'xr-start-requested');stopDesktop();renderer?.dispose();renderer=null;
+  if(navigationOpen)toggleNavigation(false);
+  const ok=await sharedXR.enter();if(!ok)noteQuestEvent(questDiagnostics,'xr-start-failed');return ok;
 }
-function finishXR(session){
-  if(xr!==session)return;
-  saveProgress(true);
-  endQuestDiagnostics(questDiagnostics);
-  xr=null;xrSpace=null;xrLayer=null;frameId=null;
-  resetInputs();paused=true;mode='idle';last=0;accum=0;
-  pauseButton.disabled=true;exitVR.disabled=true;enterVR.disabled=false;
-  show('Immersive VR ended · local VR checkpoint saved separately from original Spark.');
-  renderFieldMetrics(true);
-}
-async function leaveXR(){
-  const session=xr;if(!session)return;
-  try{await session.end();}
-  catch{finishXR(session);}
-}
+async function leaveXR(){await sharedXR.exit();renderer=null;}
 async function checkXR(){
   if(!navigator.xr?.isSessionSupported){
     $('xr-support').textContent='Immersive WebXR unavailable here · desktop preview available.';
@@ -550,6 +388,7 @@ async function checkXR(){
 desktop.addEventListener('click',startDesktop);
 enterVR.addEventListener('click',()=>void beginXR());
 pauseButton.addEventListener('click',()=>{
+  if(mode==='xr'){sharedXR.pause();return;}
   if(mode==='idle')return;
   paused=!paused;resetInputs();last=0;accum=0;
   show(paused?'Preview paused':'Preview resumed');
@@ -566,7 +405,7 @@ resume.addEventListener('click',()=>{
     const restored=loadVRCheckpoint(window.localStorage);
     if(!restored)throw Error('No VR checkpoint exists.');
     stopDesktop();mode='idle';paused=true;state=restored;
-    rootYaw=0;desktopYaw=0;desktopPitch=0;last=0;accum=0;
+    desktopYaw=0;desktopPitch=0;last=0;accum=0;
     selectedChoice=0;phaseStamp='';outputStamp='';resetInputs();
     updateInfo(true);
     toggleNavigation(false);
@@ -578,13 +417,13 @@ reset.addEventListener('click',()=>{
   if(xr){show('Exit immersive VR before starting a new run.');return;}
   if(!window.confirm('Start a fresh VR-only journey? The previous VR checkpoint will be replaced; original Spark saves are untouched.'))return;
   clearVRCheckpoint(window.localStorage);
-  state=createVRPreview();rootYaw=0;desktopYaw=0;desktopPitch=0;
+  state=createVRPreview();desktopYaw=0;desktopPitch=0;
   last=0;accum=0;outputStamp='';phaseStamp='';selectedChoice=0;
   lastSavedSignature='';lastSavedAt=0;resetInputs();
   toggleNavigation(false);updateInfo(true);refreshSavedStatus();
   show('New VR-only journey · original Spark saves untouched.');
 });
-navButton.addEventListener('click',()=>toggleNavigation());
+navButton.addEventListener('click',()=>{if(mode==='xr'){sharedXR.pause(true,'World');sharedXR.focusPage('World');}else toggleNavigation();});
 for(const control of [speedSelect,turnSelect,vignetteSelect])
   control.addEventListener('change',changeComfort);
 window.addEventListener('keydown',event=>{
@@ -617,11 +456,11 @@ window.addEventListener('keydown',event=>{
 });
 window.addEventListener('keyup',event=>keys.delete(event.code));
 window.addEventListener('blur',()=>{
-  if(mode!=='idle'){paused=true;resetInputs();show('Preview paused on window blur.');}
+  if(mode!=='idle'){paused=true;resetInputs();if(mode==='xr')sharedXR.pause(true,'Browser interrupted · release controls and resume');show('Preview paused on window blur.');}
 });
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden&&mode!=='idle'){
-    paused=true;resetInputs();saveProgress();
+    paused=true;resetInputs();if(mode==='xr')sharedXR.pause(true,'Headset hidden · resume explicitly');saveProgress();
     show('Preview paused while hidden.');
   }
 });
@@ -637,5 +476,5 @@ canvas.addEventListener('pointermove',event=>{
 });
 canvas.addEventListener('pointerup',()=>{drag=null;});
 canvas.addEventListener('pointercancel',()=>{drag=null;});
-window.addEventListener('pagehide',()=>saveProgress());
+window.addEventListener('pagehide',()=>{saveProgress();stopDesktop();if(renderer&&renderer!==sharedXR.renderer)renderer.dispose();void sharedXR.dispose();});
 initializeComfort();initializeFieldLab();updateInfo(true);refreshSavedStatus();void checkXR();

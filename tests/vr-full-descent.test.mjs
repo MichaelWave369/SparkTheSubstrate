@@ -203,7 +203,8 @@ test('source exposes separate save/resume, explicit XR controls and no backend t
   assert.match(html,/Quest Touch controllers/);
   assert.match(app,/chooseVRPhase\(/);
   assert.match(app,/nextVRForm\(/);
-  assert.match(app,/navigator\.xr\.requestSession\('immersive-vr'/);
+  assert.match(app,/sharedXR\.enter\(\)/);
+  assert.match(text('../public/vr/spark-xr-runtime.js'),/api\.requestSession\('immersive-vr'/);
   assert.ok(!app.includes('/api/'));
   assert.ok(!save.includes('/api/'));
   assert.ok(!app.includes('spark-substrate-descent-v2'));

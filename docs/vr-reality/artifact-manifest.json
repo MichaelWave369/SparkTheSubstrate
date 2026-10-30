@@ -1,0 +1,227 @@
+{
+  "schema": "spark.xr.rung4.artifacts.v1",
+  "baseCommit": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+  "selfExcluded": true,
+  "files": {
+    ".github/workflows/immersive-vr.yml": {
+      "bytes": 4810,
+      "sha256": "e70db11f6eb531d740de741333bca8125be70c9f97642acfe0aead37f189557f"
+    },
+    "ASSETS_AND_ATTRIBUTION.md": {
+      "bytes": 7592,
+      "sha256": "e6cb615be63c96a8b61869da299a129221566063c67ea184c8900978716f3844"
+    },
+    "docs/QUEST3_FIELD_LAB.md": {
+      "bytes": 11230,
+      "sha256": "3fee0a272770529d71cd0bb8a29bedf2586605fdc3696008fab5fe06b1700b1a"
+    },
+    "docs/vr-reality/ascension-calibration.png": {
+      "bytes": 87301,
+      "sha256": "b1c5be0b0308159f827aff08136053c2e52ed46c40a1b9eec1a972c08a10f7f7"
+    },
+    "docs/vr-reality/ascension-recovery.png": {
+      "bytes": 156777,
+      "sha256": "233446640b86bee1faa2e956c83c3019561265e73adbb6504e027053eadccb6b"
+    },
+    "docs/vr-reality/ascension-xr-wrist.png": {
+      "bytes": 148602,
+      "sha256": "93f6758def5b34c614dc25b57e3cab4514dee6f2137db0c328137c4c54f16353"
+    },
+    "docs/vr-reality/before/glass.png": {
+      "bytes": 197189,
+      "sha256": "26e822dd18285f9321a3da057f45e9da4e903fb0cc18f3e2f698494ef888d708"
+    },
+    "docs/vr-reality/before/machine.png": {
+      "bytes": 171015,
+      "sha256": "e79f9798c21a4a2a6b4e6f5ed0b3af39ea4d0d8131eafe9379f816d1b60dba71"
+    },
+    "docs/vr-reality/before/threshold.png": {
+      "bytes": 163397,
+      "sha256": "b5c636ce7cbc41dee092ed1049affd8afd7b7762ace74b680b2f483fdf97d034"
+    },
+    "docs/vr-reality/before/wrist.png": {
+      "bytes": 170929,
+      "sha256": "7114e1656e7a4d11f5258794bff1c5e82c2b4be59d7d8296d865a37b164dca12"
+    },
+    "docs/vr-reality/browser-results.json": {
+      "bytes": 19748,
+      "sha256": "0fc058e416ba7a81e37fa319809a4ac26885c1146a788f19df115f71395649ef"
+    },
+    "docs/vr-reality/capture-provenance.json": {
+      "bytes": 4208,
+      "sha256": "87ae0c9ec40c8ce3d721c4400ac90816af88952649056591d3d233eab3f9e792"
+    },
+    "docs/vr-reality/glass-combat-after.png": {
+      "bytes": 233209,
+      "sha256": "8e71aac4ba1b8d52ed226388c1b40980405befd0136f3dfbfd77c52aa9149d66"
+    },
+    "docs/vr-reality/hands-after-same-pose.png": {
+      "bytes": 247132,
+      "sha256": "444c0ead01357eaad3ad45078c867c8be92a8e9e922f9fe2586ee4ebfbfabbbf"
+    },
+    "docs/vr-reality/hands-before-same-pose.png": {
+      "bytes": 264666,
+      "sha256": "073f68f56c693b9939f45781beeb1438ff3675c348b43302566f220c6d7fa4f2"
+    },
+    "docs/vr-reality/index-calibration.png": {
+      "bytes": 92294,
+      "sha256": "0614a1ba369b6e10846f22052887e894662dc2791f3c9884bee0132056457eff"
+    },
+    "docs/vr-reality/index-recovery.png": {
+      "bytes": 241574,
+      "sha256": "90255dbe80363d08594c7a650c14016cbdd7908258b04a223695e4eab8e4021d"
+    },
+    "docs/vr-reality/index-xr-wrist.png": {
+      "bytes": 227875,
+      "sha256": "8c5fe6503253bbb4335e378bf89f921990b3bb8fbeac9a1ed2c9f69ff1483ef4"
+    },
+    "docs/vr-reality/intake.json": {
+      "bytes": 2979,
+      "sha256": "79d5a6dee78fdaedf1e1354801ad55c14cb15dddab4913f4743885102193de0b"
+    },
+    "docs/vr-reality/living-calibration.png": {
+      "bytes": 102071,
+      "sha256": "826246bedde543f15343aa6446e32c4fb1e285b63bb2536242cf8b9071ad7bd7"
+    },
+    "docs/vr-reality/living-recovery.png": {
+      "bytes": 264960,
+      "sha256": "9c433b78c364f8e06d034861f343e8a8f7b171772e42b1d28d93022cdb58a412"
+    },
+    "docs/vr-reality/living-xr-wrist.png": {
+      "bytes": 252879,
+      "sha256": "e0670c15dd227706c7debb2f56cd1604222d56eb35021e86069e4bf7e1da36a7"
+    },
+    "docs/vr-reality/machine-after.png": {
+      "bytes": 216758,
+      "sha256": "5069ddba423b2d151a2284c40cb31fcae840e5d9c3e23371622f77fda96fdc7f"
+    },
+    "docs/vr-reality/rung-4.md": {
+      "bytes": 11532,
+      "sha256": "0966c797c4c05a142d08af4ccba4399c21afac53b8426a7d056e9bb7f09f7aec"
+    },
+    "docs/vr-reality/threshold-after.png": {
+      "bytes": 205645,
+      "sha256": "49ff7eecec1567d515bac519eaeda4ddbe30f00c80bc9dd3be2852ce40d9e0cb"
+    },
+    "docs/vr-reality/verification.json": {
+      "bytes": 17759,
+      "sha256": "4610332d1fc08b99f58628b252495876060c9bb75813c4a3d35f5ea6b9d1b0e9"
+    },
+    "public/vr/index.html": {
+      "bytes": 9941,
+      "sha256": "0ae27553c611414bc58517e4f5e855efd05c556dc7af8386c18b4677cc08dec4"
+    },
+    "public/vr/living.html": {
+      "bytes": 8859,
+      "sha256": "36e77bfa3f945b62c03a3ce7253de29fc21e1156c8a14af51bb87216d08d6846"
+    },
+    "public/vr/spark-ascension-app.js": {
+      "bytes": 7184,
+      "sha256": "d8b7caed03841e4cbcceac2554c9e4f5bdf95adf8d5563f905596767c839f502"
+    },
+    "public/vr/spark-living-app.js": {
+      "bytes": 10546,
+      "sha256": "f8ba6ec5cb7ef5fa79c81a838d8cf52b0b07b66bc426ea5327727a4c68b6e56e"
+    },
+    "public/vr/spark-living-host.js": {
+      "bytes": 5989,
+      "sha256": "0db976b9a9caddbaffa23d53aff835627a8da4c6ed1806fc3ec4942d1065fb20"
+    },
+    "public/vr/spark-room-themes.js": {
+      "bytes": 14060,
+      "sha256": "aa0e1b1bdd56fe8acb67ac9b346b0764ea65d3352154d47fcc0f806e6e822d55"
+    },
+    "public/vr/spark-vr-app.js": {
+      "bytes": 22008,
+      "sha256": "b4cefe48d164c7b2002b7d9d3b8076acb4f73e0e243824329869a51c0f295c31"
+    },
+    "public/vr/spark-vr-art.js": {
+      "bytes": 2003,
+      "sha256": "0d17271eafe62d7b71f1bf956338319772b4a6ce100fc1b85588ecda38971ba6"
+    },
+    "public/vr/spark-vr-diagnostics.js": {
+      "bytes": 10910,
+      "sha256": "2b2cdd48d228ec6ecaec39516c698eca0b5402a86b355d9a19f43840167698c1"
+    },
+    "public/vr/spark-vr-legacy-xr.js": {
+      "bytes": 1636,
+      "sha256": "0525ee7ab1fa12b3d983b9bbd61bbda03d13a41f3fc59b2825b0356da5ebf4e3"
+    },
+    "public/vr/spark-vr-renderer.js": {
+      "bytes": 35556,
+      "sha256": "eabe9346142ed2b99ac239c436b96e5a94f476c6b65cbafca17800ff75b14410"
+    },
+    "public/vr/spark-world-art.js": {
+      "bytes": 8003,
+      "sha256": "94c93bde3991c8eaec94fe92c5f1530003bd968b7875a289706b0c8b1ae08d10"
+    },
+    "public/vr/spark-xr-adapters.js": {
+      "bytes": 12592,
+      "sha256": "7bc73abbe78a6803bcb5c7f603fb85cc2be767903f6215f9b6e002a1221b7e7f"
+    },
+    "public/vr/spark-xr-calibration.js": {
+      "bytes": 2769,
+      "sha256": "ab6c0585143d983ceb840167f13a3d41c992320e1daed3784f2dce7e17495bb5"
+    },
+    "public/vr/spark-xr-controls.js": {
+      "bytes": 6479,
+      "sha256": "615eb5330cdd30bb129eca3993ef2910a34379352a40f11485935afcf8e15d86"
+    },
+    "public/vr/spark-xr-hands.js": {
+      "bytes": 3523,
+      "sha256": "75f61a9f60f98fe85634ee09f169a0a8c2a4f0339569d8e2ace10de414c48c4d"
+    },
+    "public/vr/spark-xr-input.js": {
+      "bytes": 12522,
+      "sha256": "80ea4676a630e304db6945eacaa53460d86bee8114a7c4908d849ed3fb34c450"
+    },
+    "public/vr/spark-xr-panel.js": {
+      "bytes": 4514,
+      "sha256": "2d12c1466d21dbb8dfdd21f65cf12b26d7f86247224afa635f22928875050470"
+    },
+    "public/vr/spark-xr-preview.js": {
+      "bytes": 1754,
+      "sha256": "29106d54341d6f17bdc21f562d644a0e20d4f3d21d62ec15f2c004f95ed19789"
+    },
+    "public/vr/spark-xr-runtime.js": {
+      "bytes": 25989,
+      "sha256": "ad68e5c2659a4ff654ac9c292f565515c0ec89b23f7715bfdf725e0c65b87a60"
+    },
+    "public/vr/spark-xr-status.js": {
+      "bytes": 1991,
+      "sha256": "f2df0f2d5ac1dc71ecd57d36fdbfb4db7a018fc12afe43c476c77fe669f8fb5a"
+    },
+    "scripts/check-vr-reality-browser.mjs": {
+      "bytes": 20457,
+      "sha256": "5372c992d85cfd9cf944dc912be30afa7cf3a231cbdeb58b1e34cf37f8aced44"
+    },
+    "tests/fixtures/vr-r35-hands.mjs": {
+      "bytes": 3568,
+      "sha256": "883f19501747913fd6502bc887328e92d7d04485c3ce60a2211c41dae1198435"
+    },
+    "tests/vr-first-slice.test.mjs": {
+      "bytes": 6543,
+      "sha256": "b01eb84962a02e6fac20790e1c1a0d9e775aa4c64c7bf74074d162c92243c6f7"
+    },
+    "tests/vr-full-descent.test.mjs": {
+      "bytes": 9881,
+      "sha256": "af88182b7c3aa943862d16e8a71f87d21d6cf614fb514ae9005be70417b14d13"
+    },
+    "tests/vr-navigation-comfort.test.mjs": {
+      "bytes": 6083,
+      "sha256": "5dafcb8049f03ec3a47875eeefa620afe4708e8078cd340cf6b3362885a40f6e"
+    },
+    "tests/vr-quest-field-lab.test.mjs": {
+      "bytes": 7358,
+      "sha256": "6bb6f8b0183c05a18989af06c17681b012b3293497616d702db632317fac6bd1"
+    },
+    "tests/vr-reality-poses.mjs": {
+      "bytes": 796,
+      "sha256": "55db2b2729a42327001823a305eb2687bdf917e37dab193ea2d5ed5033b3ee6c"
+    },
+    "tests/vr-reality.test.mjs": {
+      "bytes": 14557,
+      "sha256": "ae3029b732a9c889fda60bafd388eeea09c94e956fb8c76b091b1ec13bc595a5"
+    }
+  }
+}

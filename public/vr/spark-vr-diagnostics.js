@@ -9,7 +9,7 @@ export const QUEST_ACCEPTANCE_CASES=Object.freeze([
   Object.freeze({id:'movement',label:'Left-stick movement and right-stick snap turn work'}),
   Object.freeze({id:'abilities',label:'Dash and vessel power respond correctly'}),
   Object.freeze({id:'gate',label:'Threshold to Glass gate opens by normal Spark rules'}),
-  Object.freeze({id:'compass',label:'Left-Y compass opens, pauses combat, then closes'}),
+  Object.freeze({id:'compass',label:'World page/compass opens safely; left Y recenters and pauses'}),
   Object.freeze({id:'comfort',label:'Speed and mask are tolerable while seated'}),
   Object.freeze({id:'save',label:'VR-only checkpoint restores and original saves are untouched'}),
   Object.freeze({id:'progression',label:'Glass to Machine and a real karma/gift choice work'}),
@@ -41,6 +41,11 @@ export const QUEST_ACCEPTANCE_CASES=Object.freeze([
   Object.freeze({id:'awakening-victory',label:'Awakening: defeat native Cantor, receive Ash Cloak, save/restore and continue legally'}),
   Object.freeze({id:'awakening-rearm',label:'Awakening: tracking loss/recenter cancels charge; all controls must neutralize before fresh casting'}),
   Object.freeze({id:'awakening-performance',label:'Awakening: active Cantor volley and wrist are comfortable in both eyes at all three quality presets'}),
+  Object.freeze({id:'reality-hands',label:'Reality pass: both controller gauntlets align at natural scale; grip/pointer calibration work independently'}),
+  Object.freeze({id:'reality-recovery',label:'Reality pass: tracking, neutral wait, collision and boundary states are clear; legitimate recovery never fires a held attack'}),
+  Object.freeze({id:'reality-menu',label:'Reality pass: five-page compact wrist/floating panel is readable in both eyes; ray/stick selection and close work'}),
+  Object.freeze({id:'reality-launch',label:'Reality pass: all three entry URLs and both hub modes launch; switching requires a new explicit Enter VR gesture'}),
+  Object.freeze({id:'reality-art',label:'Reality pass: Threshold, Glass and Machine art is readable, comfortable and performant in the tested physical headset'}),
   Object.freeze({id:'awakening-bounce',label:'Awakening: optional earned after-battle celebration is comfortable, expires cleanly and changes no combat state'})
 ]);
 const MAX_SAMPLES=480;

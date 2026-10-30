@@ -39,7 +39,7 @@ export function readXRFrame(frame, space, sources) {
       } catch { return null; }
     };
     const grip = get(source.gripSpace), ray = get(source.targetRaySpace);
-    hands[source.handedness] = {grip, ray: ray || grip,
+    hands[source.handedness] = {grip, ray,
       buttons: source.gamepad.buttons || [], axes: source.gamepad.axes || [], source};
   }
   return {head, hands, viewer};
@@ -58,7 +58,7 @@ export class SparkXRInput {
   constructor() { this.ui = {}; this.recenter(); }
   interrupt() {
     this.triggers = {left: {armed: false, down: false}, right: {armed: false, down: false}};
-    this.previousHands = {}; this.last = null;
+    this.previousHands = {}; this.previousHead=null; this.last = null;
     this.motionArmed=false;
   }
   recenter() { this.base = null; this.yaw = 0; this.previousHead = null; this.interrupt(); }
@@ -74,21 +74,30 @@ export class SparkXRInput {
       wrist:this.edge('wrist',button(l,4)),cycleForm:this.edge('cycleForm',sample.cycleForm===true),
       recenter: this.edge('recenter', button(l, 5)),
       confirm: this.edge('confirm', button(r, 0) || button(l, 0))};
-    const menuAxis = axis(l, 1);
+    const menuAxis = axis(l||r, 1);
     if (Math.abs(menuAxis) < .25) this.ui.menu = false;
     ui.menuMove = Math.abs(menuAxis) > .7 && !this.ui.menu ? Math.sign(menuAxis) : 0;
     if (ui.menuMove) this.ui.menu = true;
-    const out = {version: XR_INPUT_VERSION, ...ui, head, hands: {}, valid: false,
+    const pageAxis=axis(l,0);if(Math.abs(pageAxis)<.25)this.ui.page=false;
+    ui.menuPage=Math.abs(pageAxis)>.7&&!this.ui.page?Math.sign(pageAxis):0;if(ui.menuPage)this.ui.page=true;
+    const out = {version: XR_INPUT_VERSION, ...ui, head:trackedMatrix(head), hands: {}, valid: false,
       yaw:this.yaw,move: 0, cast: null, casts:{}, dodge: false, duck: false, body: null};
-    const fail = reason => { this.interrupt(); out.reason = reason; return out; };
-    if(sample.visible===false)return fail('Headset visibility interrupted');
-    if (!Number.isFinite(now) || !trackedMatrix(head)) return fail('Head tracking unavailable');
+    out.controllers={};
+    for(const side of ['left','right']){
+      const h=hands[side],grip=trackedMatrix(h?.grip),ray=trackedMatrix(h?.ray);
+      out.controllers[side]={detected:!!h,grip:!!grip,ray:!!ray};
+      if(grip&&(!out.head||distance(grip,out.head)<=1.4))out.hands[side]={matrix:grip,ray,charge:0,color:side==='left'?'#f6c66c':'#6cebe2'};
+    }
+    out.uiReady=!!out.head&&Object.keys(out.hands).length>0;
+    const fail = (reason,code='tracking-unavailable') => { this.interrupt();out.ready=false;out.reason=reason;out.status={code,reason};return out; };
+    if(sample.visible===false)return fail('Headset visibility interrupted','visibility');
+    if (!Number.isFinite(now) || !out.head) return fail('Head tracking unavailable');
     let dt = this.last === null ? 0 : (now - this.last) / 1000;
     // Software-rendered desktop frames have no physical tracking cadence to qualify.
     if(synthetic&&dt>.25)dt=.05;
-    if (dt < 0 || dt > .25) return fail('Tracking cadence interrupted');
+    if (dt < 0 || dt > .25) return fail('Tracking cadence interrupted · pause, release controls, then resume','cadence');
     if (this.previousHead && distance(head, this.previousHead) > .25 + Math.max(0, dt) * 4)
-      return fail('Tracking position jumped');
+      return fail('Tracking position jumped · recenter while seated, then resume','tracking-jump');
     if (!this.base) {
       this.base = [head[12], head[13], head[14]];
       this.yaw = Math.atan2(head[8], head[10]);
@@ -96,41 +105,54 @@ export class SparkXRInput {
     const offset = this.local([head[12] - this.base[0], head[13] - this.base[1], head[14] - this.base[2]]);
     const radius = settings.posture === 'standing' ? .55 : .45;
     if (Math.abs(offset[0]) > radius || Math.abs(offset[2]) > .35 || offset[1] < -.5 || offset[1] > .3)
-      return fail('Return to your centred play space, then resume');
+      return fail('Outside centred play space · return or recenter, then resume','safe-boundary');
+    // Visual height remains current if a controller drops out. Invalid gameplay
+    // still fails closed, but the room must not jump to a different eye height.
+    out.body={forward:clamp(-offset[2]*100,-35,35),lateral:clamp(offset[0]*100,-55,55),height:clamp(65+offset[1]*100,15,95)};
     for (const name of ['left', 'right']) {
       const h = hands[name];
+      if(!h)return fail(name+' controller disconnected · reconnect or use Session to exit','controller-disconnected');
       if (!trackedMatrix(h?.grip) || !trackedMatrix(h?.ray) || distance(h.grip, head) > 1.4)
-        return fail(name + ' controller pose unavailable');
+        return fail(name + ' controller pose unavailable · keep it in view, then resume');
+      if(Array.from(h.axes||[]).some(v=>!Number.isFinite(v)||Math.abs(v)>1.05))return fail(name+' controller input outside safe range','input-range');
       if (this.previousHands[name] && dt > 0 && distance(h.grip, this.previousHands[name]) > .35 + dt * 12)
-        return fail(name + ' controller tracking jumped');
+        return fail(name + ' controller tracking jumped · release controls and resume','tracking-jump');
     }
     // Turns are edge-triggered and never repeat until the stick returns to neutral.
-    const turn = axis(r, 0);
+    const turn = axis(r, 0),previousYaw=this.yaw;
     if (Math.abs(turn) < .25) this.ui.turn = false;
     if (active && Math.abs(turn) > .72 && !this.ui.turn) {
       this.yaw += Math.sign(turn) * settings.turn * Math.PI / 180; this.ui.turn = true;
     }
     const bodyOffset = this.local([head[12] - this.base[0], head[13] - this.base[1], head[14] - this.base[2]]);
     // A snap turn must not rotate an off-centre body outside the collision envelope.
-    if (Math.abs(bodyOffset[2]) > .35 || Math.abs(bodyOffset[0]) > radius) return fail('Recenter before turning further');
+    if (Math.abs(bodyOffset[2]) > .35 || Math.abs(bodyOffset[0]) > radius){
+      this.yaw=previousYaw;out.yaw=previousYaw;
+      return fail('Lean and snap turn reached the safe limit · recenter before turning further','safe-boundary');
+    }
     out.body = {forward: clamp(-bodyOffset[2] * 100, -35, 35),
       lateral: clamp(bodyOffset[0] * 100, -55, 55), height: clamp(65 + bodyOffset[1] * 100, 15, 95)};
     out.valid = true; out.yaw = this.yaw; out.base = [...this.base];
-    const neutral=![button(l,0),button(r,0),button(l,1),button(r,1),button(r,4),button(l,3)].some(Boolean)&&
-      Math.abs(axis(l,0))<.18&&Math.abs(axis(l,1))<.18&&Math.abs(axis(r,0))<.25;
+    const rearmBlocks=[];
+    for(const [hand,index,label]of [[l,0,'left trigger'],[r,0,'right trigger'],[l,1,'left grip'],[r,1,'right grip'],[r,4,'A'],[l,3,'left stick press']])if(button(hand,index))rearmBlocks.push(label);
+    if(Math.hypot(axis(l,0),axis(l,1))>=.18)rearmBlocks.push('move stick');
+    if(Math.abs(axis(r,0))>=.25)rearmBlocks.push('turn stick');
+    const neutral=rearmBlocks.length===0;out.neutral=neutral;out.rearmBlocks=rearmBlocks;
     if(!active)this.motionArmed=false;else if(neutral)this.motionArmed=true;
     out.ready=this.motionArmed;
+    out.status={code:!active?'paused':out.ready?'ready':'neutral-required',reason:!active?'Paused':out.ready?'Controls ready':'Release '+rearmBlocks.join(', ')+' · centre controls to move'};
     out.physicalDelta={x:0,y:0};
     if(active&&out.ready&&this.previousHead){
       const d=this.local([head[12]-this.previousHead[12],0,head[14]-this.previousHead[14]]);
       out.physicalDelta={x:d[0]*100,y:d[2]*100};
     }
-    const sx=axis(l,0),sy=axis(l,1),fx=-head[8],fz=-head[10],fl=Math.hypot(fx,fz)||1;
+    const ax=axis(l,0),ay=axis(l,1),magnitude=Math.hypot(ax,ay),deadzone=magnitude>.18?Math.min(1,(magnitude-.18)/.82)/magnitude:0,
+      sx=ax*deadzone,sy=ay*deadzone,fx=-head[8],fz=-head[10],fl=Math.hypot(fx,fz)||1;
     const wx=sx*head[0]-sy*fx/fl,wz=sx*head[2]-sy*fz/fl;
     const c=Math.cos(this.yaw),s=Math.sin(this.yaw),length=Math.max(1,Math.hypot(wx,wz));
     out.movement=active&&out.ready?{x:(c*wx-s*wz)/length*settings.movement,y:(s*wx+c*wz)/length*settings.movement}:{x:0,y:0};
     out.motionScale=settings.movement;
-    out.move = active ? -axis(l, 1) * settings.movement : 0;
+    out.move = active&&out.ready ? -sy * settings.movement : 0;
     out.duck = active && button(l, 1);
     if (out.duck) out.body.height = Math.min(out.body.height, 35);
     const dodge = this.edge('dodge', button(r, 1) || button(r, 4));
