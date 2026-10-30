@@ -91,3 +91,15 @@ additions use the repository's MIT license. MoreBounceLabs' hosted music catalog
 and other repositories' assets are not imported. Evidence PNGs are captures of the
 actual software-WebGL application, not generated mockups or headset photographs.
 No additional app dependency, remote runtime asset, paid service or telemetry.
+
+## SPARK VR: The Warden Awakens — Rung 3.5
+
+The Demiurge's Eye chamber, obsidian/gold ribs, celestial mechanisms, responsive
+Eye, Warden armor, distinct summoned hound silhouettes, locked lane guides and
+bounded dissolution/fracture effects are original procedural artwork created
+with Spark's existing geometry helpers. The optional phase cue uses the existing
+original oscillator synthesis. These additions use the repository's MIT license.
+No external art, audio samples, models, remote runtime assets or app dependencies
+are added. Evidence PNGs show the actual Chromium/software-WebGL game, not
+illustrations or photographs from a Quest headset. Existing asset notices above
+remain applicable to their respective assets.

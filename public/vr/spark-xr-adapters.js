@@ -5,7 +5,7 @@ import {BODIES,powerProfile,attackProfile,attackInterval,attackReach,queryAttack
 import {DIRECTED_ATTACK_MODE} from '../attack-intent.js';
 import {projectAttackRay,XR_ATTACK_PROJECTION_VERSION} from './spark-xr-targeting.js';
 import {VesselPresentation} from './spark-vessel-presentation.js';
-import {GuardianPresentation} from './spark-guardian-presentation.js';
+import {GuardianPresentation,guardianSpec} from './spark-guardian-presentation.js';
 import {MoreBouncePresentation} from './spark-more-bounce.js';
 import {XR_INPUT_VERSION, XR_ADAPTER_VERSION, clamp,xrSettings,trackedMatrix} from './spark-xr-input.js';
 
@@ -147,7 +147,9 @@ export class DescentXRAdapter {
         return {...e,visualHeight:.82+(launch?launch.height-.82:0)*blend};}),
       gates:s.gates.map(g=>({...g,position:exitPosition(g.direction),entry:gateEntryStatus(run,g.direction)}))};
   }
-  snapshot(){return {...this.snapshotBase(),vessel:this.presentation.describe(this.state.run.form),
+  snapshot(){const s=this.snapshotBase();
+    if(this.guardian.room!==s.roomId||(guardianSpec(s.roomId)&&s.cleared&&!this.guardian.defeated))this.guardian.seed(s);
+    return {...s,vessel:this.presentation.describe(this.state.run.form),
     transform:this.presentation.transform,feedback:this.presentation.feedback,
     attackAnimation:this.presentation.action,attackResult:this.presentation.result,guardianVisual:this.guardian.describe(),moreBounce:this.moreBounce.snapshot(this.state.run,this.controls)};}
   drainEvents(){return [...this.presentation.drainEvents(),...this.guardian.drainEvents(),...this.moreBounce.drainEvents()];}
@@ -156,7 +158,7 @@ export class DescentXRAdapter {
     const run=this.state.run;this.castSerial=attackObservations(run).at(-1)?.id??0;
     this.presentation.reset();this.presentation.combatSerial=this.castSerial;
     this.presentation.seen=new Set([...run.effects.map(e=>e.id),...run.shots.map(s=>'shot:'+s.id)]);
-    this.guardian.reset();this.guardian.room=run.room;this.guardian.defeated=run.room==='forge'&&run.cleared.includes('forge');
+    this.guardian.reset();this.guardian.room=run.room;this.guardian.defeated=!!guardianSpec(run.room)&&run.cleared.includes(run.room);
     this.moreBounce.reset();this.aim=null;this.launches.clear();
   }
 }

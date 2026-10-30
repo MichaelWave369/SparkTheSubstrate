@@ -1,0 +1,299 @@
+{
+  "schema": "spark.xr.rung3.5.browser.v1",
+  "status": "PASS",
+  "browser": "153.0.8010.0",
+  "entry": {
+    "room": "eye",
+    "bossHP": 1800,
+    "maxHP": 1800,
+    "level": 12,
+    "playerHP": 218.8666666666781,
+    "abilities": [
+      "phase",
+      "root",
+      "fracture",
+      "eye"
+    ],
+    "source": "Fresh native campaign; legal movement, powers, automatic combat and offered choices only"
+  },
+  "first": {
+    "id": 1461,
+    "kind": "warden",
+    "x": 480,
+    "y": 210,
+    "hp": 1709.2799999999997,
+    "maxHp": 1800,
+    "stage": 1,
+    "windup": 0.49999999999999917,
+    "windupTotal": 0.8,
+    "angles": [
+      1.9087361787763688,
+      2.1087361787763688,
+      2.308736178776369
+    ],
+    "volleys": 0,
+    "marks": []
+  },
+  "summons": {
+    "guardian": {
+      "id": 1461,
+      "kind": "warden",
+      "x": 497.04140954095493,
+      "y": 297.9650767377861,
+      "hp": 898.8799999999985,
+      "maxHp": 1800,
+      "stage": 2,
+      "windup": 0,
+      "windupTotal": 0.8,
+      "angles": [],
+      "volleys": 7,
+      "marks": []
+    },
+    "hounds": [
+      {
+        "id": 1569,
+        "kind": "hound",
+        "x": 562.616918038113,
+        "y": 516.2299095452163,
+        "r": 14,
+        "hp": 56,
+        "maxHp": 56,
+        "speed": 84,
+        "attack": 0.9856556525298713,
+        "orbitHit": 0,
+        "flash": 0,
+        "windup": 0,
+        "charge": 0,
+        "chargeX": 0,
+        "chargeY": 0,
+        "shield": 0,
+        "rootTime": 0
+      },
+      {
+        "id": 1570,
+        "kind": "hound",
+        "x": 432.1896455048138,
+        "y": 79.45701629457562,
+        "r": 14,
+        "hp": 56,
+        "maxHp": 56,
+        "speed": 84,
+        "attack": 1.9012370359928665,
+        "orbitHit": 0,
+        "flash": 0,
+        "windup": 0,
+        "charge": 0,
+        "chargeX": 0,
+        "chargeY": 0,
+        "shield": 0,
+        "rootTime": 0
+      }
+    ],
+    "transition": 0.7333333333333325
+  },
+  "second": {
+    "id": 1461,
+    "kind": "warden",
+    "x": 497.04140954095493,
+    "y": 297.9650767377861,
+    "hp": 876.1999999999986,
+    "maxHp": 1800,
+    "stage": 2,
+    "windup": 0.7333333333333332,
+    "windupTotal": 0.8,
+    "angles": [
+      -0.017900468934061775,
+      0.16209953106593822,
+      0.3420995310659382,
+      0.5220995310659382,
+      0.7020995310659381
+    ],
+    "volleys": 7,
+    "marks": []
+  },
+  "volley": {
+    "volleys": 8,
+    "stage": 2,
+    "hp": 830.8399999999987,
+    "shots": [
+      {
+        "vx": 259.95834562983475,
+        "vy": -4.6538733759483195,
+        "damage": 16
+      },
+      {
+        "vx": 256.5915597008213,
+        "vy": 41.961547758630964,
+        "damage": 16
+      },
+      {
+        "vx": 244.9336296388047,
+        "vy": 87.22108157986155,
+        "damage": 16
+      },
+      {
+        "vx": 225.36125364285803,
+        "vy": 129.66227422237898,
+        "damage": 16
+      },
+      {
+        "vx": 198.50686635189518,
+        "vy": 167.9137397926412,
+        "damage": 16
+      }
+    ]
+  },
+  "victory": {
+    "boss": {
+      "name": "The Warden",
+      "room": "eye"
+    },
+    "seals": [
+      "stratum"
+    ],
+    "abilities": [
+      "phase",
+      "root",
+      "fracture",
+      "eye",
+      "morph"
+    ],
+    "essence": 30,
+    "phase": "resolve",
+    "hp": 306.1000000000248,
+    "level": 12,
+    "directed": {
+      "serial": 136,
+      "casts": 68,
+      "hits": 68,
+      "damage": 1540.0000000000011
+    },
+    "visual": {
+      "version": "spark.xr.guardian-presentation.v1",
+      "kind": "warden",
+      "victory": 2.7921999999997205,
+      "victoryDuration": 2.8,
+      "defeated": true,
+      "stage": 2,
+      "transition": 0,
+      "defeatPoint": {
+        "x": 492.63501285475564,
+        "y": 317.5290151196288
+      },
+      "hounds": 0,
+      "guide": "The Warden is defeated · claim rewards, then Continue / Finish"
+    },
+    "source": "Real canonical defeat; no health or reward injection"
+  },
+  "milestone": {
+    "choices": [
+      {
+        "id": "continue",
+        "title": "Continue beyond the Eye",
+        "detail": "Pursue the six seals and the Demiurge"
+      },
+      {
+        "id": "finish",
+        "title": "Complete the Eye ending",
+        "detail": "End this run with the canon Eye victory"
+      }
+    ],
+    "phase": "milestone",
+    "eyeAcknowledged": false
+  },
+  "continuation": {
+    "finish": {
+      "phase": "won",
+      "victory": "eye"
+    },
+    "restored": true,
+    "restoredEye": {
+      "kind": "warden",
+      "defeated": true,
+      "replayedVictory": false
+    },
+    "continue": {
+      "room": "tide-harbor",
+      "seals": [
+        "stratum"
+      ]
+    },
+    "label": "Both choices exercised by branching the real saved milestone; no reward banking or duplication"
+  },
+  "stereo": {
+    "eyes": [
+      292844,
+      291991
+    ],
+    "error": 0,
+    "angles": 5,
+    "separationMetres": 0.064,
+    "distinctViewMatrices": true
+  },
+  "performance": [
+    {
+      "quality": "performance",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 3,
+      "enemyProjectiles": 3,
+      "warningAngles": 5,
+      "samples": 8,
+      "medianSubmissionMs": 9.399999999906868,
+      "p95SubmissionMs": 18.899999999906868,
+      "drawCalls": 10,
+      "verticesSubmitted": 34248,
+      "geometryUploadBytes": 264384,
+      "newGPUObjects": 0,
+      "limit": "Software-WebGL CPU submission; not headset FPS or GPU timing"
+    },
+    {
+      "quality": "balanced",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 3,
+      "enemyProjectiles": 3,
+      "warningAngles": 5,
+      "samples": 8,
+      "medianSubmissionMs": 13.200000000186265,
+      "p95SubmissionMs": 17.399999999906868,
+      "drawCalls": 10,
+      "verticesSubmitted": 44856,
+      "geometryUploadBytes": 365760,
+      "newGPUObjects": 0,
+      "limit": "Software-WebGL CPU submission; not headset FPS or GPU timing"
+    },
+    {
+      "quality": "high",
+      "twoEyes": 2,
+      "wristVisible": true,
+      "activeEnemies": 3,
+      "enemyProjectiles": 3,
+      "warningAngles": 5,
+      "samples": 8,
+      "medianSubmissionMs": 9.599999999627471,
+      "p95SubmissionMs": 12.900000000372529,
+      "drawCalls": 10,
+      "verticesSubmitted": 58872,
+      "geometryUploadBytes": 499392,
+      "newGPUObjects": 0,
+      "limit": "Software-WebGL CPU submission; not headset FPS or GPU timing"
+    }
+  ],
+  "cleanup": {
+    "gpu": [
+      {
+        "buffers": 0,
+        "textures": 0,
+        "programs": 0
+      }
+    ],
+    "voices": 0
+  },
+  "stagedPages": true,
+  "projectSubpath": "/SparkTheSubstrate/",
+  "remoteRequests": 0,
+  "browserErrors": 0,
+  "source": "Actual exported app/runtime, synthetic tracked poses, fresh native campaign route and legal inputs; no gameplay state injection",
+  "limitations": "Not a complete seven-world campaign. Quest 3 hardware, stereo comfort, tracking and performance NOT VERIFIED."
+}

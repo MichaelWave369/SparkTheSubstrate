@@ -182,7 +182,7 @@ function pushStage(vertices,scene){
 }
 function pushActors(vertices,s){
   for(const entity of s.enemies.slice(0,36)){
-    if(s.living&&s.roomId==='forge'&&entity.kind==='cantor')continue;
+    if(s.living&&((s.roomId==='forge'&&entity.kind==='cantor')||(s.roomId==='eye'&&['warden','hound'].includes(entity.kind))))continue;
     const [x,,z]=worldAt(entity.x,entity.y),radius=Math.min(.6,Math.max(.18,(entity.r||20)/100));
     const col=entity.hp>0?hex(entity.color,'#ef966d'):[.1,.1,.1];
     pushBox(vertices,x,.35+radius/2,z,radius*1.6,.7+radius,radius*1.6,col);
@@ -218,6 +218,20 @@ function pushActors(vertices,s){
     pushBox(vertices,x,.76,z,.43,.10,.43,[.9,.96,1]);
   }
   if(s.living){const detail=s.quality==='performance'?6:s.quality==='high'?20:12;guardianGeometry(vertices,s,detail);moreBounceGeometry(vertices,s,detail);}
+}
+// Keep the paused wrist readable when the user looks overhead or brings the
+// controller close. Follow the tracked wrist within a bounded head-relative
+// region, facing the viewer and leaving the central combat sight line clear.
+export function livingWristPose(head,leftGrip){
+  const out=new Float32Array(head),tracked=leftGrip?.length===16&&[12,13,14].every(i=>Number.isFinite(leftGrip[i])),
+    delta=tracked?[0,1,2].map(i=>leftGrip[12+i]-head[12+i]):null,
+    dot=column=>delta?.reduce((sum,value,i)=>sum+value*head[column+i],0),
+    bound=(value,min,max)=>Math.max(min,Math.min(max,value)),
+    x=tracked?bound(dot(0)-.22,-.42,-.36):-.4,
+    y=tracked?bound(dot(4)+.22,-.12,.1):-.06,
+    depth=tracked?bound(-dot(8)+.6,1.25,1.4):1.3;
+  for(let i=0;i<3;i++)out[12+i]=head[12+i]+head[i]*x+head[4+i]*y-head[8+i]*depth;
+  return out;
 }
 export function makeSceneVertices(snapshot){
   const vertices=[];
@@ -451,7 +465,7 @@ export class SparkVRRenderer{
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,this.hudCanvas);
   }
   updateLivingHud(s){
-    const stamp=JSON.stringify([s.form,s.roomId,Math.ceil(s.health),s.cooldown.toFixed(1),s.attackCooldown.toFixed(1),s.combatProfile,s.dominantHand,s.aim?.reason,s.aim?.targetId,s.paused,s.menuIndex,s.menuLabels,s.pauseReason,s.choices]);
+    const stamp=JSON.stringify([s.form,s.roomId,Math.ceil(s.health),s.cooldown.toFixed(1),s.attackCooldown.toFixed(1),s.combatProfile,s.dominantHand,s.aim?.reason,s.aim?.targetId,s.paused,s.menuIndex,s.menuLabels,s.pauseReason,s.choices,s.guardians?.map(g=>[Math.ceil(g.hp),g.stage]),s.guardianVisual?.guide,s.cleared,s.essence,s.morphAvailable]);
     if(stamp===this.lastHudStamp)return;this.lastHudStamp=stamp;
     if(this.hudCanvas.height!==512){
       this.hudCanvas.height=512;
@@ -471,14 +485,18 @@ export class SparkVRRenderer{
     c.fillText('Relics '+(s.relics.join(', ')||'—'),20,174);
     const hint=s.notice||s.roomDescription||s.pauseReason||'',guardian=s.guardians?.[0];
     c.fillStyle='#ddcca7';
-    if(guardian){c.fillText('THE '+guardian.kind.toUpperCase()+' · HP '+Math.ceil(guardian.hp)+' / '+guardian.maxHp+' · '+guardian.stage,20,200);c.fillText((s.guardianVisual?.guide||'').slice(0,62),20,220);}
+    if(guardian){c.fillText('THE '+guardian.kind.toUpperCase()+' · HP '+Math.ceil(guardian.hp)+' / '+guardian.maxHp+' · PHASE '+guardian.stage,20,200);c.fillText((s.guardianVisual?.guide||'').slice(0,62),20,220);}
+    else if(s.roomId==='eye'&&s.cleared&&s.bossDefeated?.room==='eye'){
+      c.fillText('THE WARDEN DEFEATED · RUN ESSENCE '+s.essence,20,200);
+      c.fillText((s.seals.includes('stratum')?'Stratum seal remembered':'')+(s.morphAvailable?' · Vessel Resonance':''),20,220);
+    }
     else{c.fillText(hint.slice(0,58),20,200);c.fillText(hint.slice(58,116),20,220);}
     c.fillStyle='#94b7ba';c.font='14px sans-serif';
     const recovery='Basic '+Math.max(0,s.attackCooldown).toFixed(1)+'s · '+s.weapon.name;
     c.fillText(recovery.slice(0,58),20,239);
     c.font='13px sans-serif';
     c.fillText(s.combatProfile==='spellcraft'?'SPELLCRAFT · '+s.dominantHand.toUpperCase()+' CAST · OTHER TRIGGER POWER':'CLASSIC · auto-attacks · either trigger power',20,258);
-    const guide=s.moreBounce?'MORE BOUNCE · celebration only':s.roomId==='forge'?s.guardianVisual?.guide:s.aim?.blocked?'Shot blocked by cover':s.aim?.targetId?'Observed enemy '+s.aim.targetId:s.feedback;
+    const guide=s.moreBounce?'MORE BOUNCE · celebration only':['forge','eye'].includes(s.roomId)?s.guardianVisual?.guide:s.aim?.blocked?'Shot blocked by cover':s.aim?.targetId?'Observed enemy '+s.aim.targetId:s.feedback;
     c.fillText((guide||'').slice(0,67),20,277);
     const labels=s.menuLabels||[];
     for(let i=-1;i<=3;i++){
@@ -559,12 +577,9 @@ export class SparkVRRenderer{
   drawHud(view,headMatrix,leftGrip){
     const gl=this.gl;
     // Head-following, placed ABOVE rather than across the central sight line.
-    const anchored=new Float32Array(headMatrix);
-    for(let k=0;k<3;k++)anchored[12+k]+=
+    const anchored=this.living?livingWristPose(headMatrix,leftGrip):new Float32Array(headMatrix);
+    if(!this.living)for(let k=0;k<3;k++)anchored[12+k]+=
       headMatrix[4+k]*.38-headMatrix[8+k]*1.75;
-    if(this.living){
-      for(let k=0;k<3;k++)anchored[12+k]=leftGrip?leftGrip[12+k]+headMatrix[k]*.18-headMatrix[8+k]*.45+(k===1?.25:0):headMatrix[12+k]-headMatrix[8+k]*1.2;
-    }
     const m=multiply4(view.projection,multiply4(view.inverse,anchored));
     gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.depthMask(false);
     gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);

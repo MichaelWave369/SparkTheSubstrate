@@ -16,6 +16,9 @@ on:
       - "tests/vr-awakening*.mjs"
       - "scripts/check-vr-awakening-browser.mjs"
       - "docs/vr-awakening/**"
+      - "tests/vr-warden*.mjs"
+      - "scripts/check-vr-warden-browser.mjs"
+      - "docs/vr-warden/**"
       - "tests/vr-ascension.test.mjs"
       - "tests/vr-living*.mjs"
       - "scripts/check-vr-living-browser.mjs"
@@ -45,6 +48,9 @@ on:
       - "tests/vr-awakening*.mjs"
       - "scripts/check-vr-awakening-browser.mjs"
       - "docs/vr-awakening/**"
+      - "tests/vr-warden*.mjs"
+      - "scripts/check-vr-warden-browser.mjs"
+      - "docs/vr-warden/**"
       - "tests/vr-ascension.test.mjs"
       - "tests/vr-living*.mjs"
       - "scripts/check-vr-living-browser.mjs"
@@ -104,6 +110,7 @@ jobs:
           node scripts/check-vr-ascension-browser.mjs
           node scripts/check-vr-living-browser.mjs
           node scripts/check-vr-awakening-browser.mjs
+          node scripts/check-vr-warden-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -112,3 +119,4 @@ jobs:
             work/vr-browser/
             work/vr-living-browser/
             work/vr-awakening-browser/
+            work/vr-warden-browser/
