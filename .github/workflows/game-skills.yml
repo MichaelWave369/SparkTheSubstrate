@@ -1,0 +1,35 @@
+name: Spark offline game skills
+on:
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - ".agents/**"
+      - "scripts/route-game-skills.mjs"
+      - "tests/game-skills.test.mjs"
+      - "docs/game-skills/**"
+      - ".github/workflows/game-skills.yml"
+  push:
+    branches: [main]
+    paths:
+      - "AGENTS.md"
+      - ".agents/**"
+      - "scripts/route-game-skills.mjs"
+      - "tests/game-skills.test.mjs"
+      - "docs/game-skills/**"
+      - ".github/workflows/game-skills.yml"
+permissions:
+  contents: read
+jobs:
+  skills:
+    name: Offline skill catalog and canonical Spark tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/route-game-skills.mjs
+      - run: node scripts/route-game-skills.mjs --validate
+      - run: node --test tests/game-skills.test.mjs
+      - run: npm test
