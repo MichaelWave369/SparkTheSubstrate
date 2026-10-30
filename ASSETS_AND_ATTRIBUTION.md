@@ -121,3 +121,21 @@ from merged main solely for a labeled rendered comparison. Evidence PNGs in
 poses, not generated artwork or photographs captured inside a Quest. The
 WebXR grip/ray conventions follow the primary specification:
 https://www.w3.org/TR/webxr/#xrinputsource-interface.
+
+## SPARK VR: Seven Worlds Awaken — Rung 4.5
+
+The seven architectural families, wall reliefs, root/leaf vaults, tide fins,
+furnace grilles, crystalline panels, astronomical dials, unfinished monuments,
+ambient inlays, ordinary creature silhouettes and native death-burst facets
+are original procedural artwork/code covered by the repository's MIT license.
+They reuse Spark's existing geometry helpers and shaders. Refracted/mirrored
+looks use layered colored geometry; no external textures, sampled models,
+real-time reflections, paid services, runtime downloads or dependencies are
+added. Existing sound synthesis and all prior notices remain unchanged.
+
+`docs/vr-worlds/` contains actual Chromium/software-WebGL output. Controlled
+room fixtures and synthetic poses are explicitly labeled; the enemies in the
+comparison captures spawn and act through the canonical simulation. These are
+neither generated promotional mockups nor photographs taken inside a Quest.
+Chromium/Playwright tooling is isolated development tooling and is not shipped
+with the game.

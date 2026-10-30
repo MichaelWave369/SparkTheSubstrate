@@ -1,0 +1,175 @@
+{
+  "schema": "spark.xr.rung4.5.artifacts.v1",
+  "baseCommit": "56d41c326e891513631acdbae7d544a7b86c98d0",
+  "selfExcluded": true,
+  "files": {
+    ".github/workflows/immersive-vr.yml": {
+      "bytes": 5107,
+      "sha256": "14e4e2f1be31222c8514359c3ae783dc6df20969079f777175c6b49b69c9cac4"
+    },
+    "ASSETS_AND_ATTRIBUTION.md": {
+      "bytes": 8652,
+      "sha256": "f1bc19f1c342ef3c52757aa7bce4203d7357b9d44c00f77e3d6f9d32b807acf0"
+    },
+    "docs/QUEST3_FIELD_LAB.md": {
+      "bytes": 13242,
+      "sha256": "44f15a457683e062a467e3ee8b594bc790095259321a738fb116eb82017db22d"
+    },
+    "docs/vr-worlds/after/browser-results.json": {
+      "bytes": 12574,
+      "sha256": "f8a79f9866d1c6993a59ae40625bf23bc13eba424a6c0e67231416d837524b08"
+    },
+    "docs/vr-worlds/after/enemy-archon.png": {
+      "bytes": 181059,
+      "sha256": "4f305f7eccf633f5392f36f63c4997654c9ba62aa5c36969c190a494d25fa985"
+    },
+    "docs/vr-worlds/after/enemy-collector.png": {
+      "bytes": 187392,
+      "sha256": "db04ecf2f89d4a8dc428e19b3c2ab9d9c23ade804a0d919f9c42bd3c0c5d3846"
+    },
+    "docs/vr-worlds/after/enemy-hound.png": {
+      "bytes": 183598,
+      "sha256": "8bab626bc67132e763452ece017bfe6cdb0634f2bd5513c9fa45e975c20ea4f7"
+    },
+    "docs/vr-worlds/after/enemy-leech.png": {
+      "bytes": 185965,
+      "sha256": "674c35f7389dd5bd8ee487db46194797c9bd58c6dd223d6ed98929888c2c0d28"
+    },
+    "docs/vr-worlds/after/enemy-mirror.png": {
+      "bytes": 186342,
+      "sha256": "752f0544ab41b1bb40a9e5b6063b414cf3745848e4bfd1da70d58cea5f80da19"
+    },
+    "docs/vr-worlds/after/spellcraft-lesson.png": {
+      "bytes": 116495,
+      "sha256": "62632c18e4e76c56a1f3c9039d26c52e7fd74d74eaf4e8facee8704a3d0d0987"
+    },
+    "docs/vr-worlds/after/world-cinder.png": {
+      "bytes": 152838,
+      "sha256": "052c2af449e8ee071268c1b46fdaedf4d47c7a9dae3e0a211258090321bdfa63"
+    },
+    "docs/vr-worlds/after/world-orbit.png": {
+      "bytes": 159018,
+      "sha256": "a11c86f009341afacdf97bd1ee3b11255f976d8f9f0ab754066dbe96c954616b"
+    },
+    "docs/vr-worlds/after/world-prism.png": {
+      "bytes": 149911,
+      "sha256": "f26562feb43153e8f86eb4f77110bbc3018e79359c5d4f4ce2c34d6434576875"
+    },
+    "docs/vr-worlds/after/world-stereo-wrist.png": {
+      "bytes": 188303,
+      "sha256": "6f94f5fa4172d8fc87f3eb5483dae91f7eab6336c472744dcc3086d691c3e342"
+    },
+    "docs/vr-worlds/after/world-stratum.png": {
+      "bytes": 160724,
+      "sha256": "c2115c164586fcd53cfa3d74820c5892586bfa05f9d2a30c87833bb2113f5155"
+    },
+    "docs/vr-worlds/after/world-tideglass.png": {
+      "bytes": 139378,
+      "sha256": "0e944710d027ed4d3a0177e85a6919b6b61af1339906018143a3eac608c3fc7e"
+    },
+    "docs/vr-worlds/after/world-uncreated.png": {
+      "bytes": 141564,
+      "sha256": "6a8d679bc664c926256549066c04d9c05ce93aa84d0f9b334bc8881b6850c7f1"
+    },
+    "docs/vr-worlds/after/world-verdant.png": {
+      "bytes": 147792,
+      "sha256": "e80a7f596929291d7edfa086d77a441bfecd9c7617cc829d03a9ef58e6fda7ce"
+    },
+    "docs/vr-worlds/before/browser-results.json": {
+      "bytes": 12501,
+      "sha256": "244c1aba5327ba7e985d54e3da33415b7adfbdcf8d1e4e44f57d238730813cef"
+    },
+    "docs/vr-worlds/before/enemy-archon.png": {
+      "bytes": 179415,
+      "sha256": "49369f210709237ca7e4d8cf22566bd302ec8645ce07212846399a743b2f0a16"
+    },
+    "docs/vr-worlds/before/enemy-collector.png": {
+      "bytes": 185929,
+      "sha256": "65cab039b685eab22dacead1af9850a0933b1d1a576e053ac63814f5f6e6270a"
+    },
+    "docs/vr-worlds/before/enemy-hound.png": {
+      "bytes": 181373,
+      "sha256": "2895b90013f3069b9b90f942963e183adcf996e392912cb1cd4c4845db352b70"
+    },
+    "docs/vr-worlds/before/enemy-leech.png": {
+      "bytes": 147198,
+      "sha256": "288754d9521c5d7f4de58f90d25f769db3829b6e4ae82801572bc073c91e6290"
+    },
+    "docs/vr-worlds/before/enemy-mirror.png": {
+      "bytes": 155642,
+      "sha256": "9eda51863343834b5f7fc3116693319080c050a8ae9419e92911ce2be5b95227"
+    },
+    "docs/vr-worlds/before/world-stratum.png": {
+      "bytes": 123926,
+      "sha256": "fa668c94b3d6764cdfe9937d3cc65b906f93bc33f1a259f4378eed995bfeaae3"
+    },
+    "docs/vr-worlds/capture-provenance.json": {
+      "bytes": 4499,
+      "sha256": "21d035f99dc939b8e8212695217f5142a2febc1950c064efa94cc6170803c0eb"
+    },
+    "docs/vr-worlds/intake.json": {
+      "bytes": 1861,
+      "sha256": "2af89fe00742c7bfc445b83238c216cc2f97b0167a191deff183d0a7469bb55d"
+    },
+    "docs/vr-worlds/performance-comparison.json": {
+      "bytes": 16344,
+      "sha256": "5444a210b8ac47a824d82345a5c4d3075d543517a85102aa9d0c59dfd2af2b94"
+    },
+    "docs/vr-worlds/preserved-showcases.json": {
+      "bytes": 1492,
+      "sha256": "13b682ee3fd51edc56b08611b496072dd269cb3318a81468786f63dafd687679"
+    },
+    "docs/vr-worlds/protected-baseline.json": {
+      "bytes": 5812,
+      "sha256": "8cc8248072df6d641533ca958fbf2d51d0e00a5f64891e41fc52626c5a6150ca"
+    },
+    "docs/vr-worlds/rung-4.5.md": {
+      "bytes": 11152,
+      "sha256": "6004de08532b428e0a6e940b10f8731929325e27a487b46995f98dcde8c266bd"
+    },
+    "docs/vr-worlds/verification.json": {
+      "bytes": 9202,
+      "sha256": "d93a47efb639c3deb6ae7c40ff1607aa94c0aa9818945be841b3c4c15c4977c5"
+    },
+    "public/vr/living.html": {
+      "bytes": 10120,
+      "sha256": "cf43101942dbdcbf351bb72a87c131f0cb4df7827761fdb7a80df09a4d31c921"
+    },
+    "public/vr/spark-enemy-art.js": {
+      "bytes": 6260,
+      "sha256": "008b42d5dc458ec5d3f92d63554774eeac998de937d7e62105cb4bb2002e138a"
+    },
+    "public/vr/spark-living-app.js": {
+      "bytes": 11101,
+      "sha256": "2cac9075eb556584376fff972fe941ff138de1ef99c7d1130cc6177a3f9c0ba4"
+    },
+    "public/vr/spark-room-themes.js": {
+      "bytes": 14820,
+      "sha256": "a8b2210cfd8ab1db8c0f6fe0b8a4cc17d7a148ce7609a342da07c9dd739c3f77"
+    },
+    "public/vr/spark-vr-renderer.js": {
+      "bytes": 35766,
+      "sha256": "5282dd891084ba5cf8bdaa30e03017cabe5bc36759bc1d13fe3ae08ed4bdd442"
+    },
+    "public/vr/spark-world-art.js": {
+      "bytes": 6640,
+      "sha256": "4756f0004d756a66e1709bed502e2f4eaa9dbadddc47fc8df983c796a7d67af2"
+    },
+    "public/vr/spark-world-families.js": {
+      "bytes": 12332,
+      "sha256": "543d908f42cab95b33de4857c835741b4672eefdc51127147697c1dfca885319"
+    },
+    "scripts/check-vr-worlds-browser.mjs": {
+      "bytes": 11464,
+      "sha256": "ec8c752879449b7e630a119aee4b0beaf24e6d7f91dfa08fdc29da0b80ac2866"
+    },
+    "tests/vr-worlds-fixtures.mjs": {
+      "bytes": 1204,
+      "sha256": "8a1228442ae63caec999f42906d8fef43737b0272c0cfa7c925b28f00442b43e"
+    },
+    "tests/vr-worlds.test.mjs": {
+      "bytes": 8661,
+      "sha256": "fe19489971c48c4664f4bc8f69118ca606b72fe80c5c1a3c0c7ee71e18a40d8e"
+    }
+  }
+}

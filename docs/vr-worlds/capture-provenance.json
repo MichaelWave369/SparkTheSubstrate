@@ -1,0 +1,126 @@
+{
+  "schema": "spark.xr.rung4.5.captures.v1",
+  "source": "Actual staged game and software-WebGL; controlled rooms and synthetic tracked poses; native enemy simulation",
+  "captures": {
+    "after/enemy-archon.png": {
+      "sha256": "4f305f7eccf633f5392f36f63c4997654c9ba62aa5c36969c190a494d25fa985",
+      "bytes": 181059,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/enemy-collector.png": {
+      "sha256": "db04ecf2f89d4a8dc428e19b3c2ab9d9c23ade804a0d919f9c42bd3c0c5d3846",
+      "bytes": 187392,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/enemy-hound.png": {
+      "sha256": "8bab626bc67132e763452ece017bfe6cdb0634f2bd5513c9fa45e975c20ea4f7",
+      "bytes": 183598,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/enemy-leech.png": {
+      "sha256": "674c35f7389dd5bd8ee487db46194797c9bd58c6dd223d6ed98929888c2c0d28",
+      "bytes": 185965,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/enemy-mirror.png": {
+      "sha256": "752f0544ab41b1bb40a9e5b6063b414cf3745848e4bfd1da70d58cea5f80da19",
+      "bytes": 186342,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/spellcraft-lesson.png": {
+      "sha256": "62632c18e4e76c56a1f3c9039d26c52e7fd74d74eaf4e8facee8704a3d0d0987",
+      "bytes": 116495,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-cinder.png": {
+      "sha256": "052c2af449e8ee071268c1b46fdaedf4d47c7a9dae3e0a211258090321bdfa63",
+      "bytes": 152838,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-orbit.png": {
+      "sha256": "a11c86f009341afacdf97bd1ee3b11255f976d8f9f0ab754066dbe96c954616b",
+      "bytes": 159018,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-prism.png": {
+      "sha256": "f26562feb43153e8f86eb4f77110bbc3018e79359c5d4f4ce2c34d6434576875",
+      "bytes": 149911,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-stereo-wrist.png": {
+      "sha256": "6f94f5fa4172d8fc87f3eb5483dae91f7eab6336c472744dcc3086d691c3e342",
+      "bytes": 188303,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-stratum.png": {
+      "sha256": "c2115c164586fcd53cfa3d74820c5892586bfa05f9d2a30c87833bb2113f5155",
+      "bytes": 160724,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-tideglass.png": {
+      "sha256": "0e944710d027ed4d3a0177e85a6919b6b61af1339906018143a3eac608c3fc7e",
+      "bytes": 139378,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-uncreated.png": {
+      "sha256": "6a8d679bc664c926256549066c04d9c05ce93aa84d0f9b334bc8881b6850c7f1",
+      "bytes": 141564,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "after/world-verdant.png": {
+      "sha256": "e80a7f596929291d7edfa086d77a441bfecd9c7617cc829d03a9ef58e6fda7ce",
+      "bytes": 147792,
+      "source": "Rung 4.5 candidate",
+      "physicalHeadset": false
+    },
+    "before/enemy-archon.png": {
+      "sha256": "49369f210709237ca7e4d8cf22566bd302ec8645ce07212846399a743b2f0a16",
+      "bytes": 179415,
+      "source": "Rung 4 baseline",
+      "physicalHeadset": false
+    },
+    "before/enemy-collector.png": {
+      "sha256": "65cab039b685eab22dacead1af9850a0933b1d1a576e053ac63814f5f6e6270a",
+      "bytes": 185929,
+      "source": "Rung 4 baseline",
+      "physicalHeadset": false
+    },
+    "before/enemy-hound.png": {
+      "sha256": "2895b90013f3069b9b90f942963e183adcf996e392912cb1cd4c4845db352b70",
+      "bytes": 181373,
+      "source": "Rung 4 baseline",
+      "physicalHeadset": false
+    },
+    "before/enemy-leech.png": {
+      "sha256": "288754d9521c5d7f4de58f90d25f769db3829b6e4ae82801572bc073c91e6290",
+      "bytes": 147198,
+      "source": "Rung 4 baseline",
+      "physicalHeadset": false
+    },
+    "before/enemy-mirror.png": {
+      "sha256": "9eda51863343834b5f7fc3116693319080c050a8ae9419e92911ce2be5b95227",
+      "bytes": 155642,
+      "source": "Rung 4 baseline",
+      "physicalHeadset": false
+    },
+    "before/world-stratum.png": {
+      "sha256": "fa668c94b3d6764cdfe9937d3cc65b906f93bc33f1a259f4378eed995bfeaae3",
+      "bytes": 123926,
+      "source": "Rung 4 baseline",
+      "physicalHeadset": false
+    }
+  }
+}

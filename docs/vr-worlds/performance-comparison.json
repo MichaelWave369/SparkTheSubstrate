@@ -1,0 +1,621 @@
+{
+  "schema": "spark.xr.worlds.performance.v1",
+  "baseline": "56d41c326e891513631acdbae7d544a7b86c98d0",
+  "environment": "153.0.8010.0 / SwiftShader",
+  "samplesPerPreset": 6,
+  "views": 2,
+  "scene": "Active native room fixture and tracked hands; warm static cache",
+  "nativeEnemyObservationsIdentical": true,
+  "comparisons": [
+    {
+      "world": "stratum",
+      "room": "quiet",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "quiet",
+        "world": "stratum",
+        "staticVertices": 4176,
+        "medianCpuMs": 4,
+        "maxCpuMs": 5.099999999860302,
+        "vertices": 18312,
+        "drawCalls": 6,
+        "uploadBytes": 119520,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "quiet",
+        "world": "stratum",
+        "staticVertices": 10044,
+        "medianCpuMs": 4.599999999627471,
+        "maxCpuMs": 15,
+        "vertices": 30048,
+        "drawCalls": 6,
+        "uploadBytes": 119520,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "stratum",
+      "room": "quiet",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "quiet",
+        "world": "stratum",
+        "staticVertices": 4248,
+        "medianCpuMs": 2.8999999999068677,
+        "maxCpuMs": 3.6000000000931323,
+        "vertices": 19368,
+        "drawCalls": 6,
+        "uploadBytes": 130464,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "quiet",
+        "world": "stratum",
+        "staticVertices": 11916,
+        "medianCpuMs": 3.3999999999068677,
+        "maxCpuMs": 3.6000000000931323,
+        "vertices": 35760,
+        "drawCalls": 6,
+        "uploadBytes": 143136,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "stratum",
+      "room": "quiet",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "quiet",
+        "world": "stratum",
+        "staticVertices": 4344,
+        "medianCpuMs": 3.2000000001862645,
+        "maxCpuMs": 4.5,
+        "vertices": 20712,
+        "drawCalls": 6,
+        "uploadBytes": 144288,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "quiet",
+        "world": "stratum",
+        "staticVertices": 14724,
+        "medianCpuMs": 4.7000000001862645,
+        "maxCpuMs": 5.399999999906868,
+        "vertices": 42720,
+        "drawCalls": 6,
+        "uploadBytes": 159264,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "tideglass",
+      "room": "tide-archive",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "tide-archive",
+        "world": "tideglass",
+        "staticVertices": 4176,
+        "medianCpuMs": 2.9000000001396984,
+        "maxCpuMs": 3.4000000001396984,
+        "vertices": 17688,
+        "drawCalls": 6,
+        "uploadBytes": 112032,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "tide-archive",
+        "world": "tideglass",
+        "staticVertices": 6348,
+        "medianCpuMs": 6.300000000279397,
+        "maxCpuMs": 9.300000000279397,
+        "vertices": 23160,
+        "drawCalls": 6,
+        "uploadBytes": 125568,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "tideglass",
+      "room": "tide-archive",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "tide-archive",
+        "world": "tideglass",
+        "staticVertices": 4248,
+        "medianCpuMs": 3.2999999998137355,
+        "maxCpuMs": 3.800000000046566,
+        "vertices": 18744,
+        "drawCalls": 6,
+        "uploadBytes": 122976,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "tide-archive",
+        "world": "tideglass",
+        "staticVertices": 7356,
+        "medianCpuMs": 6.699999999720603,
+        "maxCpuMs": 11.699999999720603,
+        "vertices": 27384,
+        "drawCalls": 6,
+        "uploadBytes": 152064,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "tideglass",
+      "room": "tide-archive",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "tide-archive",
+        "world": "tideglass",
+        "staticVertices": 4344,
+        "medianCpuMs": 4.199999999953434,
+        "maxCpuMs": 6.7000000001862645,
+        "vertices": 20088,
+        "drawCalls": 6,
+        "uploadBytes": 136800,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "tide-archive",
+        "world": "tideglass",
+        "staticVertices": 8868,
+        "medianCpuMs": 6.7000000001862645,
+        "maxCpuMs": 9,
+        "vertices": 31176,
+        "drawCalls": 6,
+        "uploadBytes": 161280,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "verdant",
+      "room": "grove-well",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "grove-well",
+        "world": "verdant",
+        "staticVertices": 4176,
+        "medianCpuMs": 3.5,
+        "maxCpuMs": 10.300000000046566,
+        "vertices": 17688,
+        "drawCalls": 6,
+        "uploadBytes": 112032,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "grove-well",
+        "world": "verdant",
+        "staticVertices": 7980,
+        "medianCpuMs": 6,
+        "maxCpuMs": 12.399999999906868,
+        "vertices": 25080,
+        "drawCalls": 6,
+        "uploadBytes": 109440,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "verdant",
+      "room": "grove-well",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "grove-well",
+        "world": "verdant",
+        "staticVertices": 4248,
+        "medianCpuMs": 3.1000000000931323,
+        "maxCpuMs": 3.5,
+        "vertices": 18744,
+        "drawCalls": 6,
+        "uploadBytes": 122976,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "grove-well",
+        "world": "verdant",
+        "staticVertices": 8556,
+        "medianCpuMs": 7.399999999906868,
+        "maxCpuMs": 13.299999999813735,
+        "vertices": 27624,
+        "drawCalls": 6,
+        "uploadBytes": 126144,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "verdant",
+      "room": "grove-well",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "grove-well",
+        "world": "verdant",
+        "staticVertices": 4344,
+        "medianCpuMs": 5.100000000093132,
+        "maxCpuMs": 5.800000000046566,
+        "vertices": 20088,
+        "drawCalls": 6,
+        "uploadBytes": 136800,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "grove-well",
+        "world": "verdant",
+        "staticVertices": 8556,
+        "medianCpuMs": 4.900000000372529,
+        "maxCpuMs": 5.7999999998137355,
+        "vertices": 28392,
+        "drawCalls": 6,
+        "uploadBytes": 135360,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "cinder",
+      "room": "cinder-fuel",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "cinder-fuel",
+        "world": "cinder",
+        "staticVertices": 4488,
+        "medianCpuMs": 4.699999999953434,
+        "maxCpuMs": 8,
+        "vertices": 18312,
+        "drawCalls": 6,
+        "uploadBytes": 112032,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "cinder-fuel",
+        "world": "cinder",
+        "staticVertices": 9312,
+        "medianCpuMs": 6.399999999906868,
+        "maxCpuMs": 6.899999999906868,
+        "vertices": 27864,
+        "drawCalls": 6,
+        "uploadBytes": 110880,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "cinder",
+      "room": "cinder-fuel",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "cinder-fuel",
+        "world": "cinder",
+        "staticVertices": 4560,
+        "medianCpuMs": 2.6000000000931323,
+        "maxCpuMs": 2.800000000046566,
+        "vertices": 19368,
+        "drawCalls": 6,
+        "uploadBytes": 122976,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "cinder-fuel",
+        "world": "cinder",
+        "staticVertices": 9600,
+        "medianCpuMs": 5.7000000001862645,
+        "maxCpuMs": 8.5,
+        "vertices": 30072,
+        "drawCalls": 6,
+        "uploadBytes": 130464,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "cinder",
+      "room": "cinder-fuel",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "cinder-fuel",
+        "world": "cinder",
+        "staticVertices": 4656,
+        "medianCpuMs": 2.699999999953434,
+        "maxCpuMs": 2.800000000046566,
+        "vertices": 20712,
+        "drawCalls": 6,
+        "uploadBytes": 136800,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "cinder-fuel",
+        "world": "cinder",
+        "staticVertices": 10032,
+        "medianCpuMs": 4.600000000093132,
+        "maxCpuMs": 5.5,
+        "vertices": 31704,
+        "drawCalls": 6,
+        "uploadBytes": 139680,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "prism",
+      "room": "night-library",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "night-library",
+        "world": "prism",
+        "staticVertices": 4176,
+        "medianCpuMs": 2.6000000000931323,
+        "maxCpuMs": 3.0999999998603016,
+        "vertices": 17688,
+        "drawCalls": 6,
+        "uploadBytes": 112032,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "night-library",
+        "world": "prism",
+        "staticVertices": 5796,
+        "medianCpuMs": 4.5,
+        "maxCpuMs": 10.200000000186265,
+        "vertices": 21480,
+        "drawCalls": 6,
+        "uploadBytes": 118656,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "prism",
+      "room": "night-library",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "night-library",
+        "world": "prism",
+        "staticVertices": 4248,
+        "medianCpuMs": 2.8999999999068677,
+        "maxCpuMs": 3.300000000046566,
+        "vertices": 18744,
+        "drawCalls": 6,
+        "uploadBytes": 122976,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "night-library",
+        "world": "prism",
+        "staticVertices": 5796,
+        "medianCpuMs": 5.2000000001862645,
+        "maxCpuMs": 22.399999999906868,
+        "vertices": 23160,
+        "drawCalls": 6,
+        "uploadBytes": 138816,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "prism",
+      "room": "night-library",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "night-library",
+        "world": "prism",
+        "staticVertices": 4344,
+        "medianCpuMs": 3.8999999999068677,
+        "maxCpuMs": 7.699999999953434,
+        "vertices": 20088,
+        "drawCalls": 6,
+        "uploadBytes": 136800,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "night-library",
+        "world": "prism",
+        "staticVertices": 5796,
+        "medianCpuMs": 5.400000000372529,
+        "maxCpuMs": 17.899999999906868,
+        "vertices": 23928,
+        "drawCalls": 6,
+        "uploadBytes": 148032,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "orbit",
+      "room": "orbit-relay",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "orbit-relay",
+        "world": "orbit",
+        "staticVertices": 4488,
+        "medianCpuMs": 2.699999999953434,
+        "maxCpuMs": 4.899999999906868,
+        "vertices": 18312,
+        "drawCalls": 6,
+        "uploadBytes": 112032,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "orbit-relay",
+        "world": "orbit",
+        "staticVertices": 12996,
+        "medianCpuMs": 3.8999999999068677,
+        "maxCpuMs": 5.899999999906868,
+        "vertices": 35832,
+        "drawCalls": 6,
+        "uploadBytes": 118080,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "orbit",
+      "room": "orbit-relay",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "orbit-relay",
+        "world": "orbit",
+        "staticVertices": 4560,
+        "medianCpuMs": 8.5,
+        "maxCpuMs": 14.5,
+        "vertices": 19368,
+        "drawCalls": 6,
+        "uploadBytes": 122976,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "orbit-relay",
+        "world": "orbit",
+        "staticVertices": 18852,
+        "medianCpuMs": 4.900000000372529,
+        "maxCpuMs": 10.700000000186265,
+        "vertices": 49512,
+        "drawCalls": 6,
+        "uploadBytes": 141696,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "orbit",
+      "room": "orbit-relay",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "orbit-relay",
+        "world": "orbit",
+        "staticVertices": 4656,
+        "medianCpuMs": 3.5999999998603016,
+        "maxCpuMs": 9.199999999953434,
+        "vertices": 20712,
+        "drawCalls": 6,
+        "uploadBytes": 136800,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "orbit-relay",
+        "world": "orbit",
+        "staticVertices": 27636,
+        "medianCpuMs": 3.2999999998137355,
+        "maxCpuMs": 3.5,
+        "vertices": 66840,
+        "drawCalls": 6,
+        "uploadBytes": 138816,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "uncreated",
+      "room": "origin-draft",
+      "quality": "performance",
+      "before": {
+        "quality": "performance",
+        "room": "origin-draft",
+        "world": "uncreated",
+        "staticVertices": 3672,
+        "medianCpuMs": 4.800000000046566,
+        "maxCpuMs": 6.899999999906868,
+        "vertices": 17304,
+        "drawCalls": 6,
+        "uploadBytes": 119520,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "performance",
+        "room": "origin-draft",
+        "world": "uncreated",
+        "staticVertices": 8724,
+        "medianCpuMs": 5.2999999998137355,
+        "maxCpuMs": 7.199999999720603,
+        "vertices": 27696,
+        "drawCalls": 6,
+        "uploadBytes": 122976,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "uncreated",
+      "room": "origin-draft",
+      "quality": "balanced",
+      "before": {
+        "quality": "balanced",
+        "room": "origin-draft",
+        "world": "uncreated",
+        "staticVertices": 3744,
+        "medianCpuMs": 3.800000000046566,
+        "maxCpuMs": 15.300000000046566,
+        "vertices": 18360,
+        "drawCalls": 6,
+        "uploadBytes": 130464,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "balanced",
+        "room": "origin-draft",
+        "world": "uncreated",
+        "staticVertices": 9228,
+        "medianCpuMs": 12.5,
+        "maxCpuMs": 129.60000000009313,
+        "vertices": 30960,
+        "drawCalls": 6,
+        "uploadBytes": 150048,
+        "allocations": 0
+      }
+    },
+    {
+      "world": "uncreated",
+      "room": "origin-draft",
+      "quality": "high",
+      "before": {
+        "quality": "high",
+        "room": "origin-draft",
+        "world": "uncreated",
+        "staticVertices": 3840,
+        "medianCpuMs": 4,
+        "maxCpuMs": 5.100000000093132,
+        "vertices": 19704,
+        "drawCalls": 6,
+        "uploadBytes": 144288,
+        "allocations": 0
+      },
+      "after": {
+        "quality": "high",
+        "room": "origin-draft",
+        "world": "uncreated",
+        "staticVertices": 9984,
+        "medianCpuMs": 10.5,
+        "maxCpuMs": 15.200000000186265,
+        "vertices": 33816,
+        "drawCalls": 6,
+        "uploadBytes": 166176,
+        "allocations": 0
+      }
+    }
+  ],
+  "limits": "CPU submission only, not GPU completion, Quest FPS, sustained performance or physical headset approval"
+}

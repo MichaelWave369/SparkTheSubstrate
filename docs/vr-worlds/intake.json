@@ -1,0 +1,37 @@
+{
+  "schema": "spark.xr.rung4.5.intake.v1",
+  "authority": "User WORK MODE BUILD MISSION: The Seven Worlds Awaken, Rung 4.5",
+  "base": "56d41c326e891513631acdbae7d544a7b86c98d0",
+  "boundary": "Procedural presentation and optional instruction; no combat, save, progression, hand calibration, menu architecture or backend rewrite",
+  "requirements": [
+    {
+      "id": "WORLDS",
+      "target": "Seven deterministic architectural families, preserved showcase rooms, cached geometry under 30000 static vertices",
+      "proof": "all-room budget, cache, determinism, gate/lane tests; seven actual rendered fixtures"
+    },
+    {
+      "id": "ENEMIES",
+      "target": "Three or more native ordinary enemy identities, real windup/charge/flash/shield observations",
+      "proof": "identity/state tests and active canonical simulation captures"
+    },
+    {
+      "id": "ATMOSPHERE",
+      "target": "Bounded quality-scaled motion, energy and depth; reduced intensity preserves warnings",
+      "proof": "geometry bounds, reduced/quality tests, before/after measurements"
+    },
+    {
+      "id": "LESSON",
+      "target": "Optional nonprogressing Spellcraft instructions if time permits",
+      "proof": "no fake enemy/reward; dismiss/switch-back and unchanged run"
+    },
+    {
+      "id": "COMPAT",
+      "target": "Preserve canonical rules, saves, controllers, wrist, bosses, offline Pages and cleanup",
+      "proof": "479-test baseline, all five established browser suites, protected hashes and new browser suite"
+    }
+  ],
+  "evidencePolicy": "Controlled fixtures labeled; no natural seven-world playthrough or physical Quest success claim",
+  "release": "One reviewable PR; no merge or deployment; independent review and physical Quest retest pending",
+  "status": "SOFTWARE_CANDIDATE_PASS_HEADSET_RETEST_PENDING",
+  "verification": "verification.json"
+}

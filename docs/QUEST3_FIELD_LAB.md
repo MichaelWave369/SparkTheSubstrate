@@ -179,3 +179,34 @@ or uploaded. This is separate from the existing Field Lab's timing report.
 Keep both reports with reproduction notes if helpful.
 
 [Bug matrix, route inventory, software captures and limitations](vr-reality/rung-4.md).
+
+## Rung 4.5 · Seven worlds and creature identity
+
+**Physical Quest retest pending.** Use your own legitimately earned checkpoint
+for later worlds. The software evidence uses explicitly controlled room
+fixtures; no fixture launcher is included in the shipped game.
+
+- [ ] Read the optional **First Spellcraft lesson** in the Living hub. Choose
+      Spellcraft and the desired casting hand, enter normally, hold/point/release
+      for a basic attack, and use the other trigger for native power. Check
+      misses, cover, normal recovery and switching back to Classic.
+- [ ] Compare ordinary rooms in all seven worlds: stone/conduits, tidal fins,
+      root vaults, furnaces, split crystals, astronomical rings and fractured
+      monuments. Look around voluntarily; camera motion is never imposed.
+- [ ] Check native doors, keys/relics, cover, attack lanes and floor warnings.
+      Decorative relief must remain on the walls or above the player. Locked
+      native gates retain their real requirements and bars.
+- [ ] Recognize collectors, archons, hounds, mirrors and leeches. Verify real
+      hound/archon/leech windups point toward the subsequent native attack,
+      shields and damage remain readable, and death facets follow actual kills.
+      Anatomy does not create extra hitboxes or new attacks.
+- [ ] Compare performance/balanced/high and reduced intensity in each world.
+      Reduced intensity freezes incidental movement while preserving warnings
+      and gate/target information. Record sustained comfort, text/controller
+      alignment, heat and frame behavior; software submissions are not Quest FPS.
+- [ ] Recheck Rung 4 wrist/hand calibration, controller interruption, neutral
+      recovery, both Living modes, save/restore and safe exit. Confirm native
+      Cantor/Warden behavior and actual Eye Continue/Finish decisions.
+
+[Seven rendered worlds, enemy comparisons, measurements and exact software
+results](vr-worlds/rung-4.5.md). No acceptance item above is automatically passed.
