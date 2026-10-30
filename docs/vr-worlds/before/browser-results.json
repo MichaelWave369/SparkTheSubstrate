@@ -1,0 +1,516 @@
+{
+  "schema": "spark.xr.worlds.browser.v1",
+  "status": "PASS",
+  "baseline": true,
+  "browser": "153.0.8010.0",
+  "worlds": [
+    {
+      "room": "quiet",
+      "world": "stratum",
+      "name": "The Quiet Array",
+      "enemies": [
+        "collector",
+        "archon"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    },
+    {
+      "room": "tide-archive",
+      "world": "tideglass",
+      "name": "The Salt Archive",
+      "enemies": [
+        "brine",
+        "hound"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    },
+    {
+      "room": "grove-well",
+      "world": "verdant",
+      "name": "The Rootwell",
+      "enemies": [
+        "thornling",
+        "hound"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    },
+    {
+      "room": "cinder-fuel",
+      "world": "cinder",
+      "name": "The Fuel Chapel",
+      "enemies": [
+        "cinderling",
+        "hound"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    },
+    {
+      "room": "night-library",
+      "world": "prism",
+      "name": "The Dream Library",
+      "enemies": [
+        "shade",
+        "hound"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    },
+    {
+      "room": "orbit-relay",
+      "world": "orbit",
+      "name": "The Lunar Relay",
+      "enemies": [
+        "satellite",
+        "hound"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    },
+    {
+      "room": "origin-draft",
+      "world": "uncreated",
+      "name": "The Unfinished Draft",
+      "enemies": [
+        "collector",
+        "archon"
+      ],
+      "phase": "playing",
+      "paused": false,
+      "valid": true
+    }
+  ],
+  "enemies": [
+    {
+      "kind": "collector",
+      "room": "glass",
+      "seed": 369,
+      "observed": {
+        "id": 1,
+        "kind": "collector",
+        "x": 843.0557520856127,
+        "y": 406.82544848021945,
+        "r": 14,
+        "hp": 30,
+        "maxHp": 30,
+        "speed": 80,
+        "attack": 1.5595965103944764,
+        "orbitHit": 0,
+        "flash": 0,
+        "rootTime": 0
+      },
+      "phase": "playing",
+      "paused": false,
+      "valid": true,
+      "health": 112,
+      "time": 0.6500000000000004,
+      "policy": "Controlled room fixture; enemy spawned and reached this activity through native simulation, never an injected model target"
+    },
+    {
+      "kind": "archon",
+      "room": "glass",
+      "seed": 369,
+      "observed": {
+        "id": 2,
+        "kind": "archon",
+        "x": 417.63248587423453,
+        "y": 145.45788781592194,
+        "r": 17,
+        "hp": 48,
+        "maxHp": 48,
+        "speed": 53,
+        "attack": -0.12063810077185412,
+        "orbitHit": 0,
+        "flash": 0,
+        "rootTime": 0,
+        "windup": 0.633333333333333,
+        "chargeX": 0.24712741677347516,
+        "chargeY": 0.9689829925643015
+      },
+      "phase": "playing",
+      "paused": false,
+      "valid": true,
+      "health": 112,
+      "time": 2.6166666666666623,
+      "policy": "Controlled room fixture; enemy spawned and reached this activity through native simulation, never an injected model target"
+    },
+    {
+      "kind": "hound",
+      "room": "glass",
+      "seed": 371,
+      "observed": {
+        "id": 1,
+        "kind": "hound",
+        "x": 761.5485814857343,
+        "y": 457.1999238446713,
+        "r": 14,
+        "hp": 36,
+        "maxHp": 36,
+        "speed": 84,
+        "attack": 2.5666666666666673,
+        "orbitHit": 0,
+        "flash": 0,
+        "windup": 0.4166666666666663,
+        "charge": 0,
+        "chargeX": -0.9726779775092068,
+        "chargeY": -0.23215846327153128,
+        "shield": 0,
+        "rootTime": 0
+      },
+      "phase": "playing",
+      "paused": false,
+      "valid": true,
+      "health": 112,
+      "time": 1.8833333333333315,
+      "policy": "Controlled room fixture; enemy spawned and reached this activity through native simulation, never an injected model target"
+    },
+    {
+      "kind": "mirror",
+      "room": "nursery",
+      "seed": 369,
+      "observed": {
+        "id": 2,
+        "kind": "mirror",
+        "x": 399.02379139119284,
+        "y": 72.49346847583058,
+        "r": 18,
+        "hp": 65,
+        "maxHp": 65,
+        "speed": 58,
+        "attack": 1.3126952325614796,
+        "orbitHit": 0,
+        "flash": 0,
+        "windup": 0,
+        "charge": 0,
+        "chargeX": 0,
+        "chargeY": 0,
+        "shield": 1,
+        "rootTime": 0
+      },
+      "phase": "playing",
+      "paused": false,
+      "valid": true,
+      "health": 112,
+      "time": 1.2333333333333338,
+      "policy": "Controlled room fixture; enemy spawned and reached this activity through native simulation, never an injected model target"
+    },
+    {
+      "kind": "leech",
+      "room": "conduit",
+      "seed": 369,
+      "observed": {
+        "id": 2,
+        "kind": "leech",
+        "x": 423.3576043628211,
+        "y": 167.9059938103284,
+        "r": 17,
+        "hp": 64,
+        "maxHp": 64,
+        "speed": 59,
+        "attack": -0.48730476743852075,
+        "orbitHit": 0,
+        "flash": 0,
+        "windup": 0.733333333333333,
+        "charge": 0,
+        "chargeX": 0.24712741677347086,
+        "chargeY": 0.9689829925643028,
+        "shield": 0,
+        "rootTime": 0
+      },
+      "phase": "playing",
+      "paused": false,
+      "valid": true,
+      "health": 112,
+      "time": 2.9833333333333276,
+      "policy": "Controlled room fixture; enemy spawned and reached this activity through native simulation, never an injected model target"
+    }
+  ],
+  "performance": [
+    {
+      "quality": "performance",
+      "room": "quiet",
+      "world": "stratum",
+      "staticVertices": 4176,
+      "medianCpuMs": 4,
+      "maxCpuMs": 5.099999999860302,
+      "vertices": 18312,
+      "drawCalls": 6,
+      "uploadBytes": 119520,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "quiet",
+      "world": "stratum",
+      "staticVertices": 4248,
+      "medianCpuMs": 2.8999999999068677,
+      "maxCpuMs": 3.6000000000931323,
+      "vertices": 19368,
+      "drawCalls": 6,
+      "uploadBytes": 130464,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "quiet",
+      "world": "stratum",
+      "staticVertices": 4344,
+      "medianCpuMs": 3.2000000001862645,
+      "maxCpuMs": 4.5,
+      "vertices": 20712,
+      "drawCalls": 6,
+      "uploadBytes": 144288,
+      "allocations": 0
+    },
+    {
+      "quality": "performance",
+      "room": "tide-archive",
+      "world": "tideglass",
+      "staticVertices": 4176,
+      "medianCpuMs": 2.9000000001396984,
+      "maxCpuMs": 3.4000000001396984,
+      "vertices": 17688,
+      "drawCalls": 6,
+      "uploadBytes": 112032,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "tide-archive",
+      "world": "tideglass",
+      "staticVertices": 4248,
+      "medianCpuMs": 3.2999999998137355,
+      "maxCpuMs": 3.800000000046566,
+      "vertices": 18744,
+      "drawCalls": 6,
+      "uploadBytes": 122976,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "tide-archive",
+      "world": "tideglass",
+      "staticVertices": 4344,
+      "medianCpuMs": 4.199999999953434,
+      "maxCpuMs": 6.7000000001862645,
+      "vertices": 20088,
+      "drawCalls": 6,
+      "uploadBytes": 136800,
+      "allocations": 0
+    },
+    {
+      "quality": "performance",
+      "room": "grove-well",
+      "world": "verdant",
+      "staticVertices": 4176,
+      "medianCpuMs": 3.5,
+      "maxCpuMs": 10.300000000046566,
+      "vertices": 17688,
+      "drawCalls": 6,
+      "uploadBytes": 112032,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "grove-well",
+      "world": "verdant",
+      "staticVertices": 4248,
+      "medianCpuMs": 3.1000000000931323,
+      "maxCpuMs": 3.5,
+      "vertices": 18744,
+      "drawCalls": 6,
+      "uploadBytes": 122976,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "grove-well",
+      "world": "verdant",
+      "staticVertices": 4344,
+      "medianCpuMs": 5.100000000093132,
+      "maxCpuMs": 5.800000000046566,
+      "vertices": 20088,
+      "drawCalls": 6,
+      "uploadBytes": 136800,
+      "allocations": 0
+    },
+    {
+      "quality": "performance",
+      "room": "cinder-fuel",
+      "world": "cinder",
+      "staticVertices": 4488,
+      "medianCpuMs": 4.699999999953434,
+      "maxCpuMs": 8,
+      "vertices": 18312,
+      "drawCalls": 6,
+      "uploadBytes": 112032,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "cinder-fuel",
+      "world": "cinder",
+      "staticVertices": 4560,
+      "medianCpuMs": 2.6000000000931323,
+      "maxCpuMs": 2.800000000046566,
+      "vertices": 19368,
+      "drawCalls": 6,
+      "uploadBytes": 122976,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "cinder-fuel",
+      "world": "cinder",
+      "staticVertices": 4656,
+      "medianCpuMs": 2.699999999953434,
+      "maxCpuMs": 2.800000000046566,
+      "vertices": 20712,
+      "drawCalls": 6,
+      "uploadBytes": 136800,
+      "allocations": 0
+    },
+    {
+      "quality": "performance",
+      "room": "night-library",
+      "world": "prism",
+      "staticVertices": 4176,
+      "medianCpuMs": 2.6000000000931323,
+      "maxCpuMs": 3.0999999998603016,
+      "vertices": 17688,
+      "drawCalls": 6,
+      "uploadBytes": 112032,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "night-library",
+      "world": "prism",
+      "staticVertices": 4248,
+      "medianCpuMs": 2.8999999999068677,
+      "maxCpuMs": 3.300000000046566,
+      "vertices": 18744,
+      "drawCalls": 6,
+      "uploadBytes": 122976,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "night-library",
+      "world": "prism",
+      "staticVertices": 4344,
+      "medianCpuMs": 3.8999999999068677,
+      "maxCpuMs": 7.699999999953434,
+      "vertices": 20088,
+      "drawCalls": 6,
+      "uploadBytes": 136800,
+      "allocations": 0
+    },
+    {
+      "quality": "performance",
+      "room": "orbit-relay",
+      "world": "orbit",
+      "staticVertices": 4488,
+      "medianCpuMs": 2.699999999953434,
+      "maxCpuMs": 4.899999999906868,
+      "vertices": 18312,
+      "drawCalls": 6,
+      "uploadBytes": 112032,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "orbit-relay",
+      "world": "orbit",
+      "staticVertices": 4560,
+      "medianCpuMs": 8.5,
+      "maxCpuMs": 14.5,
+      "vertices": 19368,
+      "drawCalls": 6,
+      "uploadBytes": 122976,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "orbit-relay",
+      "world": "orbit",
+      "staticVertices": 4656,
+      "medianCpuMs": 3.5999999998603016,
+      "maxCpuMs": 9.199999999953434,
+      "vertices": 20712,
+      "drawCalls": 6,
+      "uploadBytes": 136800,
+      "allocations": 0
+    },
+    {
+      "quality": "performance",
+      "room": "origin-draft",
+      "world": "uncreated",
+      "staticVertices": 3672,
+      "medianCpuMs": 4.800000000046566,
+      "maxCpuMs": 6.899999999906868,
+      "vertices": 17304,
+      "drawCalls": 6,
+      "uploadBytes": 119520,
+      "allocations": 0
+    },
+    {
+      "quality": "balanced",
+      "room": "origin-draft",
+      "world": "uncreated",
+      "staticVertices": 3744,
+      "medianCpuMs": 3.800000000046566,
+      "maxCpuMs": 15.300000000046566,
+      "vertices": 18360,
+      "drawCalls": 6,
+      "uploadBytes": 130464,
+      "allocations": 0
+    },
+    {
+      "quality": "high",
+      "room": "origin-draft",
+      "world": "uncreated",
+      "staticVertices": 3840,
+      "medianCpuMs": 4,
+      "maxCpuMs": 5.100000000093132,
+      "vertices": 19704,
+      "drawCalls": 6,
+      "uploadBytes": 144288,
+      "allocations": 0
+    }
+  ],
+  "stereo": {
+    "bothEyes": [
+      251860,
+      252351
+    ],
+    "controllers": [
+      "left",
+      "right"
+    ]
+  },
+  "lesson": null,
+  "cleanup": {
+    "gpu": [
+      {
+        "buffers": 0,
+        "textures": 0,
+        "programs": 0
+      }
+    ],
+    "voices": 0,
+    "mode": "idle"
+  },
+  "browserErrors": 0,
+  "remoteRequests": 0,
+  "limitations": "Actual staged app and software-WebGL with synthetic controller/eye poses; direct room fixtures, native enemy simulation. No natural seven-world campaign, physical Quest acceptance, GPU timing or headset FPS claim."
+}

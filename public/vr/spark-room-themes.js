@@ -1,5 +1,6 @@
 import {FOUNDATION_ROOMS,foundationFloor,foundationArchitecture,foundationDynamics} from './spark-world-art.js';
 import {pushBevelBox} from './spark-vr-art.js';
+import {WORLD_FAMILY_VERSION,PRESERVED_ART_ROOMS,worldFamilyGeometry,worldFamilyDynamics} from './spark-world-families.js';
 import {pushBox,pushBeam,pushGem,pushRing,hex,tint} from './spark-vr-geometry.js';
 import {worldAt} from './spark-vr-model.js';
 export const ROOM_THEME_VERSION='spark.xr.room-theme.v1';
@@ -10,10 +11,10 @@ export const XR_QUALITY=Object.freeze({
 });
 export const ROOM_THEMES=Object.freeze({
   stratum:{stone:'#20323c',light:'#f4cc83',glow:'#6ddbd0'},
-  tideglass:{stone:'#173a4c',light:'#94e5ee',glow:'#66a7ec'},
+  tideglass:{stone:'#173a4c',light:'#94e5ee',glow:'#65d5cf'},
   verdant:{stone:'#263f33',light:'#b5da85',glow:'#6ad8ab'},
   cinder:{stone:'#44302d',light:'#f2b16a',glow:'#e57a49'},
-  prism:{stone:'#30324c',light:'#d7b5ee',glow:'#7ca7df'},
+  prism:{stone:'#30324c',light:'#d7b5ee',glow:'#b58cf1'},
   orbit:{stone:'#2e3d52',light:'#dbe6f3',glow:'#7dcbeb'},
   uncreated:{stone:'#383a3c',light:'#ffdfa4',glow:'#8be9d2'}
 });
@@ -26,7 +27,7 @@ export function roomTheme(scene){return {version:ROOM_THEME_VERSION,...(ROOM_THE
   showcase:['threshold','glass','machine','forge','eye'].includes(scene.roomId)?scene.roomId:'world'};}
 const cache=new Map();
 export function clearRoomGeometryCache(){cache.clear();}
-export function roomGeometryKey(s){return JSON.stringify([ROOM_THEME_VERSION,s.roomId,s.worldId,s.quality||'balanced',
+export function roomGeometryKey(s){return JSON.stringify([ROOM_THEME_VERSION,WORLD_FAMILY_VERSION,s.roomId,s.worldId,s.quality||'balanced',
   s.gates.map(g=>[g.direction,g.available]),s.obstacles]);}
 export function livingRoomGeometry(s){
   const key=roomGeometryKey(s);if(cache.has(key))return cache.get(key);
@@ -35,8 +36,8 @@ export function livingRoomGeometry(s){
   // Floor inlays are flush; all new solid architecture is beyond the legal body
   // footprint or above head height. Cover uses the exact canonical footprints.
   if(FOUNDATION_ROOMS.has(s.roomId))foundationFloor(v,s,stone,light,glow);
-  else for(let x=-4.25;x<4.3;x+=.5)pushBox(v,x,.004,0,.009,.008,5.18,tint(glow,.35));
-  if(!FOUNDATION_ROOMS.has(s.roomId))for(let z=-2.5;z<2.6;z+=.5)pushBox(v,0,.005,z,8.6,.009,.008,tint(light,.22));
+  else if(PRESERVED_ART_ROOMS.has(s.roomId))for(let x=-4.25;x<4.3;x+=.5)pushBox(v,x,.004,0,.009,.008,5.18,tint(glow,.35));
+  if(!FOUNDATION_ROOMS.has(s.roomId)&&PRESERVED_ART_ROOMS.has(s.roomId))for(let z=-2.5;z<2.6;z+=.5)pushBox(v,0,.005,z,8.6,.009,.008,tint(light,.22));
   const sides=new Set(s.gates.map(g=>g.direction));
   for(const axis of ['x','z'])for(const side of [-1,1]){
     const dir=axis==='x'?(side<0?'west':'east'):(side<0?'north':'south'),edge=(axis==='x'?4.8:3)*side;
@@ -63,14 +64,14 @@ export function livingRoomGeometry(s){
     pushGem(v,x,1.16,z,Math.min(o.w,o.h)/240,.32,light);
   }
   // Tall peripheral ribs frame every real room across all seven worlds.
-  if(!FOUNDATION_ROOMS.has(s.roomId))for(const x of [-4.55,4.55])for(let i=0;i<5;i++){
+  if(['forge','eye'].includes(s.roomId))for(const x of [-4.55,4.55])for(let i=0;i<5;i++){
     const z=-2.2+i*1.1;
     if(Math.abs(z)<.01&&sides.has(x>0?'east':'west'))continue;
     pushBox(v,x,1.65,z,.30,3.3,.28,tint(stone,1.6));
     pushBox(v,x,2.85,z,.36,.12,.38,light);
     pushBox(v,x,1.6,z,.035,2.3,.31,tint(glow,.8));
   }
-  if(!FOUNDATION_ROOMS.has(s.roomId))for(const z of [-2.72,2.72])for(const x of [-3.8,-2.0,2.0,3.8]){
+  if(['forge','eye'].includes(s.roomId))for(const z of [-2.72,2.72])for(const x of [-3.8,-2.0,2.0,3.8]){
     pushBeam(v,[x,3.15,z],[x*.62,4.15,z],.14,tint(light,.6));
     pushGem(v,x,2.5,z,.17,.75,tint(glow,.9));
   }
@@ -108,10 +109,7 @@ export function livingRoomGeometry(s){
       pushBeam(v,[x-.12*Math.sign(x),.03,z],[x,.03,z+.15],.025,light);
     }
   }else{
-    for(let i=0;i<q.detail/2;i++){
-      const a=i/Math.max(1,q.detail/2)*Math.PI*2;
-      pushGem(v,Math.cos(a)*1.45,3.5,Math.sin(a)*1.45,.13,.5,light);
-    }
+    for(const value of worldFamilyGeometry(s,stone,light,glow))v.push(value);
   }
   const result=new Float32Array(v);cache.set(key,result);
   if(cache.size>4)cache.delete(cache.keys().next().value);
@@ -120,6 +118,7 @@ export function livingRoomGeometry(s){
 export function livingDynamicGeometry(v,s){
   const q=XR_QUALITY[s.quality]||XR_QUALITY.balanced,theme=roomTheme(s),glow=hex(theme.glow),light=hex(theme.light);
   foundationDynamics(v,s,q,light,glow);
+  worldFamilyDynamics(v,s,light,glow);
   if(s.roomId==='forge'){
     const boss=s.guardians?.find(g=>g.kind==='cantor'),second=boss?.stage===2,
       spin=s.reduced?0:s.time*(second?.26:.14),heat=boss?.windup>0?1.25:.7;
@@ -144,10 +143,16 @@ export function livingDynamicGeometry(v,s){
         const a=fx.type==='slash'?Math.atan2(s.facing?.y||0,s.facing?.x||1)-1.52+i/Math.max(1,segments-1)*3.04:i/q.detail*Math.PI*2;
         pushGem(v,x+Math.cos(a)*r*(.65+life*.35),.28+life*.25,z+Math.sin(a)*r*(.65+life*.35),.035,.12,col);
       }
+    }else if(fx.type==='burst'&&!s.boss&&!['forge','eye'].includes(s.roomId)){
+      // A native death burst breaks into a few falling facets. No entity or
+      // reward is created by this effect; lifetime/position come from Spark.
+      const count=s.reduced?3:s.quality==='performance'?3:s.quality==='high'?7:5;
+      for(let i=0;i<count;i++){const a=i/count*Math.PI*2,travel=s.reduced?.12:r*life*.65;
+        pushGem(v,x+Math.cos(a)*travel,.10+(s.reduced?0:Math.sin(life*Math.PI)*.45),z+Math.sin(a)*travel,.025*(1-life),.10*(1-life),col);}
     }else pushGem(v,x,.7+life*.45,z,.06*(1-life),.14*(1-life),col);
   }
   if(s.transform>0&&!s.reduced){const [x,,z]=worldAt(s.player.x,s.player.y);pushRing(v,x,.15,z,.6+(1-s.transform)*.5,hex(s.vessel.color),q.detail);}
-  if(!s.reduced)for(let i=0;i<q.particles;i++){
+  if(!s.reduced&&PRESERVED_ART_ROOMS.has(s.roomId))for(let i=0;i<q.particles;i++){
     const a=i*2.3999,x=Math.cos(a)*4.1,z=Math.sin(a)*2.45,y=2.4+Math.sin(s.time*.2+i)*.25;
     pushGem(v,x,y,z,.012,.035,tint(glow,.6));
   }

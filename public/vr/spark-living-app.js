@@ -71,6 +71,11 @@ $('living-resume').addEventListener('click',act(()=>host.restore()));
 $('living-new').addEventListener('click',()=>host.newJourney());
 $('living-exit').addEventListener('click',act(()=>host.returnToHub()));
 for(const id of ['descent','duel'])$('mode-'+id).addEventListener('click',act(()=>host.setMode(id)));
+for(const button of document.querySelectorAll('[data-lesson-profile]'))button.addEventListener('click',()=>{
+  if(host.mode!=='descent'){host.status('Choose Descent in the hub to use this Spellcraft guide.');return;}
+  const control=$('living-combatProfile');control.value=button.dataset.lessonProfile;control.dispatchEvent(new Event('change'));
+  host.status((control.value==='spellcraft'?'Spellcraft selected · hold, point, release casting trigger; other trigger power':'Classic selected · automatic basics')+' · enter VR or resume when ready');
+});
 for(const key of Object.keys(runtime.settings)){const control=$('living-'+key);if(!control)continue;
   control.addEventListener('change',()=>{runtime.configure({[key]:control.type==='checkbox'?control.checked:['movement','turn','vignette','aimAssist'].includes(key)?Number(control.value):control.value});if(key==='posture')runtime.recenter();});}
 runtime.onSettings(runtime.settings);

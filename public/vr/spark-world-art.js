@@ -1,6 +1,5 @@
-import {pushBox,pushBeam,pushGem,pushRing,hex,tint} from './spark-vr-geometry.js';
-import {pushArch,pushColumn,pushBevelBox,pushLimb} from './spark-vr-art.js';
-import {worldAt} from './spark-vr-model.js';
+import {pushBox,pushBeam,pushGem,pushRing,tint} from './spark-vr-geometry.js';
+import {pushArch,pushColumn,pushBevelBox} from './spark-vr-art.js';
 export const WORLD_ART_VERSION='spark.xr.world-art.v1';
 export const FOUNDATION_ROOMS=new Set(['threshold','glass','machine']);
 export function foundationFloor(v,s,stone,light,glow){
@@ -115,27 +114,5 @@ export function foundationDynamics(v,s,q,light,glow){
   const a=i*Math.PI/3+spin;pushGem(v,Math.cos(a)*.75,3.2+(s.reduced?0:Math.sin(a)*.1),Math.sin(a)*.75,.035,.14,light);
  }
 }
-export function livingEnemyFigure(v,e,s){
- const [x,,z]=worldAt(e.x,e.y),base=hex(e.color||'#8eaca8'),gold=[.82,.65,.35],hot=e.windup>0?[1,.68,.3]:[.4,.85,.85],
-  step=s.reduced?0:Math.sin((s.time||0)*5+(e.id||0))*.035;
- if(e.kind==='hound'){
-  pushBevelBox(v,x,.28,z,.28,.28,.42,tint(base,.5));pushGem(v,x,.44,z+.19,.13,.28,hot);
-  for(const side of [-1,1])for(const n of [-1,1])pushLimb(v,[x+side*.10,.24,z+n*.13],[x+side*.13,.035,z+n*.17],.037,.025,gold);
-  return;
- }
- const mechanical=['archon','construct','turret'].some(k=>e.kind.includes(k));
- if(mechanical){
-  pushBevelBox(v,x,.76+step,z,.32,.55,.25,tint(base,.45));pushGem(v,x,1.15+step,z,.18,.3,gold);
-  pushGem(v,x,1.15+step,z+.17,.06,.10,hot);pushRing(v,x,.8+step,z,.29,gold,8);
-  for(const side of [-1,1]){pushLimb(v,[x+side*.16,.95,z],[x+side*.34,.5+step,z],.055,.035,gold);pushLimb(v,[x+side*.09,.52,z],[x+side*.13,.05,z],.055,.04,tint(base,.5));}
- }else{
-  pushGem(v,x,.62,z,.22,.95,tint(base,.45));pushGem(v,x,1.12+step,z,.17,.35,tint(base,.55));
-  pushBevelBox(v,x,1.12+step,z+.12,.13,.15,.07,[.045,.065,.09]);pushBeam(v,[x-.05,1.13+step,z+.16],[x+.05,1.13+step,z+.16],.018,hot);
-  for(const side of [-1,1]){
-   const lift=e.windup>0?.18:step*side;
-   pushLimb(v,[x+side*.16,.87,z],[x+side*.26,.46+lift,z+.08],.05,.03,tint(base,.7));
-   pushGem(v,x+side*.26,.44+lift,z+.08,.035,.08,gold);
-   pushLimb(v,[x+side*.08,.35,z],[x+side*.10,.04,z+step*side],.045,.035,tint(base,.45));
-  }
- }
-}
+// Preserve the established renderer-facing entry while sharing native role art.
+export {enemyFigure as livingEnemyFigure} from './spark-enemy-art.js';

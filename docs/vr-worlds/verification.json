@@ -1,0 +1,227 @@
+{
+  "schema": "spark.xr.rung4.5.verification.v1",
+  "status": "SOFTWARE_CANDIDATE_PASS_HEADSET_RETEST_PENDING",
+  "baseCommit": "56d41c326e891513631acdbae7d544a7b86c98d0",
+  "recordedUTC": "2026-10-30T06:14:40.973056+00:00",
+  "baseline": {
+    "command": "npm test",
+    "passed": 479,
+    "failed": 0,
+    "source": "Unmodified merged Rung 4 main; old public tree matches the merged base"
+  },
+  "tests": [
+    {
+      "name": "pages",
+      "command": [
+        "node",
+        "--test",
+        "tests/pages-static.test.mjs"
+      ],
+      "seconds": 0.41,
+      "result": "PASS",
+      "summary": "\u2714 canonical game, VR and Echo Lives HTML references stay project-relative (0.652374ms)\n\u2139 tests 7\n\u2139 suites 0\n\u2139 pass 7\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 314.692445"
+    },
+    {
+      "name": "pages-build",
+      "command": [
+        "node",
+        "scripts/build-pages.mjs"
+      ],
+      "seconds": 0.19,
+      "result": "PASS"
+    },
+    {
+      "name": "ascension-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-ascension-browser.mjs"
+      ],
+      "seconds": 14.0,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0 / SwiftShader; isolated Playwright, synthetic poses; not a physical Quest test"
+    },
+    {
+      "name": "living-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-living-browser.mjs"
+      ],
+      "seconds": 21.73,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0 / SwiftShader; isolated Playwright, synthetic poses; not a physical Quest test"
+    },
+    {
+      "name": "awakening-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-awakening-browser.mjs"
+      ],
+      "seconds": 33.87,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0 / SwiftShader; isolated Playwright, synthetic poses; not a physical Quest test"
+    },
+    {
+      "name": "warden-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-warden-browser.mjs"
+      ],
+      "seconds": 16.13,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0 / SwiftShader; isolated Playwright, synthetic poses; not a physical Quest test"
+    },
+    {
+      "name": "reality-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-reality-browser.mjs"
+      ],
+      "seconds": 29.59,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0 / SwiftShader; isolated Playwright, synthetic poses; not a physical Quest test"
+    },
+    {
+      "name": "gameplay",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "seconds": 16.78,
+      "result": "PASS",
+      "summary": "\u2714 holding a gate key crosses once; backtracking requires release and approaching the return gate (5.434619ms)\n\u2139 tests 491\n\u2139 suites 0\n\u2139 pass 491\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 16334.844165"
+    },
+    {
+      "name": "vr",
+      "command": [
+        "node",
+        "--test",
+        "tests/vr-ascension.test.mjs",
+        "tests/vr-awakening.test.mjs",
+        "tests/vr-first-slice.test.mjs",
+        "tests/vr-full-descent.test.mjs",
+        "tests/vr-living.test.mjs",
+        "tests/vr-navigation-comfort.test.mjs",
+        "tests/vr-quest-field-lab.test.mjs",
+        "tests/vr-reality.test.mjs",
+        "tests/vr-warden.test.mjs",
+        "tests/vr-worlds.test.mjs"
+      ],
+      "seconds": 11.82,
+      "result": "PASS",
+      "summary": "\u2714 Rung 4 controller, wrist, canonical engines and save files remain byte-identical to the merged baseline (14.673617ms)\n\u2139 tests 123\n\u2139 suites 0\n\u2139 pass 123\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 11708.354626"
+    },
+    {
+      "name": "syntax",
+      "command": [
+        "bash",
+        "-c",
+        "for f in public/vr/*.js scripts/check-vr-worlds-browser.mjs tests/vr-worlds*.mjs; do node --check \"$f\" || exit; done"
+      ],
+      "seconds": 3.9,
+      "result": "PASS"
+    },
+    {
+      "name": "worlds-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-worlds-browser.mjs"
+      ],
+      "seconds": 28.28,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0 / SwiftShader; isolated Playwright, synthetic poses; not a physical Quest test"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "seconds": 0.01,
+      "result": "PASS"
+    }
+  ],
+  "additionalBaselineBrowser": {
+    "command": "SPARK_WORLD_BASELINE_ROOT=/workspace/scratch/2aa7df9689cc/SparkTheSubstrate-rung4 node scripts/check-vr-worlds-browser.mjs",
+    "result": "PASS",
+    "renderer": "Rung 4 public tree, byte-identical to merged main",
+    "environment": "SPARK_PLAYWRIGHT_MODULE set to isolated runtime Playwright; SPARK_CHROMIUM_PATH points to isolated Chromium"
+  },
+  "protectedFiles": {
+    "count": 60,
+    "hashes": "protected-baseline.json",
+    "comparedToBase": true
+  },
+  "protectedTrees": {
+    ".openai": "6f4ad44f76b875b0df485db16f34d7985d7812a6",
+    "app": "79acf705ad270734cd62c481aec51a256d48e37f",
+    "art": "308d678d6ba98aa9384c7e47de01788bd8340a92",
+    "build": "ad80c8ed48e17e80282b99c27d8ac0ff0cbcf479",
+    "components": "54a25dfac2ce7f6099ce5b3ae8ea0e8348458b1e",
+    "db": "6eada412cf96dad20eb9ef2afe6f4c6d478e3d06",
+    "drizzle": "6a2e1925e39829ad809e85c75f5b0804dbf14edc",
+    "examples": "e987e3414dd5725d636da9be199bbb35bc0fc640",
+    "hooks": "cc6027e3ac916df709fe1f49005f24ad4402e692",
+    "lib": "1088fbcd6e45e4e36785917567975864f0412d02",
+    "runtime": "3b43b9a4143cb67af0732510857d07cba8607aa9",
+    "server": "46eed644dea4eda6658f262b2fc186ea6f57cc25",
+    "vendor": "a01d59c29b433718e6a6a30e3ccd710214babbb4"
+  },
+  "preservedShowcases": {
+    "rooms": [
+      "threshold",
+      "glass",
+      "machine",
+      "forge",
+      "eye"
+    ],
+    "qualities": 3,
+    "hashes": "preserved-showcases.json",
+    "byteIdentical": true
+  },
+  "coverage": {
+    "WORLDS": "Implemented; 126 rooms \u00d7 3 qualities tested; seven representative controlled room renders",
+    "ENEMIES": "Eight canonical roles and actual regional aliases; five active native simulation before/after captures",
+    "ATMOSPHERE": "Bounded quality-dependent cosmetic movement, wall inlays and fog; reduced motion preserves warnings",
+    "LESSON": "Optional Living hub primer; actual buttons switch profiles, campaign run unchanged",
+    "COMPAT": "60 protected files, existing engines/saves/controller/wrist/boss regressions, six browser suites and offline Pages"
+  },
+  "corrections": [
+    {
+      "finding": "Initial targeted run: 7 passed / 4 failed",
+      "details": [
+        "A low Verdant growth entered the body envelope and crossed a native south gate. Moved it onto the wall and excluded all native gate axes.",
+        "Yaw calculation treated a valid zero locked direction component as a fallback value. Corrected exact cardinal directions.",
+        "The identity test initially omitted Oracle from the canonical danger-based fallback pool; retained actual Oracle support and documented that source."
+      ],
+      "resolution": "12 targeted tests now pass, including triangle bounds and preserved showcases"
+    },
+    {
+      "finding": "Initial forward view still looked too empty",
+      "resolution": "Added family-specific long-wall relief and recaptured the actual renderer"
+    },
+    {
+      "finding": "First enemy capture harness turned instantly and could trip tracking safety",
+      "resolution": "Discarded those captures; gradual valid synthetic turns now assert unpaused gameplay and valid input. Both cohorts recaptured."
+    },
+    {
+      "finding": "Ephemeral Chromium was absent; normal Playwright download returned a truncated archive; package tar ownership extraction failed in this container",
+      "resolution": "Installed development-only Chromium 153 package outside repository and unpacked without ownership changes. No app dependencies changed."
+    }
+  ],
+  "limitations": [
+    "No physical Quest 3 retest; directed Spellcraft, headset comfort/legibility, sustained GPU and thermal behavior unverified.",
+    "Room selections are controlled fixtures. Enemies subsequently spawn and act through the actual engine; no natural seven-world campaign or story-gate traversal claim from these images.",
+    "No QA fixture launcher or practice enemy is included in the shipped game; the primer grants no rewards.",
+    "Crystal/reflection appearances use stylized layered geometry, not alpha refraction or real-time reflections.",
+    "Before/after CPU submissions are noisy and exclude GPU completion. More ordinary-room geometry costs more work; no Quest FPS or general speed improvement claim.",
+    "The five established bespoke stages are preserved; other rooms inherit world families, not individual handcrafted redesigns."
+  ],
+  "release": {
+    "pullRequest": "Authorized review candidate",
+    "merge": "Not authorized automatically",
+    "deployment": "Not performed",
+    "humanReview": "Pending",
+    "physicalRetest": "Pending"
+  }
+}

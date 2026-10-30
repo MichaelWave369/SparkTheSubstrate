@@ -1,0 +1,21 @@
+{
+  "base": "56d41c326e891513631acdbae7d544a7b86c98d0",
+  "source": "Rung 4 public tree, identical to merged main",
+  "hashes": {
+    "threshold:performance": "61f1fa2ca196e345decb833b17cb7a4dd5b6c085bc1ecd6d7293fb1578224e98",
+    "threshold:balanced": "9b82d0b788c0e5656ae2c59fa74eebec0d2af515ddc4f8d437724b1a15c24e96",
+    "threshold:high": "db529755398d8341b893445d7dcf35d436897ba402f1c55186a0a391505f8af9",
+    "glass:performance": "bb42655e4edd5f140bdcf294021d9d7ad4031921116c2f4faef9fb9d431cecbb",
+    "glass:balanced": "3412fa3a475185d5f724eb5ca4f96b554d3875fcb4019b8661767a04dcff8a31",
+    "glass:high": "d72853c556b129a35cf307d7a3737c43d45fc0e763574258835912951044a9a3",
+    "machine:performance": "8c7ed7ddf915c5105c19f918534ca1c2db1d2afcaf3273eaeebffa8016fc28d1",
+    "machine:balanced": "eb00e19b6b725ac6ed09c1769687a29e0d3a3a6bbc12412ddc04994f59e9afef",
+    "machine:high": "0ec24cc74fd1c1b0f5456d480b8646275906b8cd99f9c421784dea4bc294b7ac",
+    "forge:performance": "73a2512c88f139faf7535a4f2d71034d3cd9c9a4a3f4dc9968dc7ad66c9156d0",
+    "forge:balanced": "8015385c451ff29028fd4fb563d227cdd6c375ea7ad95d65545ed6dc964c0d12",
+    "forge:high": "16cceb5982f8b5e5b1660038c3a0d74642809725caa70955a74a13a7ed6e6de9",
+    "eye:performance": "b9671c1db742c4fdc8ad541704659cc9c09b9a846b3447c5d76262c0e647d205",
+    "eye:balanced": "0bea75a19d6075d23a1d208cd7b3f33c184796ddad6c4cc5017790867af7979d",
+    "eye:high": "936b093b61953e9e9f5cd4081941feec516243b31d0177b336a707ff682d3e56"
+  }
+}

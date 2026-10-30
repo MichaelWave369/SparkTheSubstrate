@@ -23,6 +23,9 @@ on:
       - "tests/fixtures/vr-r35-hands.mjs"
       - "scripts/check-vr-reality-browser.mjs"
       - "docs/vr-reality/**"
+      - "tests/vr-worlds*.mjs"
+      - "scripts/check-vr-worlds-browser.mjs"
+      - "docs/vr-worlds/**"
       - "tests/vr-ascension.test.mjs"
       - "tests/vr-living*.mjs"
       - "scripts/check-vr-living-browser.mjs"
@@ -59,6 +62,9 @@ on:
       - "tests/fixtures/vr-r35-hands.mjs"
       - "scripts/check-vr-reality-browser.mjs"
       - "docs/vr-reality/**"
+      - "tests/vr-worlds*.mjs"
+      - "scripts/check-vr-worlds-browser.mjs"
+      - "docs/vr-worlds/**"
       - "tests/vr-ascension.test.mjs"
       - "tests/vr-living*.mjs"
       - "scripts/check-vr-living-browser.mjs"
@@ -120,6 +126,7 @@ jobs:
           node scripts/check-vr-awakening-browser.mjs
           node scripts/check-vr-warden-browser.mjs
           node scripts/check-vr-reality-browser.mjs
+          node scripts/check-vr-worlds-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -130,3 +137,4 @@ jobs:
             work/vr-awakening-browser/
             work/vr-warden-browser/
             work/vr-reality-browser/
+            work/vr-worlds-browser/

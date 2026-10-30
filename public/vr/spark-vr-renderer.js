@@ -11,6 +11,7 @@ import {livingEnemyFigure} from './spark-world-art.js';
 import {trackedGauntletVertices} from './spark-xr-hands.js';
 import {calibrationRoomGeometry} from './spark-xr-panel.js';
 import {duelWorldPoint} from './spark-xr-adapters.js';
+import {worldFamily} from './spark-world-families.js';
 
 const VERT= `attribute vec3 position;
 attribute vec3 color;
@@ -22,7 +23,8 @@ const FRAG= `precision mediump float;
 varying vec3 vColor;
 varying float vDepth;
 uniform float fogAmount;
-void main(){float fog=clamp((vDepth-3.)/18.,0.,.65)*fogAmount;gl_FragColor=vec4(mix(vColor,vec3(.012,.025,.04),fog),1.0);}`;
+uniform vec3 fogColor;
+void main(){float fog=clamp((vDepth-3.)/18.,0.,.65)*fogAmount;gl_FragColor=vec4(mix(vColor,fogColor,fog),1.0);}`;
 const HUD_VERT=`attribute vec3 position;
 attribute vec2 uv;
 uniform mat4 vp;
@@ -541,12 +543,14 @@ export class SparkVRRenderer{
     const a=gl.getAttribLocation(p,'position'),b=gl.getAttribLocation(p,'color'),
       vp=gl.getUniformLocation(p,'vp');
     // gl.clear ignores viewport: clear once or the second eye erases the first.
-    gl.clearColor(.012,.023,.045,1);
+    const atmosphere=scene.living?worldFamily(scene).fog:[.012,.023,.045];
+    gl.clearColor(...atmosphere,1);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     for(const view of views){
       gl.viewport(view.viewport.x,view.viewport.y,view.viewport.width,view.viewport.height);
       gl.useProgram(p);gl.enable(gl.CULL_FACE);
       gl.uniform1f(gl.getUniformLocation(p,'fogAmount'),scene.living?1:0);
+      gl.uniform3fv(gl.getUniformLocation(p,'fogColor'),atmosphere);
       const sceneMatrix=scene.calibration?multiply4(view.projection,view.inverse):view.matrix;
       if(scene.living&&!scene.calibration){
         gl.bindBuffer(gl.ARRAY_BUFFER,this.stageVertices);
