@@ -114,7 +114,9 @@ test('VR files use an explicit entry and do not rename or take over established 
   assert.ok(entry.includes('href="vr/index.html"'),'VR route remains relative and subpath-safe');
   assert.match(page,/id="enter-vr"/);
   assert.match(page,/Prototype boundary/);
-  assert.match(app,/navigator\.xr\.requestSession\('immersive-vr'/);
+  assert.match(app,/sharedXR\.enter\(\)/);
+  const runtime=await readFile(new URL('../public/vr/spark-xr-runtime.js',import.meta.url),'utf8');
+  assert.match(runtime,/api\.requestSession\('immersive-vr'/);
   assert.doesNotMatch(app,/localStorage\.(setItem|removeItem)/);
   assert.doesNotMatch(app,/sessionStorage\.(setItem|removeItem)/);
   assert.doesNotMatch(app,/fetch\(/);

@@ -5,6 +5,7 @@ import {desktopXRSample} from './spark-xr-preview.js';
 import {clamp} from './spark-xr-input.js';
 import {loadVRComfort,storeVRComfort} from './spark-vr-comfort.js';
 import {loadSpellcraftPreferences,storeSpellcraftPreferences} from './spark-spellcraft-preferences.js';
+import {installXRControls} from './spark-xr-controls.js';
 import {QUEST_ACCEPTANCE_CASES,createQuestDiagnostics,beginQuestDiagnostics,endQuestDiagnostics,recordQuestFrame,questAcceptanceReport,summarizeQuestDiagnostics} from './spark-vr-diagnostics.js';
 const $=id=>document.getElementById(id),canvas=$('world'),keys=new Set(),latch={};
 const descentGuide=$('living-guide').innerHTML;
@@ -40,7 +41,7 @@ export const runtime=new SparkXRRuntime({canvas,adapter:new DescentXRAdapter(),
 host=new LivingSparkHost({runtime,storage,onStatus:message=>{$('living-status').textContent=message;},onMode:id=>{
   for(const mode of ['descent','duel'])$('mode-'+mode).setAttribute('aria-pressed',String(mode===id));
   $('living-selection').textContent=id==='descent'?'Descent selected · original VR checkpoint format':'Elemental Ascension selected · ephemeral Duel encounter';
-  $('living-mode-label').textContent=id==='descent'?'DESCENT / SHARED XR':'ELEMENTAL ASCENSION / DUEL';
+  $('living-mode-label').textContent=id==='descent'?'DESCENT / CAMPAIGN':'ELEMENTAL ASCENSION / DUEL';
   $('living-guide').innerHTML=id==='descent'?descentGuide:arenaGuide;
   for(const control of ['save','resume','new'])$('living-'+control).disabled=id!=='descent';
 }});
@@ -61,7 +62,7 @@ function preview(now){
   if(runtime.paused)s.hands.left.axes[3]=(keys.has('ArrowDown')?1:0)-(keys.has('ArrowUp')?1:0);
   for(const k of Object.keys(latch))delete latch[k];return s;
 }
-const act=fn=>()=>{try{void fn();}catch(error){host.status(error.message);}};
+const act=fn=>()=>{try{fn()?.catch?.(error=>host.status(error.message));}catch(error){host.status(error.message);}};
 $('living-desktop').addEventListener('click',act(()=>runtime.startDesktop(preview)));
 $('living-vr').addEventListener('click',act(()=>runtime.enter()));
 $('living-wrist').addEventListener('click',()=>runtime.pause());
@@ -73,6 +74,7 @@ for(const id of ['descent','duel'])$('mode-'+id).addEventListener('click',act(()
 for(const key of Object.keys(runtime.settings)){const control=$('living-'+key);if(!control)continue;
   control.addEventListener('change',()=>{runtime.configure({[key]:control.type==='checkbox'?control.checked:['movement','turn','vignette','aimAssist'].includes(key)?Number(control.value):control.value});if(key==='posture')runtime.recenter();});}
 runtime.onSettings(runtime.settings);
+installXRControls(runtime);
 const bindings={KeyF:'trigger',KeyG:'power',Enter:'trigger',Space:'dash',KeyE:'interact',KeyX:'dodge',Tab:'wrist',KeyQ:'cycle',Escape:'pause',KeyR:'recenter',KeyB:'exit'};
 window.addEventListener('keydown',event=>{
   if(event.target?.closest?.('button,input,select,a'))return;

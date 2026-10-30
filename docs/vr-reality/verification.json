@@ -1,0 +1,503 @@
+{
+  "schema": "spark.xr.rung4.verification.v1",
+  "status": "SOFTWARE_CANDIDATE_PASS_PHYSICAL_RETEST_PENDING",
+  "dateUTC": "2026-10-30T04:44:26.058065+00:00",
+  "baseCommit": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+  "controllingAuthority": "User WORK MODE BUILD MISSION: SPARK VR \u2014 THE QUEST REALITY PASS, Rung 4",
+  "tests": [
+    {
+      "name": "gameplay",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "seconds": 4.95,
+      "result": "PASS",
+      "summary": "\u2714 holding a gate key crosses once; backtracking requires release and approaching the return gate (2.138512ms)\n\u2139 tests 479\n\u2139 suites 0\n\u2139 pass 479\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 4768.713317"
+    },
+    {
+      "name": "vr",
+      "command": [
+        "node",
+        "--test",
+        "tests/vr-ascension.test.mjs",
+        "tests/vr-awakening.test.mjs",
+        "tests/vr-first-slice.test.mjs",
+        "tests/vr-full-descent.test.mjs",
+        "tests/vr-living.test.mjs",
+        "tests/vr-navigation-comfort.test.mjs",
+        "tests/vr-quest-field-lab.test.mjs",
+        "tests/vr-reality.test.mjs",
+        "tests/vr-warden.test.mjs"
+      ],
+      "seconds": 3.03,
+      "result": "PASS",
+      "summary": "\u2714 fresh input-only route: Classic and left-handed seated Spellcraft legally damage the Warden, defeat it, preserve rewards, checkpoint and both Eye decisions (2330.493968ms)\n\u2139 tests 111\n\u2139 suites 0\n\u2139 pass 111\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 2961.394126"
+    },
+    {
+      "name": "syntax",
+      "command": [
+        "bash",
+        "-c",
+        "for f in public/vr/*.js scripts/check-vr-reality-browser.mjs tests/vr-reality*.mjs tests/fixtures/vr-r35-hands.mjs; do node --check \"$f\" || exit; done"
+      ],
+      "seconds": 1.95,
+      "result": "PASS"
+    },
+    {
+      "name": "pages",
+      "command": [
+        "node",
+        "--test",
+        "tests/pages-static.test.mjs"
+      ],
+      "seconds": 0.23,
+      "result": "PASS",
+      "summary": "\u2714 canonical game, VR and Echo Lives HTML references stay project-relative (0.504556ms)\n\u2139 tests 7\n\u2139 suites 0\n\u2139 pass 7\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 163.09297"
+    },
+    {
+      "name": "pages-build",
+      "command": [
+        "node",
+        "scripts/build-pages.mjs"
+      ],
+      "seconds": 0.13,
+      "result": "PASS"
+    },
+    {
+      "name": "ascension-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-ascension-browser.mjs"
+      ],
+      "seconds": 7.86,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0, SwiftShader, isolated Playwright; synthetic XR, no physical headset"
+    },
+    {
+      "name": "living-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-living-browser.mjs"
+      ],
+      "seconds": 10.35,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0, SwiftShader, isolated Playwright; synthetic XR, no physical headset"
+    },
+    {
+      "name": "awakening-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-awakening-browser.mjs"
+      ],
+      "seconds": 12.1,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0, SwiftShader, isolated Playwright; synthetic XR, no physical headset"
+    },
+    {
+      "name": "warden-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-warden-browser.mjs"
+      ],
+      "seconds": 8.09,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0, SwiftShader, isolated Playwright; synthetic XR, no physical headset"
+    },
+    {
+      "name": "reality-browser",
+      "command": [
+        "node",
+        "scripts/check-vr-reality-browser.mjs"
+      ],
+      "seconds": 13.59,
+      "result": "PASS",
+      "environment": "Chromium 153.0.8010.0, SwiftShader, isolated Playwright; synthetic XR, no physical headset"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "seconds": 0.01,
+      "result": "PASS"
+    }
+  ],
+  "protectedFiles": {
+    ".github/workflows/pages.yml": {
+      "unchanged": true,
+      "sha256": "0990adc1d3e3c6d9f6eb486ce7b484c4c3a45b6065111dafe10de135e960b855"
+    },
+    "LICENSE": {
+      "unchanged": true,
+      "sha256": "24a731247da58720e7245cc29aa815c686206736eb4ec711395466eca295ed82"
+    },
+    "package.json": {
+      "unchanged": true,
+      "sha256": "81e77679352b0b947038af50d406fd5d77ea8083906fbed58311d650a14c2ded"
+    },
+    "pnpm-lock.yaml": {
+      "unchanged": true,
+      "sha256": "095ba6f301ba3997da2c251dfc4b805c220624bdf0921d905eaceee0d1fb29c9"
+    },
+    "public/action-engine.js": {
+      "unchanged": true,
+      "sha256": "4608e6ce0a5c92c0a7cd0e133d01b31b47aaea2132771c293e7077eb805fa4c2"
+    },
+    "public/app.js": {
+      "unchanged": true,
+      "sha256": "ec3363fdf2ed0e8c0673139c69a28a398732f182a4cc10416a5ea7d70a3239f1"
+    },
+    "public/attack-intent.js": {
+      "unchanged": true,
+      "sha256": "70fe3d777410421e2642c91b139d88afb6058929473c087a4d0700f9c9d41bc3"
+    },
+    "public/boss-rematch.js": {
+      "unchanged": true,
+      "sha256": "fe764ec254688cae2d6f176885c0d95c28b73c84791dafc0ad4ae774468ce659"
+    },
+    "public/combat-view.js": {
+      "unchanged": true,
+      "sha256": "603670588ccc821610267f982fc749a50394616dfa3f39ddf6e4cd5e2efd7329"
+    },
+    "public/coop-input.js": {
+      "unchanged": true,
+      "sha256": "95e5c8c361319ccf9ecedc2fc4c709ee382901dca6da1fc34e70c875a8c3cb88"
+    },
+    "public/coop-state.js": {
+      "unchanged": true,
+      "sha256": "5329934f63c92ea4851cd14aeb4d1820c295dad50da63376c04943819c565e05"
+    },
+    "public/descent.js": {
+      "unchanged": true,
+      "sha256": "da164c0b5fb2d61037e850c1a42703a7805ed20d558eb442aa2738691ba22738"
+    },
+    "public/duel-engine.js": {
+      "unchanged": true,
+      "sha256": "502697e0166f43989ea4057a3f500d22d9b0f9e3605b2d107e54b8ad81f7ef70"
+    },
+    "public/duel-spatial.js": {
+      "unchanged": true,
+      "sha256": "9d54b9baf210c1a46b6f355a5921d647c76bca034dcef7c5e231ddb8c3d293fb"
+    },
+    "public/duel-view.js": {
+      "unchanged": true,
+      "sha256": "050cd693a1f7c6ca79ed41840faa7bc6a991551fda95518d88f4b436c7d097a6"
+    },
+    "public/dungeon.js": {
+      "unchanged": true,
+      "sha256": "333be2d5ac4f908d1b040afb94a193d74bb7f2a6b1f54536399591440beb0a12"
+    },
+    "public/engine.js": {
+      "unchanged": true,
+      "sha256": "10b0695fd2d45819305cab2e827be81d1ffb47d662d49d63fcd6a7340e49b137"
+    },
+    "public/entry.js": {
+      "unchanged": true,
+      "sha256": "0d0058c6d04c1041608a0c04c27db5a18d1834aa706415fba9771f8d27c6dbdc"
+    },
+    "public/equipment.js": {
+      "unchanged": true,
+      "sha256": "f6840fd6fd6bef600952243a9b7482e472025a6d5fdb448b61ff46c036b74f2b"
+    },
+    "public/exploration.js": {
+      "unchanged": true,
+      "sha256": "10b025b490391a24fcc47d71cc6368f956e46bb71a6126bbb9afabb450572495"
+    },
+    "public/legacy-runtime.js": {
+      "unchanged": true,
+      "sha256": "416ec27950f16b5952f904a05af04bd4197edf27de0bd70fa896a4f53ddcd1c5"
+    },
+    "public/mastery.js": {
+      "unchanged": true,
+      "sha256": "4a7360ccb52c6a7c80a9d1f38731dbe6a4bf96b231744304234bc9133371867e"
+    },
+    "public/memory-arcade-manifest.js": {
+      "unchanged": true,
+      "sha256": "049e5dda24d890932d231af9b4d125b7e71acdf17b978c8ce694191f074b9c9e"
+    },
+    "public/memory-arcade-state.js": {
+      "unchanged": true,
+      "sha256": "3f312f058f4caa9a98d500aaa1269701f2cf0333299dc6bdaf3d4f7b96390ac4"
+    },
+    "public/memory-arcade.js": {
+      "unchanged": true,
+      "sha256": "a8837272a3631f3a943451a368284ee8904989050fe69a07258e690a4ad3ba7e"
+    },
+    "public/more-bounce-field.js": {
+      "unchanged": true,
+      "sha256": "c001f25cfc7a2820135c3e0192f723926ec57a64e36587401e4cc48a5d6229af"
+    },
+    "public/online.js": {
+      "unchanged": true,
+      "sha256": "6e0236351ec7ddf9e38a96390dc262ce0e124db757dcca9b1ef46af66ec08cfa"
+    },
+    "public/progress.js": {
+      "unchanged": true,
+      "sha256": "32d494ca15b05e4e5cb4792d2e5e39afa59f8a83ee1ab46da5927ff7d75c957f"
+    },
+    "public/room-layouts.js": {
+      "unchanged": true,
+      "sha256": "337bb716799bbd8f72c26028ee3835d2c9440739c046e647af021460470a9a7c"
+    },
+    "public/run-record.js": {
+      "unchanged": true,
+      "sha256": "8d3388d5bc5ea988b2b20ba5e87a061488d884cdd1fb3af70e3ea442ac73e7ce"
+    },
+    "public/settings.js": {
+      "unchanged": true,
+      "sha256": "ccbc1fff3995785946e5178e577e786ba5038347c0806f926b257002362c53e6"
+    },
+    "public/share-run.js": {
+      "unchanged": true,
+      "sha256": "85ba2860082178ef3e9a944c9857e2742a6e7581a0950aca885914e4b18edb7c"
+    },
+    "public/sideways-brawler.js": {
+      "unchanged": true,
+      "sha256": "59cb1d0f8eaacf9aafa67b64cfa025e9079cab1341125bef624e76c83d25cc7a"
+    },
+    "public/sideways-build.js": {
+      "unchanged": true,
+      "sha256": "e8e043c7102e9a88f34d26c4b5402901dac673c0acb1406cfd281cf7c3db0031"
+    },
+    "public/sideways-engine.js": {
+      "unchanged": true,
+      "sha256": "80df2855a54b5a93e8ec9201931f9fd7f21426a8dc6c29417963b849c2ed8589"
+    },
+    "public/sideways-guardians.js": {
+      "unchanged": true,
+      "sha256": "56c102de5c85af7e5fd0062c2e63c08c5c0a0a7ef593da5b4cc30101b966a9e6"
+    },
+    "public/sideways-memories.js": {
+      "unchanged": true,
+      "sha256": "bc546ba07eb0e918b9e6713fc87eed0b03be30eecdc7356aa08d46129df0196e"
+    },
+    "public/sideways-path-art.js": {
+      "unchanged": true,
+      "sha256": "65435ff849084b8ed944509c7ee6f700e21362d97e90f5d52912c486c73628e9"
+    },
+    "public/sideways-paths.js": {
+      "unchanged": true,
+      "sha256": "2234d767697aa62070d49df9d807144c8106a494b39dd2868c17df29fb412f63"
+    },
+    "public/sideways-scenery.js": {
+      "unchanged": true,
+      "sha256": "b9b94e4a3fb197f6a189f393f47a1f4571e07a386b0ab8b6688c5e1d491807f4"
+    },
+    "public/sideways-view.js": {
+      "unchanged": true,
+      "sha256": "31b22a354d90d45b9851a834449426286779e7d2ce9e3e2dae6a93132137b877"
+    },
+    "public/story.js": {
+      "unchanged": true,
+      "sha256": "c0a67ba643094705c75c57a6a6d99cb76747af59a7069e66d40af036a7108957"
+    },
+    "public/substrate-rewards.js": {
+      "unchanged": true,
+      "sha256": "5b1887566201031ba402963fdec2a2fda49e5e96c87cede7523c3b3cb5556d8b"
+    },
+    "public/table-engine.js": {
+      "unchanged": true,
+      "sha256": "ee630597ac8e68b696a223b0a06616b8b8d370fa6231ed7c561dde2a6739df57"
+    },
+    "public/vr/spark-guardian-presentation.js": {
+      "unchanged": true,
+      "sha256": "0e5d8320eb7a0ec3a314559386aff9a1bafbee3b5a2893b88d9933fee412e7aa"
+    },
+    "public/vr/spark-more-bounce.js": {
+      "unchanged": true,
+      "sha256": "ef9ac5f1b6361a482e9ad94d7265406fce220469064ba91556ae654eb0cbbb52"
+    },
+    "public/vr/spark-spellcraft-preferences.js": {
+      "unchanged": true,
+      "sha256": "0d0ed48026c086a99b6e1a6ac8fd41717beee62c7edfa0e8f7b4508a044a1292"
+    },
+    "public/vr/spark-vr-model.js": {
+      "unchanged": true,
+      "sha256": "e4f09e5220b8604ba82cf0b6442cff6185e929c15783bc1eef78a8bc8258ff65"
+    },
+    "public/vr/spark-vr-save.js": {
+      "unchanged": true,
+      "sha256": "33517e928286b1e65e9e630124728be6bbab675e1e759ebff3ab2692fc50c3c8"
+    },
+    "public/world-expansion.js": {
+      "unchanged": true,
+      "sha256": "72e0ba24810941e1bd56b62e03cd2ba192e5403f65d20d82e1c9e3860873a1ce"
+    },
+    "public/world-story.js": {
+      "unchanged": true,
+      "sha256": "3c45ba26dde04fa89b724d258fc9bf2965083fa9f12aae7b0feaf06d4c422f5e"
+    },
+    "public/worlds.js": {
+      "unchanged": true,
+      "sha256": "fbd52951cbc3cb96fc3ba339dd57782026b73e94667bdc7620ff5b1055e0e04e"
+    },
+    "scripts/build-pages.mjs": {
+      "unchanged": true,
+      "sha256": "5760a01e942e4d83d97f8e5220a4d901d9148b59c7fe670ee79a00991b1313f2"
+    }
+  },
+  "protectedTrees": {
+    ".openai": {
+      "unchanged": true,
+      "gitTree": "6f4ad44f76b875b0df485db16f34d7985d7812a6"
+    },
+    "app": {
+      "unchanged": true,
+      "gitTree": "79acf705ad270734cd62c481aec51a256d48e37f"
+    },
+    "art": {
+      "unchanged": true,
+      "gitTree": "308d678d6ba98aa9384c7e47de01788bd8340a92"
+    },
+    "build": {
+      "unchanged": true,
+      "gitTree": "ad80c8ed48e17e80282b99c27d8ac0ff0cbcf479"
+    },
+    "components": {
+      "unchanged": true,
+      "gitTree": "54a25dfac2ce7f6099ce5b3ae8ea0e8348458b1e"
+    },
+    "db": {
+      "unchanged": true,
+      "gitTree": "6eada412cf96dad20eb9ef2afe6f4c6d478e3d06"
+    },
+    "drizzle": {
+      "unchanged": true,
+      "gitTree": "6a2e1925e39829ad809e85c75f5b0804dbf14edc"
+    },
+    "examples": {
+      "unchanged": true,
+      "gitTree": "e987e3414dd5725d636da9be199bbb35bc0fc640"
+    },
+    "hooks": {
+      "unchanged": true,
+      "gitTree": "cc6027e3ac916df709fe1f49005f24ad4402e692"
+    },
+    "lib": {
+      "unchanged": true,
+      "gitTree": "1088fbcd6e45e4e36785917567975864f0412d02"
+    },
+    "runtime": {
+      "unchanged": true,
+      "gitTree": "3b43b9a4143cb67af0732510857d07cba8607aa9"
+    },
+    "server": {
+      "unchanged": true,
+      "gitTree": "46eed644dea4eda6658f262b2fc186ea6f57cc25"
+    },
+    "vendor": {
+      "unchanged": true,
+      "gitTree": "a01d59c29b433718e6a6a30e3ccd710214babbb4"
+    }
+  },
+  "softwareBaseline": {
+    "gameplayPassed": 459,
+    "source": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+    "capture": "Actual unchanged-main software-WebGL output, not Quest photography"
+  },
+  "requirements": [
+    {
+      "id": "R4-HANDS",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "tests/vr-reality.test.mjs",
+        "hands-before-same-pose.png",
+        "hands-after-same-pose.png",
+        "living-calibration.png"
+      ]
+    },
+    {
+      "id": "R4-RECOVERY",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "tests/vr-reality.test.mjs",
+        "browser-results.json#routes",
+        "living-recovery.png"
+      ]
+    },
+    {
+      "id": "R4-LAUNCH",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "scripts/check-vr-reality-browser.mjs",
+        "browser-results.json#routes",
+        "browser-results.json#hub"
+      ]
+    },
+    {
+      "id": "R4-MENU",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "tests/vr-reality.test.mjs",
+        "living-xr-wrist.png",
+        "browser-results.json#routes"
+      ]
+    },
+    {
+      "id": "R4-ART",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "tests/vr-living.test.mjs",
+        "threshold-after.png",
+        "glass-combat-after.png",
+        "machine-after.png",
+        "browser-results.json#performance"
+      ]
+    },
+    {
+      "id": "R4-DIAGNOSTICS",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "tests/vr-reality.test.mjs",
+        "browser-results.json#remoteRequests",
+        "../QUEST3_FIELD_LAB.md"
+      ]
+    },
+    {
+      "id": "R4-COMPAT",
+      "status": "SOFTWARE_PASS",
+      "evidence": [
+        "protectedFiles",
+        "protectedTrees",
+        "tests/vr-warden.test.mjs",
+        "tests/vr-awakening.test.mjs",
+        "tests/pages-static.test.mjs"
+      ]
+    },
+    {
+      "id": "R4-HARDWARE",
+      "status": "NOT_PERFORMED",
+      "evidence": [
+        "../QUEST3_FIELD_LAB.md#rung-4--quest-reality-retest"
+      ]
+    }
+  ],
+  "developmentCorrections": [
+    "Four legacy source-wiring assertions failed after immersive ownership moved into the shared runtime. Updated assertions follow shared ownership; behavioral and save regressions were retained.",
+    "Initial beveled floors exceeded the established geometry budget. Hidden tile faces and duplicate generic ribs were removed; the existing 180000-float cap was not raised.",
+    "Held startup/recovery triggers could select a pause command before neutral acquisition. Guarded both states; regression tests demonstrate no queued attacks.",
+    "Review found a stationary pointer could scroll commands under itself and recovery could retain an index from the reduced command registry. Selection and scrolling are separate, and registry changes remap to the displayed page; targeted regressions pass.",
+    "First new browser harness run had a return-field typo (activation/activations); corrected the harness and reran all route assertions.",
+    "A verification command named a nonexistent scripts/check-pages.mjs. Replaced it with the repository actual pages-static tests and build-pages script; both pass."
+  ],
+  "limits": [
+    "No physical Quest 3 retest, performance/comfort acceptance or optical hand tracking claim.",
+    "Only the written hardware field report was accessible; no Quest screenshot attachments available for pixel inspection.",
+    "Original failing third route is unidentified; software coverage cannot prove its physical root cause.",
+    "Actual DOM/app/WebGL with simulated XR provider/layer/frames and Quest-like poses; not a native hardware session.",
+    "Short CPU submissions are not GPU completion, Quest FPS, sustained thermal performance or a baseline hardware speed comparison.",
+    "Native input opening route is exercised; full 126-room natural campaign playthrough is not claimed. Existing controlled fixtures remain labeled in their suites.",
+    "Only Threshold, Glass and Machine receive new room foundations; other rooms retain existing themes.",
+    "Cross-mode switch deliberately ends XR and requires a fresh Enter VR browser gesture."
+  ],
+  "release": {
+    "pr": "Authorized reviewable candidate",
+    "autoMerge": false,
+    "deployment": "Not performed",
+    "humanReview": "Pending",
+    "questRetest": "Pending"
+  }
+}

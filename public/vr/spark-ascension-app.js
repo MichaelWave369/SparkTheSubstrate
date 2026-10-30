@@ -1,4 +1,5 @@
 import {SparkXRRuntime} from './spark-xr-runtime.js';
+import {installXRControls} from './spark-xr-controls.js';
 import {DuelXRAdapter} from './spark-xr-adapters.js';
 import {desktopXRSample} from './spark-xr-preview.js';
 import {clamp} from './spark-xr-input.js';
@@ -10,7 +11,7 @@ let pointer=false,drag=null,yaw=0,pitch=0,lean=0,duck=0,lastPreview=null,interru
 const triggerLatch={left:false,right:false};
 const diagnostics=createQuestDiagnostics(),checks={};
 const adapter=new DuelXRAdapter();
-const runtime=new SparkXRRuntime({canvas,adapter,
+export const runtime=new SparkXRRuntime({canvas,adapter,
   settings:{reduced:globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true},
   onStatus:message=>{$('arena-status').textContent=message;},
   onMode:mode=>{
@@ -71,6 +72,7 @@ for(const key of Object.keys(runtime.settings)){
   });
 }
 runtime.onSettings(runtime.settings);
+installXRControls(runtime);
 window.addEventListener('keydown',event=>{
   if(event.target?.closest?.('input,select,button,a'))return;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code))event.preventDefault();

@@ -103,3 +103,21 @@ No external art, audio samples, models, remote runtime assets or app dependencie
 are added. Evidence PNGs show the actual Chromium/software-WebGL game, not
 illustrations or photographs from a Quest headset. Existing asset notices above
 remain applicable to their respective assets.
+
+## SPARK VR: Quest Reality Pass — Rung 4
+
+The mirrored controller gauntlets, thin vessel accents, calibration fixtures,
+compact wrist artwork, bevel masonry, arches, gate ribbons, vaulted Threshold,
+Glass Causeway fins, Machine Sepulcher mechanisms and revised ordinary enemy
+silhouettes are original procedural geometry/code covered by the repository's
+MIT license. The existing Spark poster informed palette and silhouettes; its
+raster image is not sampled into new textures. No downloaded models, textures,
+audio, fonts, paid services or runtime dependencies are added. Existing material
+and fog shaders, synthesized audio and guardian presentation are reused.
+
+`tests/fixtures/vr-r35-hands.mjs` preserves the original MIT Rung 3.5 hand geometry
+from merged main solely for a labeled rendered comparison. Evidence PNGs in
+`docs/vr-reality/` are actual Chromium/software-WebGL output with synthetic
+poses, not generated artwork or photographs captured inside a Quest. The
+WebXR grip/ray conventions follow the primary specification:
+https://www.w3.org/TR/webxr/#xrinputsource-interface.

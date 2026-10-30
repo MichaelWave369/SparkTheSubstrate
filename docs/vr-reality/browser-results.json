@@ -1,0 +1,740 @@
+{
+  "schema": "spark.xr.reality.browser.v1",
+  "status": "PASS",
+  "browser": "153.0.8010.0",
+  "stagedPages": true,
+  "projectSubpath": "/SparkTheSubstrate/",
+  "routes": [
+    {
+      "path": "index.html",
+      "denial": {
+        "error": "PERMISSION_DENIED",
+        "mode": "idle"
+      },
+      "launched": {
+        "mode": "xr",
+        "adapter": "descent",
+        "before": {
+          "x": 480,
+          "y": 390
+        },
+        "after": {
+          "x": 480,
+          "y": 341.125
+        },
+        "controllers": {
+          "left": {
+            "detected": true,
+            "grip": true,
+            "ray": true
+          },
+          "right": {
+            "detected": true,
+            "grip": true,
+            "ray": true
+          }
+        },
+        "page": "Combat",
+        "activations": [
+          true,
+          true,
+          true
+        ],
+        "requestCount": 3
+      },
+      "interaction": {
+        "pages": [
+          "Combat",
+          "Inventory",
+          "World",
+          "Comfort",
+          "Session"
+        ],
+        "queuedAttacks": 0,
+        "remainingHandDelta": 0.01999999999999999,
+        "diagnostics": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "descent",
+          "state": "controller-disconnected",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": false,
+              "grip": false,
+              "ray": false
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 2,
+            "paused": 1,
+            "neutral-required": 2,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 0,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "recovered": {
+        "ready": true,
+        "powersBefore": 0,
+        "powersAfter": 1,
+        "report": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "descent",
+          "state": "ready",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 3,
+            "paused": 2,
+            "neutral-required": 3,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 0,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "calibration": {
+        "unchanged": true,
+        "page": true,
+        "settings": {
+          "version": "spark.xr.calibration.v1",
+          "scale": 1,
+          "wristSide": "right",
+          "panelMode": "wrist",
+          "panelScale": 1,
+          "grip": {
+            "left": {
+              "height": 0.02,
+              "depth": 0,
+              "pitch": 10,
+              "roll": 0
+            },
+            "right": {
+              "height": 0,
+              "depth": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          },
+          "ray": {
+            "left": {
+              "pitch": 0,
+              "yaw": 5
+            },
+            "right": {
+              "pitch": 0,
+              "yaw": 0
+            }
+          }
+        },
+        "report": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "descent",
+          "state": "calibration",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 3,
+            "paused": 2,
+            "neutral-required": 3,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 1,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "cleanup": {
+        "mode": "idle",
+        "calibrating": false,
+        "gpu": [
+          {
+            "buffers": 0,
+            "textures": 0,
+            "programs": 0
+          }
+        ],
+        "voices": 0,
+        "cacheReleased": true
+      }
+    },
+    {
+      "path": "ascension.html",
+      "denial": {
+        "error": "PERMISSION_DENIED",
+        "mode": "idle"
+      },
+      "launched": {
+        "mode": "xr",
+        "adapter": "duel",
+        "before": {
+          "x": 290,
+          "y": 300
+        },
+        "after": {
+          "x": 319.75,
+          "y": 300
+        },
+        "controllers": {
+          "left": {
+            "detected": true,
+            "grip": true,
+            "ray": true
+          },
+          "right": {
+            "detected": true,
+            "grip": true,
+            "ray": true
+          }
+        },
+        "page": "Combat",
+        "activations": [
+          true,
+          true,
+          true
+        ],
+        "requestCount": 3
+      },
+      "interaction": {
+        "pages": [
+          "Combat",
+          "Inventory",
+          "World",
+          "Comfort",
+          "Session"
+        ],
+        "queuedAttacks": 0,
+        "remainingHandDelta": 0.01999999999999999,
+        "diagnostics": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "duel",
+          "state": "controller-disconnected",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": false,
+              "grip": false,
+              "ray": false
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 2,
+            "paused": 1,
+            "neutral-required": 2,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 0,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "recovered": {
+        "ready": true,
+        "powersBefore": 0,
+        "powersAfter": 1,
+        "report": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "duel",
+          "state": "ready",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 3,
+            "paused": 2,
+            "neutral-required": 3,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 0,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "calibration": {
+        "unchanged": true,
+        "page": true,
+        "settings": {
+          "version": "spark.xr.calibration.v1",
+          "scale": 1,
+          "wristSide": "right",
+          "panelMode": "wrist",
+          "panelScale": 1,
+          "grip": {
+            "left": {
+              "height": 0.02,
+              "depth": 0,
+              "pitch": 10,
+              "roll": 0
+            },
+            "right": {
+              "height": 0,
+              "depth": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          },
+          "ray": {
+            "left": {
+              "pitch": 0,
+              "yaw": 5
+            },
+            "right": {
+              "pitch": 0,
+              "yaw": 0
+            }
+          }
+        },
+        "report": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "duel",
+          "state": "calibration",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 3,
+            "paused": 2,
+            "neutral-required": 3,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 1,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "cleanup": {
+        "mode": "idle",
+        "calibrating": false,
+        "gpu": [
+          {
+            "buffers": 0,
+            "textures": 0,
+            "programs": 0
+          }
+        ],
+        "voices": 0,
+        "cacheReleased": true
+      }
+    },
+    {
+      "path": "living.html",
+      "denial": {
+        "error": "PERMISSION_DENIED",
+        "mode": "idle"
+      },
+      "launched": {
+        "mode": "xr",
+        "adapter": "descent",
+        "before": {
+          "x": 480,
+          "y": 390
+        },
+        "after": {
+          "x": 480,
+          "y": 341.125
+        },
+        "controllers": {
+          "left": {
+            "detected": true,
+            "grip": true,
+            "ray": true
+          },
+          "right": {
+            "detected": true,
+            "grip": true,
+            "ray": true
+          }
+        },
+        "page": "Combat",
+        "activations": [
+          true,
+          true,
+          true
+        ],
+        "requestCount": 3
+      },
+      "interaction": {
+        "pages": [
+          "Combat",
+          "Inventory",
+          "World",
+          "Comfort",
+          "Session"
+        ],
+        "queuedAttacks": 0,
+        "remainingHandDelta": 0.01999999999999999,
+        "diagnostics": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "descent",
+          "state": "controller-disconnected",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": false,
+              "grip": false,
+              "ray": false
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 2,
+            "paused": 1,
+            "neutral-required": 2,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 0,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "recovered": {
+        "ready": true,
+        "powersBefore": 0,
+        "powersAfter": 1,
+        "report": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "descent",
+          "state": "ready",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 3,
+            "paused": 2,
+            "neutral-required": 3,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 0,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "calibration": {
+        "unchanged": true,
+        "page": true,
+        "settings": {
+          "version": "spark.xr.calibration.v1",
+          "scale": 1,
+          "wristSide": "right",
+          "panelMode": "wrist",
+          "panelScale": 1,
+          "grip": {
+            "left": {
+              "height": 0.02,
+              "depth": 0,
+              "pitch": 10,
+              "roll": 0
+            },
+            "right": {
+              "height": 0,
+              "depth": 0,
+              "pitch": 0,
+              "roll": 0
+            }
+          },
+          "ray": {
+            "left": {
+              "pitch": 0,
+              "yaw": 5
+            },
+            "right": {
+              "pitch": 0,
+              "yaw": 0
+            }
+          }
+        },
+        "report": {
+          "schema": "spark.xr.reality-diagnostics.v1",
+          "session": "xr",
+          "mode": "descent",
+          "state": "calibration",
+          "quality": "balanced",
+          "controllers": {
+            "left": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            },
+            "right": {
+              "detected": true,
+              "grip": true,
+              "ray": true
+            }
+          },
+          "lastError": "PERMISSION_DENIED",
+          "transitions": {
+            "idle": 1,
+            "launching": 3,
+            "ready": 3,
+            "paused": 2,
+            "neutral-required": 3,
+            "tracking-unavailable": 2,
+            "controller-disconnected": 1,
+            "safe-boundary": 0,
+            "tracking-jump": 0,
+            "cadence": 0,
+            "visibility": 0,
+            "input-range": 0,
+            "collision-blocked": 0,
+            "calibration": 1,
+            "error": 1
+          },
+          "privacy": "Local aggregate state only; no poses, axes, recordings, saves or automatic upload",
+          "hardwareAcceptance": "Manual Quest retest required"
+        }
+      },
+      "cleanup": {
+        "mode": "idle",
+        "calibrating": false,
+        "gpu": [
+          {
+            "buffers": 0,
+            "textures": 0,
+            "programs": 0
+          }
+        ],
+        "voices": 0,
+        "cacheReleased": true
+      }
+    }
+  ],
+  "hub": {
+    "ended": true,
+    "saved": true,
+    "mode": "duel",
+    "status": "Ascension encounter selected · previous VR session ended · press Enter immersive VR again (a new browser gesture is required)"
+  },
+  "arenaHub": {
+    "mode": "duel",
+    "phase": "playing"
+  },
+  "native": {
+    "room": "glass",
+    "enemies": [
+      "collector",
+      "archon"
+    ],
+    "hp": 112
+  },
+  "performance": [
+    {
+      "quality": "performance",
+      "room": "machine",
+      "twoEyes": true,
+      "medianCpuMs": 1.5,
+      "p95CpuMs": 4,
+      "drawCalls": 10,
+      "vertices": 53664,
+      "uploadBytes": 89856,
+      "allocations": 0,
+      "cpuMs": 1.8999999994412065,
+      "limit": "Software CPU submission, not Quest FPS, GPU time or sustained thermal evidence"
+    },
+    {
+      "quality": "balanced",
+      "room": "machine",
+      "twoEyes": true,
+      "medianCpuMs": 2.5,
+      "p95CpuMs": 4.900000000372529,
+      "drawCalls": 10,
+      "vertices": 57312,
+      "uploadBytes": 95616,
+      "allocations": 0,
+      "cpuMs": 1.400000000372529,
+      "limit": "Software CPU submission, not Quest FPS, GPU time or sustained thermal evidence"
+    },
+    {
+      "quality": "high",
+      "room": "machine",
+      "twoEyes": true,
+      "medianCpuMs": 1.599999999627471,
+      "p95CpuMs": 3.7999999998137355,
+      "drawCalls": 10,
+      "vertices": 64224,
+      "uploadBytes": 102528,
+      "allocations": 0,
+      "cpuMs": 1.5,
+      "limit": "Software CPU submission, not Quest FPS, GPU time or sustained thermal evidence"
+    }
+  ],
+  "cleanup": {
+    "gpu": [
+      {
+        "buffers": 0,
+        "textures": 0,
+        "programs": 0
+      }
+    ],
+    "voices": 0
+  },
+  "browserErrors": 0,
+  "remoteRequests": 0,
+  "source": "Actual DOM entry buttons, app/runtime and software-WebGL renderer. Simulated XR provider/layer and current tracked Quest-like poses; no native hardware session.",
+  "comparison": "Frozen Rung 3.5 hand mesh and new mesh in the same pose/current stage; baseline room captures in docs/vr-reality/before use the actual unmodified merged main.",
+  "hardware": "Quest 3 retest NOT PERFORMED. Reported third failing route is unidentified; software tests cannot identify which original hardware entry failed."
+}

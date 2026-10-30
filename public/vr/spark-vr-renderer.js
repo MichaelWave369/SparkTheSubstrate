@@ -4,9 +4,12 @@ import {WIDTH,HEIGHT} from '../action-engine.js?v=0.17.0';
 import {worldAt} from './spark-vr-model.js';
 import {multiply4,transform4} from './spark-vr-math.js';
 import {hex,tint,pushBox,pushGem,pushRing,pushBeam} from './spark-vr-geometry.js';
-import {livingRoomGeometry,livingDynamicGeometry} from './spark-room-themes.js';
+import {livingRoomGeometry,livingDynamicGeometry,clearRoomGeometryCache} from './spark-room-themes.js';
 import {guardianGeometry} from './spark-guardian-presentation.js';
 import {moreBounceGeometry} from './spark-more-bounce.js';
+import {livingEnemyFigure} from './spark-world-art.js';
+import {trackedGauntletVertices} from './spark-xr-hands.js';
+import {calibrationRoomGeometry} from './spark-xr-panel.js';
 import {duelWorldPoint} from './spark-xr-adapters.js';
 
 const VERT= `attribute vec3 position;
@@ -183,6 +186,7 @@ function pushStage(vertices,scene){
 function pushActors(vertices,s){
   for(const entity of s.enemies.slice(0,36)){
     if(s.living&&((s.roomId==='forge'&&entity.kind==='cantor')||(s.roomId==='eye'&&['warden','hound'].includes(entity.kind))))continue;
+    if(s.living){livingEnemyFigure(vertices,entity,s);continue;}
     const [x,,z]=worldAt(entity.x,entity.y),radius=Math.min(.6,Math.max(.18,(entity.r||20)/100));
     const col=entity.hp>0?hex(entity.color,'#ef966d'):[.1,.1,.1];
     pushBox(vertices,x,.35+radius/2,z,radius*1.6,.7+radius,radius*1.6,col);
@@ -191,12 +195,14 @@ function pushActors(vertices,s){
   for(const shot of s.shots.slice(0,s.living?240:80)){
     const [x,,z]=worldAt(shot.x,shot.y);
     const col=shot.enemy?[1,.28,.35]:s.living?hex(shot.color):[.31,.97,1];
-    if(s.living)pushGem(vertices,x,shot.visualHeight??.82,z,.07,.22,col);
+    if(s.living){const y=shot.visualHeight??.82;pushGem(vertices,x,y,z,.045,.12,col);
+      const length=Math.hypot(shot.vx||0,shot.vy||0);if(length)pushBeam(vertices,[x,y,z],[x-(shot.vx/length)*.18,y,z-(shot.vy/length)*.18],.018,tint(col,.65));
+      pushGem(vertices,x,y,z,.019,.055,[.88,.97,.9]);}
     else pushBox(vertices,x,.65,z,.14,.14,.14,col);
   }
   for(const frag of s.fragments.slice(0,60)){
     const [x,,z]=worldAt(frag.x,frag.y);
-    pushBox(vertices,x,.28,z,.14,.55,.14,[.9,.77,.35]);
+    if(s.living)pushGem(vertices,x,.17,z,.04,.13,[1,.83,.37]);else pushBox(vertices,x,.28,z,.14,.55,.14,[.9,.77,.35]);
   }
   for(const mark of (s.dangerMarks??[]).slice(0,40)){
     const [x,,z]=worldAt(mark.x,mark.y);
@@ -235,7 +241,7 @@ export function livingWristPose(head,leftGrip){
 }
 export function makeSceneVertices(snapshot){
   const vertices=[];
-  if(snapshot.living){vertices.push(...livingRoomGeometry(snapshot));pushActors(vertices,snapshot);livingDynamicGeometry(vertices,snapshot);}
+  if(snapshot.living){for(const value of livingRoomGeometry(snapshot))vertices.push(value);pushActors(vertices,snapshot);livingDynamicGeometry(vertices,snapshot);}
   else if(snapshot.presentation==='arena')pushArena(vertices,snapshot);
   else{pushStage(vertices,snapshot);pushActors(vertices,snapshot);}
   return new Float32Array(vertices);
@@ -243,54 +249,8 @@ export function makeSceneVertices(snapshot){
 
 // Original vessel gauntlets: tracked palms, five fingers, wrist rings and charge seeds.
 // Vertices live in XR reference space; no camera-relative fake hands or retained poses.
-export function makeTrackedHandVertices(hands={},reduced=false){
-  const result=[];
-  for(const name of ['left','right']){
-    const hand=hands[name];if(!hand?.matrix)continue;
-    const local=[],col=hex(hand.color),sign=name==='left'?-1:1,accent=hex(hand.accent||hand.color);
-    if(hand.style==='lumen'){pushRing(local,0,.04,-.04,.075,accent,reduced?6:12);pushGem(local,0,.08,-.045,.035,.07,col);}
-    if(hand.style==='blade'){pushBeam(local,[0,.015,-.05],[0,.025,-.53],.018,accent);pushBox(local,0,.025,-.13,.15,.025,.025,col);}
-    if(hand.style==='prism'){for(let i=-1;i<=1;i++)pushGem(local,i*.045,.045,-.04,.022,.09,accent);pushBox(local,0,.035,0,.10,.025,.09,col);}
-    if(hand.style==='claw'){for(let i=-1;i<=1;i++)pushBeam(local,[i*.024,.025,-.06],[i*.036,.01,-.23],.016,accent);}
-    if(hand.style==='root'){for(const side of [-1,1]){pushBeam(local,[side*.035,.025,.05],[side*.06,.04,-.1],.02,col);pushGem(local,side*.06,.05,-.09,.035,.035,accent);}}
-    if(hand.style==='crystal'){pushBox(local,0,.005,-.01,.12,.065,.13,col);for(const side of [-1,1])pushGem(local,side*.055,.045,-.04,.03,.09,accent);}
-    if(hand.attacking){
-      const p=hand.attack||0,pulse=Math.sin(p*Math.PI),r=.065+p*(reduced?.02:.065);
-      if(hand.style==='blade')for(let i=0;i<5;i++)pushBeam(local,[(i-2)*.045*p,.015,-.08],[(i-2)*.10*p,.04,-.62-pulse*.14],.012,accent);
-      else if(hand.style==='claw')for(let i=-1;i<=1;i++)pushBeam(local,[i*.026,.03,-.09],[i*.065,.03-pulse*.1,-.35-pulse*.16],.018,accent);
-      else if(hand.style==='root')for(const side of [-1,1])pushBeam(local,[0,.03,0],[side*r,.08,-.15-r],.02,col);
-      else if(hand.style==='crystal')pushRing(local,0,-.02-p*.12,-.12,r,col,8);
-      else if(hand.style==='prism')for(let i=-1;i<=1;i++)pushGem(local,i*r,.05,-.16-p*.25,.025,.11,accent);
-      else pushRing(local,0,.08,-.09,r,accent,10);
-    }
-    pushBox(local,0,0,0,.075,.035,.105,tint(col,.6));
-    pushBox(local,0,0,.065,.09,.045,.025,col);
-    for(let i=0;i<4;i++){
-      const x=(i-1.5)*.019,z=-.083+(i===3?.012:0);
-      pushBox(local,x,0,z,.014,.025,.066,tint(col,.85));
-      pushBox(local,x,-.006,z-.041,.013,.020,.02,col);
-    }
-    pushBox(local,sign*.049,-.004,-.015,.030,.025,.05,col);
-    const charge=Math.max(0,Math.min(1,hand.charge||0));
-    const size=.025+charge*.075;
-    if(hand.recovering){pushBox(local,0,.026,.064,.08,.01,.025,[.25,.28,.32]);pushBox(local,-.04+(.08*(1-(hand.recovery||0)))/2,.033,.064,.08*(1-(hand.recovery||0)),.008,.026,accent);}
-    pushBox(local,0,.055,-.085,size,size,size,col);
-    if(charge>0){
-      const count=reduced?2:6;
-      for(let i=0;i<count;i++){
-        const a=i/count*Math.PI*2+charge*2;
-        pushBox(local,Math.cos(a)*.095,.055+Math.sin(a)*.07,-.085,.014,.014,.014,col);
-      }
-    }
-    // The controller ray and grip can have different orientations on real devices.
-    const filament=[];pushBox(filament,0,0,-.24,.004,.004,.26,tint(col,.45));
-    for(let i=0;i<filament.length;i+=6)result.push(...transform4(hand.ray||hand.matrix,filament.slice(i,i+3)),...filament.slice(i+3,i+6));
-    for(let i=0;i<local.length;i+=6){
-      result.push(...transform4(hand.matrix,local.slice(i,i+3)),...local.slice(i+3,i+6));
-    }
-  }
-  return new Float32Array(result);
-}
+export const makeTrackedHandVertices=trackedGauntletVertices;
+
 function pushArena(v,s){
   const dark=[.035,.075,.095],gold=[.86,.64,.29],mint=[.28,.71,.70];
   pushBox(v,0,-.11,0,5.6,.2,10,dark);
@@ -374,6 +334,7 @@ export class SparkVRRenderer{
     this.disposed=false;
   }
   updateHud(scene){
+    if(scene.panel)return this.updateXRPanel(scene);
     if(scene.living)return this.updateLivingHud(scene);
     if(scene.presentation==='arena')return this.updateArenaHud(scene);
     const stamp=[scene.roomId,scene.roomName,scene.worldName,scene.form,
@@ -432,6 +393,53 @@ export class SparkVRRenderer{
     g.bindTexture(g.TEXTURE_2D,this.hudTexture);
     g.pixelStorei(g.UNPACK_FLIP_Y_WEBGL,false);
     g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,this.hudCanvas);
+  }
+  updateXRPanel(s){
+    const alert=!!s.statusMessage&&!s.paused&&!s.calibration,p=s.panel,d=s.diagnostics||{},
+      stamp=JSON.stringify([alert,s.statusMessage,s.pauseReason,p.page,p.rows.map(r=>[r.label,r.selected]),p.start,p.total,
+        Math.ceil(s.health),s.cooldown?.toFixed(1),s.guardians?.map(g=>[Math.ceil(g.hp),g.stage]),d.state,d.controllers,s.panelPlacement?.attachment,p.pointer&&[Math.round(p.pointer.x/8),Math.round(p.pointer.y/8)]]);
+    if(stamp===this.lastHudStamp)return;this.lastHudStamp=stamp;
+    const c=this.hudContext,height=alert?128:384,width=alert?.34:p.width,physicalHeight=alert?.085:p.height;
+    if(this.hudCanvas.height!==height)this.hudCanvas.height=height;
+    const meshKey=width+':'+physicalHeight;
+    if(this.hudSizeKey!==meshKey){this.hudSizeKey=meshKey;const x=width/2,y=physicalHeight/2;
+      this.hudMesh=new Float32Array([-x,-y,0,0,1,x,-y,0,1,1,x,y,0,1,0,-x,-y,0,0,1,x,y,0,1,0,-x,y,0,0,0]);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.hudVertices);this.gl.bufferData(this.gl.ARRAY_BUFFER,this.hudMesh,this.gl.STATIC_DRAW);}
+    c.fillStyle='rgba(5,17,23,.97)';c.fillRect(0,0,512,height);c.strokeStyle='#bda366';c.lineWidth=3;c.strokeRect(2,2,508,height-4);
+    const lines=(text,max=34)=>{const words=String(text||'').split(' '),out=[''];for(const word of words){if((out.at(-1)+' '+word).trim().length>max)out.push(word);else out[out.length-1]=(out.at(-1)+' '+word).trim();}return out;};
+    c.fillStyle='#f5dca1';c.font='bold 28px sans-serif';c.fillText(alert?'SPARK / CONTROLS':'SPARK / '+p.page.toUpperCase(),16,33);
+    if(alert){c.font='24px sans-serif';c.fillStyle='#e3ece7';lines(s.statusMessage,37).slice(0,3).forEach((line,i)=>c.fillText(line,16,63+i*26));}
+    else{
+      c.font='18px sans-serif';c.fillStyle='#a4d9d1';
+      c.fillText((s.calibration?'CAMPAIGN PAUSED · CALIBRATION':(s.roomName||'Arena')+' · '+(s.form||'spark')).slice(0,44),16,57);
+      c.fillStyle='#e2d9c3';c.font='19px sans-serif';
+      const boss=s.guardians?.[0];
+      const summary=boss?boss.kind.toUpperCase()+' '+Math.ceil(boss.hp)+' / '+boss.maxHp+' · PHASE '+boss.stage:
+        s.roomId==='eye'&&s.cleared?'WARDEN DEFEATED · RUN ESSENCE '+s.essence:
+        p.page==='Inventory'?'Keys '+(s.keys?.join(', ')||'—')+' · Seals '+(s.seals?.join(', ')||'—'):
+        'HP '+Math.ceil(s.health)+' / '+s.maxHealth+' · POWER '+(s.cooldown||0).toFixed(1)+'s';
+      c.fillText(summary.slice(0,44),16,82);
+      if(p.page==='Diagnostics'){
+        c.font='19px sans-serif';const controls=d.controllers||{};
+        const state=side=>{const x=controls[side]||{};return !x.detected?'disconnected':!x.grip?'grip lost':!x.ray?'ray lost':'tracked';};
+        for(const [i,text]of ['L '+state('left')+' · R '+state('right'),d.state+' · '+(s.movementStatus||'').slice(0,20),d.session+' / '+d.mode+' / '+d.quality,'Last error: '+(d.lastError||'none')].entries())c.fillText(text.slice(0,44),16,78+i*23);
+      }
+      for(const row of p.rows){
+        c.fillStyle=row.selected?'#254c4b':'#102b31';c.fillRect(10,row.y,492,row.height);
+        if(row.selected){c.fillStyle='#f6d994';c.fillRect(10,row.y,5,row.height);}
+        c.fillStyle=row.selected?'#fff0be':'#bbd6d2';c.font=(row.selected?'bold ':'')+'24px sans-serif';
+        lines(row.label,34).slice(0,2).forEach((line,i)=>c.fillText((row.selected&&i===0?'› ':'  ')+line,23,row.y+24+i*25));
+      }
+      if(!p.rows.length){c.fillStyle='#b5d6d2';c.font='22px sans-serif';
+        lines(p.page==='World'?(s.worldName||'Arena')+' · No campaign gates in this encounter.':'No actions on this page.',32).slice(0,3).forEach((line,i)=>c.fillText(line,22,130+i*29));}
+      c.font='15px sans-serif';p.tabs.forEach((tab,i)=>{const w=512/p.tabs.length;c.fillStyle=tab===p.page?'#d4ba7f':'#214047';c.fillRect(i*w+3,284,w-6,34);c.fillStyle=tab===p.page?'#10222a':'#c0d9d6';c.fillText(tab,i*w+8,307);});
+      c.font='16px sans-serif';c.fillStyle='#a1c8c3';
+      const footer=s.calibration?'Only art / aim preferences · no combat input':s.statusMessage||s.pauseReason||'Stick ↑↓ items · ←→ pages · trigger confirm';
+      lines(footer,49).slice(0,2).forEach((line,i)=>c.fillText(line,14,340+i*18));
+      c.font='13px sans-serif';c.fillText((p.total?p.start+1+'–'+Math.min(p.start+p.rows.length,p.total)+' / '+p.total+' · ':'')+(s.panelPlacement?.attachment||'wrist')+' · X close / Y recenter',14,378);
+      if(p.pointer){c.fillStyle='#f9e2a7';c.beginPath();c.arc(p.pointer.x,p.pointer.y,4,0,Math.PI*2);c.fill();}
+    }
+    const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.hudTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,this.hudCanvas);
   }
   updateArenaHud(s){
     const stamp=[s.frame>>3,s.paused,s.menuIndex,s.menuLabels?.join('|'),s.pauseReason].join('|');
@@ -514,13 +522,15 @@ export class SparkVRRenderer{
     const gl=this.gl;
     this.living=!!scene.living;
     let mesh;
-    if(scene.living){const dynamic=[];pushActors(dynamic,scene);livingDynamicGeometry(dynamic,scene);mesh=new Float32Array(dynamic);
+    if(scene.calibration){const v=[];calibrationRoomGeometry(v,{head:hudPose,origin:scene.panelAnchor},{box:pushBox,ring:pushRing,gem:pushGem});mesh=new Float32Array(v);}
+    else if(scene.living){const dynamic=[];pushActors(dynamic,scene);livingDynamicGeometry(dynamic,scene);mesh=new Float32Array(dynamic);
       const stage=livingRoomGeometry(scene);if(stage!==this.stageMesh){this.stageMesh=stage;gl.bindBuffer(gl.ARRAY_BUFFER,this.stageVertices);gl.bufferData(gl.ARRAY_BUFFER,stage,gl.STATIC_DRAW);}}
     else mesh=makeSceneVertices(scene);
     const handMesh=makeTrackedHandVertices(hands,reduced);
     gl.bindBuffer(gl.ARRAY_BUFFER,this.handVertices);
     gl.bufferData(gl.ARRAY_BUFFER,handMesh,gl.DYNAMIC_DRAW);
-    if(!scene.living||scene.paused)this.updateHud(scene);
+    const panelVisible=scene.panel?(scene.paused||scene.calibration||!!scene.statusMessage):!scene.living||scene.paused;
+    if(panelVisible)this.updateHud(scene);
     gl.bindBuffer(gl.ARRAY_BUFFER,this.vertices);
     gl.bufferData(gl.ARRAY_BUFFER,mesh,gl.DYNAMIC_DRAW);
     gl.bindFramebuffer(gl.FRAMEBUFFER,framebuffer);
@@ -537,7 +547,8 @@ export class SparkVRRenderer{
       gl.viewport(view.viewport.x,view.viewport.y,view.viewport.width,view.viewport.height);
       gl.useProgram(p);gl.enable(gl.CULL_FACE);
       gl.uniform1f(gl.getUniformLocation(p,'fogAmount'),scene.living?1:0);
-      if(scene.living){
+      const sceneMatrix=scene.calibration?multiply4(view.projection,view.inverse):view.matrix;
+      if(scene.living&&!scene.calibration){
         gl.bindBuffer(gl.ARRAY_BUFFER,this.stageVertices);
         gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,24,0);
         gl.enableVertexAttribArray(b);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
@@ -546,7 +557,7 @@ export class SparkVRRenderer{
       gl.bindBuffer(gl.ARRAY_BUFFER,this.vertices);
       gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,24,0);
       gl.enableVertexAttribArray(b);gl.vertexAttribPointer(b,3,gl.FLOAT,false,24,12);
-      gl.uniformMatrix4fv(vp,false,view.matrix);
+      gl.uniformMatrix4fv(vp,false,sceneMatrix);
       gl.drawArrays(gl.TRIANGLES,0,mesh.length/6);
       if(handMesh.length&&view.projection&&view.inverse){
         gl.bindBuffer(gl.ARRAY_BUFFER,this.handVertices);
@@ -556,7 +567,9 @@ export class SparkVRRenderer{
       }
       // A lightweight optional per-eye comfort mask precedes the readable HUD.
       if(hudPose&&vignette>0)this.drawComfortVignette(vignette);
-      if(hudPose&&(!scene.living||scene.paused))this.drawHud(view,hudPose,hands.left?.matrix);
+      if(hudPose&&panelVisible){let placement=scene.panelPlacement?.matrix;
+        if(scene.panel&&scene.statusMessage&&!scene.paused&&!scene.calibration){placement=new Float32Array(hudPose);for(let i=0;i<3;i++)placement[12+i]=hudPose[12+i]-hudPose[4+i]*.32-hudPose[8+i]*.8;}
+        this.drawHud(view,hudPose,hands.left?.matrix,placement);}
     }
   }
   drawComfortVignette(amount){
@@ -574,11 +587,11 @@ export class SparkVRRenderer{
     gl.drawArrays(gl.TRIANGLES,0,6);
     gl.disable(gl.BLEND);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);
   }
-  drawHud(view,headMatrix,leftGrip){
+  drawHud(view,headMatrix,leftGrip,placement=null){
     const gl=this.gl;
     // Head-following, placed ABOVE rather than across the central sight line.
-    const anchored=this.living?livingWristPose(headMatrix,leftGrip):new Float32Array(headMatrix);
-    if(!this.living)for(let k=0;k<3;k++)anchored[12+k]+=
+    const anchored=placement|| (this.living?livingWristPose(headMatrix,leftGrip):new Float32Array(headMatrix));
+    if(!placement&&!this.living)for(let k=0;k<3;k++)anchored[12+k]+=
       headMatrix[4+k]*.38-headMatrix[8+k]*1.75;
     const m=multiply4(view.projection,multiply4(view.inverse,anchored));
     gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.depthMask(false);
@@ -603,5 +616,6 @@ export class SparkVRRenderer{
     gl.deleteTexture(this.hudTexture);
     gl.deleteProgram(this.program);gl.deleteProgram(this.hudProgram);
     gl.deleteProgram(this.comfortProgram);
+    clearRoomGeometryCache();
   }
 }

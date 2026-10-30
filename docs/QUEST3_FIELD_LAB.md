@@ -22,10 +22,11 @@ compare behavior, but it does not exercise the immersive frame path.
    the headset's explicit browser session prompt. No VR starts automatically.
 3. Look around. Check stereoscopic depth and floor height with both eyes,
    including moving your head independently of left-stick locomotion.
-4. Move with left stick, turn with right stick, dash with left trigger,
-   invoke a vessel power with right trigger, open/close the compass with
-   **left Y**, and pause/resume with the right stick click. Note any input
-   differences you actually experience.
+4. Move with left stick, turn with right stick, dash with left stick click,
+   and use either trigger for vessel power in Classic. **Left X** or right stick
+   click opens the wrist. Left Y recenters and pauses; World holds the compass.
+   Spellcraft uses the selected casting-hand trigger for basic attacks and the
+   other trigger for power. Note any input differences you actually experience.
 5. Follow Spark's *real engine* directions through The Threshold,
    Glass Causeway and, when possible, Machine Sepulcher. Test blocked doors,
    true swarm clearance and first real karma/boon decisions.
@@ -33,7 +34,7 @@ compare behavior, but it does not exercise the immersive frame path.
    still works. Reload only after testing the local checkpoint resume
    behavior. The separate original Descent/Sideways saves must be unchanged.
 7. Under **QUEST 3 FIELD LAB**, inspect the locally measured session summary.
-   Select **Passed**, **Failed**, or **Not tested** for each of the 12 acceptance
+   Select **Passed**, **Failed**, or **Not tested** for each applicable acceptance
    checks yourself. The page does **not** auto-mark hardware results passed.
 8. Press **Download Quest test report (JSON)** or **Copy report** explicitly.
    The site does not upload these measurements and does not retain the
@@ -102,7 +103,7 @@ backend, cloud save or licensing terms are changed by the lab.
 
 **Not tested on physical Quest 3.** These checks extend the existing lab; they
 do not auto-mark any of its hardware results. Use `vr/living.html` for this
-showcase. Keep the existing 12-check report and record these encounter notes
+showcase. Keep the existing acceptance report and record these encounter notes
 alongside it. A new readiness panel is deferred in favor of the finished boss.
 
 - [ ] Reach the Eye through real campaign gates (or restore your own legitimately
@@ -131,3 +132,50 @@ alongside it. A new readiness panel is deferred in favor of the finished boss.
       Duel. Confirm no orphaned effects, tones, input queues or broken stereo.
 
 Screenshots and repeatable software checks: [Rung 3.5 evidence](vr-warden/rung-3.5.md).
+
+## Rung 4 · Quest reality retest
+
+The creator's first physical session found hand, movement, menu and entry
+problems. This revision has software evidence only; **physical retest is pending**.
+Keep the existing checklist and its pass/fail history. The five `reality-*`
+checks are additional manual results, initially **Not tested**.
+
+1. Visit `/vr/index.html`, `/vr/ascension.html` and `/vr/living.html` separately.
+   Enter with the page's button. Record the exact URL and browser version if one
+   fails. Deny once and retry. In Living, switch between campaign and arena:
+   the first session must end, followed by a deliberate new **Enter immersive
+   VR** gesture. Browser permission prompts cannot be approved by the game.
+2. Begin seated, hands relaxed around Touch controllers. Move each hand and
+   rotate the wrist independently: the gauntlet should follow the grip and the
+   fine pointer should follow aim. Open Session → Calibrate hands. Compare the
+   reference targets, then adjust size, grip lift/depth/tilt/roll and pointer
+   pitch/yaw separately. No campaign time or combat may advance in calibration.
+   Check both hands and left-handed Spellcraft; these are controller gauntlets,
+   not optical articulated-hand tracking.
+3. Open X wrist. Read Combat, Inventory, World, Comfort and Session with each
+   eye, seated and standing. Stick up/down scrolls three visible actions;
+   left/right changes page. Point the opposite controller at a row/tab and
+   confirm with a trigger. Try either wrist and the small fixed floating panel.
+   Look up/down; close with X. Verify native gifts and Eye Continue/Finish
+   choices remain accessible. Release the confirming trigger before casting.
+4. During legal movement, observe native cover/edge feedback. Return from a
+   small bounded lean, recenter with Y, briefly obscure a controller, disconnect
+   one controller and interrupt headset visibility. The current remaining hand
+   must keep following its controller while combat pauses. Read Diagnostics;
+   reconnect/restore tracking and choose **Recover when neutral** or Resume.
+   Release both triggers/grips and center sticks. No old charge may fire.
+   B or the recovery Exit action must always provide an exit path when tracked.
+5. Explore Threshold → real Glass combat/rewards → Machine normally. Check gate
+   clearance, native cover, enemy visibility and animated machinery. Compare
+   reduced intensity and all quality presets. Record sustained comfort, heat,
+   frame behavior and panel legibility; software CPU measurements are not
+   headset FPS. Save/restore your own earned VR checkpoint and check original
+   saves and the separate online service. Do not use test fixtures for rewards.
+
+Hands & controls → Input diagnostics shows only local session/controller flags,
+state, mode, quality and fixed error codes. Explicit export adds aggregate state
+transition counts; no poses, axes, recordings, identifiers or saves are collected
+or uploaded. This is separate from the existing Field Lab's timing report.
+Keep both reports with reproduction notes if helpful.
+
+[Bug matrix, route inventory, software captures and limitations](vr-reality/rung-4.md).

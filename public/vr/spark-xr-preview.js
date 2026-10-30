@@ -15,7 +15,11 @@ export function desktopXRSample({yaw=0,pitch=0,lean=0,duck=0,move=0,turn=0,
     const matrix=previewMatrix(...point,Math.atan2(-d[0],-d[2]),Math.asin(d[1]/n));
     const pressed=name==='left'?[leftTrigger,controllerDuck,false,dash,wrist,recenter]:
       [rightTrigger,dodge||interact,false,pause,false,exit];
-    hands[name]={grip:missingPose&&name==='right'?null:matrix,ray:matrix,
+    // Touch-like grip: thumb axis points up and +Y returns along the forearm.
+    // The pointing ray remains forward. Identical grip/ray orientations hid
+    // alignment errors in the original desktop-only hand screenshots.
+    const grip=previewMatrix(...point,Math.atan2(-d[0],-d[2]),Math.asin(d[1]/n)+1.25);
+    hands[name]={grip:missingPose&&name==='right'?null:grip,ray:matrix,
       axes:[0,0,name==='left'?(strafe??dodgeDirection):turn,name==='left'?-move:0],
       buttons:pressed.map(p=>({pressed:!!p,value:p?1:0}))};
   }

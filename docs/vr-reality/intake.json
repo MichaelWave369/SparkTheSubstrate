@@ -1,0 +1,60 @@
+{
+  "schema": "spark.xr.reality.intake.v1",
+  "authority": "User WORK MODE BUILD MISSION: Rung 4 \u2014 Quest Reality Pass",
+  "base": "a1f59bd1649af0ea6c145a2af94463bb502748ca",
+  "evidence": {
+    "creatorQuest3Report": "Hardware-derived observations override prior software assumptions",
+    "reported": [
+      "Unnatural oversized hands",
+      "Intermittent sticking",
+      "Large clipped menus",
+      "One unidentified VR entry unresponsive",
+      "Primitive visuals",
+      "Classic playable; Spellcraft not hardware-tested"
+    ],
+    "questScreenshotFiles": "Not attached in this message or available in the workspace; do not claim pixel inspection",
+    "artDirection": "public/spark-poster-v1.png inspected; obsidian, fractured gold, luminous teal, monumental fantasy arches",
+    "softwareBaseline": "Fresh local captures on merged main, not physical Quest footage"
+  },
+  "requirements": [
+    {
+      "id": "R4-HANDS",
+      "target": "Controller-local mirrored gauntlets; separate bounded grip-art and ray calibration; hub calibration",
+      "proof": "Transforms, scale, independent poses, rendered realistic Quest fixture"
+    },
+    {
+      "id": "R4-RECOVERY",
+      "target": "Explicit tracking, disconnection, neutral, collision, boundary and pause states; safe recovery",
+      "proof": "Interrupted/resumed input, held controls, frame timing, canonical movement observations"
+    },
+    {
+      "id": "R4-LAUNCH",
+      "target": "Audit three entry URLs and both shared hub modes; explicit exit/re-entry and failure feedback",
+      "proof": "Actual DOM launches with simulated XR lifecycle; rejected/pending/cancelled sessions"
+    },
+    {
+      "id": "R4-MENU",
+      "target": "Compact attachable wrist/floating alternative; five pages, three rows, ray/stick interaction",
+      "proof": "Both-eye frusta, pointer and menu controls; no closure attack queue; canonical choices"
+    },
+    {
+      "id": "R4-ART",
+      "target": "Reusable lightweight materials/architecture and first-room showcase; Glass/Machine as time permits",
+      "proof": "Actual before/after renderer captures; canonical footprints and gates; measured resource budget"
+    },
+    {
+      "id": "R4-DIAGNOSTICS",
+      "target": "Live local aggregate status; preserve manual Field Lab; no pose/telemetry upload",
+      "proof": "Allowlisted report serialization and no remote requests"
+    },
+    {
+      "id": "R4-COMPAT",
+      "target": "Preserve all engines, earnings, boss rules, saves, desktop controls and online service",
+      "proof": "Protected source hashes; full gameplay/VR/browser suites; staged Pages imports"
+    }
+  ],
+  "scope": "Bounded fixes, interface and visual foundations; no boss, game mode, backend or progression expansion",
+  "release": "One reviewable PR; no automatic merge/deployment; Quest retest and independent human review pending",
+  "candidate": "SOFTWARE_CANDIDATE_PASS_PHYSICAL_RETEST_PENDING",
+  "verification": "verification.json"
+}
