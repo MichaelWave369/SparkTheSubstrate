@@ -171,7 +171,7 @@
     "visual": {
       "version": "spark.xr.guardian-presentation.v1",
       "kind": "warden",
-      "victory": 2.7914000000001393,
+      "victory": 2.7921999999997205,
       "victoryDuration": 2.8,
       "defeated": true,
       "stage": 2,
@@ -207,6 +207,11 @@
       "victory": "eye"
     },
     "restored": true,
+    "restoredEye": {
+      "kind": "warden",
+      "defeated": true,
+      "replayedVictory": false
+    },
     "continue": {
       "room": "tide-harbor",
       "seals": [
@@ -234,8 +239,8 @@
       "enemyProjectiles": 3,
       "warningAngles": 5,
       "samples": 8,
-      "medianSubmissionMs": 11.099999999860302,
-      "p95SubmissionMs": 16.4000000001397,
+      "medianSubmissionMs": 9.399999999906868,
+      "p95SubmissionMs": 18.899999999906868,
       "drawCalls": 10,
       "verticesSubmitted": 34248,
       "geometryUploadBytes": 264384,
@@ -250,8 +255,8 @@
       "enemyProjectiles": 3,
       "warningAngles": 5,
       "samples": 8,
-      "medianSubmissionMs": 8.799999999813735,
-      "p95SubmissionMs": 15.5,
+      "medianSubmissionMs": 13.200000000186265,
+      "p95SubmissionMs": 17.399999999906868,
       "drawCalls": 10,
       "verticesSubmitted": 44856,
       "geometryUploadBytes": 365760,
@@ -266,8 +271,8 @@
       "enemyProjectiles": 3,
       "warningAngles": 5,
       "samples": 8,
-      "medianSubmissionMs": 10.800000000046566,
-      "p95SubmissionMs": 13.199999999953434,
+      "medianSubmissionMs": 9.599999999627471,
+      "p95SubmissionMs": 12.900000000372529,
       "drawCalls": 10,
       "verticesSubmitted": 58872,
       "geometryUploadBytes": 499392,

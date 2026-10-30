@@ -91,6 +91,11 @@ The VR checkpoint remains `spark-substrate-immersive-vr-v1`, schema
 Descent/Sideways/Duel saves and separate Spellcraft preferences keep their existing
 namespaces. No online API, account or telemetry operation is introduced.
 
+Paused checkpoint restoration seeds guardian visuals from canonical room/cleared
+history before the first render. An earned Eye milestone therefore restores the
+fractured Eye immediately, with no repeated defeat animation or cue. This also
+handles older saves and later boss banners without changing the saved run.
+
 ## Software verification and evidence
 
 Exact commands, results, fixture labels and protected-file checks are recorded in
@@ -189,9 +194,9 @@ Measured local sample (eight frames after warmup, **CPU submission only**):
 
 | Quality | Median / p95 ms | Vertices submitted (two eyes) | Geometry upload KiB/frame |
 |---|---:|---:|---:|
-| performance | 11.1 / 16.4 | 34,248 | 258.2 |
-| balanced | 8.8 / 15.5 | 44,856 | 357.2 |
-| high | 10.8 / 13.2 | 58,872 | 487.7 |
+| performance | 9.4 / 18.9 | 34,248 | 258.2 |
+| balanced | 13.2 / 17.4 | 44,856 | 357.2 |
+| high | 9.6 / 12.9 | 58,872 | 487.7 |
 
 Known boundaries: procedural faceted art, original planar hitboxes rather than
 anatomical collision, bounded effects rather than a cinematic camera, optional

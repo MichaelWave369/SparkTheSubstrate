@@ -55,9 +55,11 @@ test('guardian phase and victory cues are canonical, bounded, reduced, nonreplay
  a.guardian.observe({...s,guardians:[],cleared:true,bossDefeated:{room:'eye',name:'The Warden'}},0);
  assert.equal(a.guardian.describe().victory,2.8);now=1400;close(a.guardian.describe().victory,1.4);now=6000;assert.equal(a.guardian.describe().victory,0);
  run.cleared.push('eye');a.dispose();assert.equal(a.guardian.describe().victory,0);assert.deepEqual(a.drainEvents(),[]);assert.equal(a.launches.size,0);
+ a.guardian.seed({...s,cleared:true,guardians:[],bossDefeated:{room:'another-guardian'}});
+ assert.equal(a.guardian.describe().defeated,true,'native cleared history survives a newer boss banner');assert.equal(a.guardian.describe().victory,0);assert.deepEqual(a.guardian.drainEvents(),[]);
 });
 test('Eye chamber caches static geometry, quality budgets dynamic effects and preserves Cantor six/eight plus pair observations',()=>{
- const {state,run}=fixture(),a=new DescentXRAdapter(state),s=a.snapshot();assert.equal(roomTheme(s).showcase,'eye');
+ const {state,run}=fixture(),a=new DescentXRAdapter(state),s=a.snapshot();assert.equal(roomTheme(s).showcase,'eye');assert.equal(s.guardianVisual.kind,'warden');
  assert.equal(livingRoomGeometry(s),livingRoomGeometry(s));const sizes=[];
  for(const quality of ['performance','balanced','high']){const v=[];livingDynamicGeometry(v,{...s,quality});assert.ok(v.every(Number.isFinite));sizes.push(v.length);}
  assert.ok(sizes[0]<sizes[1]&&sizes[1]<sizes[2]);
@@ -98,7 +100,9 @@ test('fresh input-only route: Classic and left-handed seated Spellcraft legally 
  assert.deepEqual(d.snapshot().choices.map(c=>c.id),['continue','finish']);assert.ok(validRun(a.state.run));
  h.save();const checkpoint=structuredClone(a.state.run),saved=JSON.parse(storage.getItem(VR_SAVE_KEY));assert.equal(saved.schema,VR_SAVE_SCHEMA);assert.equal(saved.run.guardianVisual,undefined);
  d.choose('finish');assert.equal(a.state.run.phase,'won');assert.equal(a.state.run.victory,'eye');
- h.restore();assert.deepEqual(a.state.run,checkpoint);d.choose('continue');assert.equal(a.state.run.phase,'playing');assert.equal(a.state.run.eyeAcknowledged,true);
+ h.restore();assert.deepEqual(a.state.run,checkpoint);
+ const restored=a.snapshot().guardianVisual;assert.equal(restored.kind,'warden');assert.equal(restored.defeated,true);assert.equal(restored.victory,0,'restored milestone is already fractured without replaying defeat');assert.deepEqual(a.guardian.drainEvents(),[]);
+ d.choose('continue');assert.equal(a.state.run.phase,'playing');assert.equal(a.state.run.eyeAcknowledged,true);
  a.morph('tree');assert.equal(a.state.run.form,'tree');r.pause(false);d.tick({});d.tick({});crossGate(d,'east');assert.equal(d.snapshot().roomId,'tide-harbor');assert.ok(validRun(a.state.run));
  for(const key of ['spark-substrate-descent-v2','spark-substrate-sideways-v1'])assert.equal(storage.getItem(key),null);
 });

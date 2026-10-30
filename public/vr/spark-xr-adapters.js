@@ -147,7 +147,9 @@ export class DescentXRAdapter {
         return {...e,visualHeight:.82+(launch?launch.height-.82:0)*blend};}),
       gates:s.gates.map(g=>({...g,position:exitPosition(g.direction),entry:gateEntryStatus(run,g.direction)}))};
   }
-  snapshot(){return {...this.snapshotBase(),vessel:this.presentation.describe(this.state.run.form),
+  snapshot(){const s=this.snapshotBase();
+    if(this.guardian.room!==s.roomId||(guardianSpec(s.roomId)&&s.cleared&&!this.guardian.defeated))this.guardian.seed(s);
+    return {...s,vessel:this.presentation.describe(this.state.run.form),
     transform:this.presentation.transform,feedback:this.presentation.feedback,
     attackAnimation:this.presentation.action,attackResult:this.presentation.result,guardianVisual:this.guardian.describe(),moreBounce:this.moreBounce.snapshot(this.state.run,this.controls)};}
   drainEvents(){return [...this.presentation.drainEvents(),...this.guardian.drainEvents(),...this.moreBounce.drainEvents()];}

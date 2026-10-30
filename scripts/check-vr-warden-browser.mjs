@@ -173,9 +173,11 @@ try{
   const continuation=await page.evaluate(()=>{
     const q=window.__warden,{d,app,helpers}=q;d.choose('finish');const finish={phase:d.snapshot().phase,victory:d.snapshot().victory};
     app.host.restore();if(JSON.stringify(app.host.descent.state.run)!==q.milestoneRun)throw Error('Checkpoint changed native campaign');
+    const restored=d.snapshot().guardianVisual;
+    if(restored.kind!=='warden'||!restored.defeated||restored.victory!==0)throw Error('Paused milestone did not restore fractured Eye without replay');
     d.choose('continue');app.runtime.pause(false);d.tick({});d.tick({});helpers.crossGate(d,'east');
     if(d.snapshot().roomId!=='tide-harbor')throw Error('Continue did not open the next world');
-    return {finish,restored:true,continue:{room:d.snapshot().roomId,seals:d.snapshot().seals},
+    return {finish,restored:true,restoredEye:{kind:restored.kind,defeated:restored.defeated,replayedVictory:restored.victory>0},continue:{room:d.snapshot().roomId,seals:d.snapshot().seals},
       label:'Both choices exercised by branching the real saved milestone; no reward banking or duplication'};
   });
   assert.equal(continuation.finish.phase,'won');assert.equal(continuation.finish.victory,'eye');

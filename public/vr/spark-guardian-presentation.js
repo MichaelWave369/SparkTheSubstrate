@@ -6,6 +6,16 @@ export const guardianSpec=room=>SPECS[room]||null;
 export class GuardianPresentation{
  constructor({now=()=>globalThis.performance?.now?.()??Date.now()}={}){this.now=now;this.reset();}
  reset(){this.room=null;this.boss=null;this.winding=false;this.stage=1;this.victory=0;this.events=[];this.defeated=false;this.transition=0;this.victoryStarted=null;this.defeatPoint=null;this.hounds=0;}
+ // A loaded checkpoint can be paused at a choice and never take a sim step.
+ // Reflect its canonical state immediately, without replaying transient cues.
+ seed(s){
+  this.reset();this.room=s.roomId;const spec=guardianSpec(s.roomId);
+  this.boss=s.guardians?.find(g=>g.kind===spec?.kind)||null;this.stage=this.boss?.stage??1;this.winding=this.boss?.windup>0;
+  // Cleared history also survives old saves or a later boss replacing the
+  // single latest bossDefeated banner. Seeding never emits a victory event.
+  this.defeated=!!spec&&!!s.cleared;
+  this.hounds=spec?.kind==='warden'?(s.enemies||[]).filter(e=>e.kind==='hound'&&e.hp>0).length:0;
+ }
  observe(s,dt){
   if(this.room!==s.roomId){this.reset();this.room=s.roomId;}
   this.victory=Math.max(0,this.victory-dt);
