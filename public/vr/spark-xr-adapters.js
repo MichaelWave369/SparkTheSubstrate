@@ -5,7 +5,7 @@ import {BODIES,powerProfile,attackProfile,attackInterval,attackReach,queryAttack
 import {DIRECTED_ATTACK_MODE} from '../attack-intent.js';
 import {projectAttackRay,XR_ATTACK_PROJECTION_VERSION} from './spark-xr-targeting.js';
 import {VesselPresentation} from './spark-vessel-presentation.js';
-import {GuardianPresentation} from './spark-guardian-presentation.js';
+import {GuardianPresentation,guardianSpec} from './spark-guardian-presentation.js';
 import {MoreBouncePresentation} from './spark-more-bounce.js';
 import {XR_INPUT_VERSION, XR_ADAPTER_VERSION, clamp,xrSettings,trackedMatrix} from './spark-xr-input.js';
 
@@ -156,7 +156,7 @@ export class DescentXRAdapter {
     const run=this.state.run;this.castSerial=attackObservations(run).at(-1)?.id??0;
     this.presentation.reset();this.presentation.combatSerial=this.castSerial;
     this.presentation.seen=new Set([...run.effects.map(e=>e.id),...run.shots.map(s=>'shot:'+s.id)]);
-    this.guardian.reset();this.guardian.room=run.room;this.guardian.defeated=run.room==='forge'&&run.cleared.includes('forge');
+    this.guardian.reset();this.guardian.room=run.room;this.guardian.defeated=!!guardianSpec(run.room)&&run.cleared.includes(run.room);
     this.moreBounce.reset();this.aim=null;this.launches.clear();
   }
 }

@@ -18,10 +18,10 @@ export const ROOM_THEMES=Object.freeze({
 const WORLD_IDS=['stratum','tideglass','verdant','cinder','prism','orbit','uncreated'];
 const SHOWCASE={threshold:{stone:'#303239',light:'#f4d08a',glow:'#b5dbc5'},
   glass:{stone:'#1d3549',light:'#b2e9f0',glow:'#59c4dd'},machine:{stone:'#272c3d',light:'#e4ab64',glow:'#69dfc5'},
-  forge:{stone:'#392c32',light:'#f3c181',glow:'#ef874c'}};
+  forge:{stone:'#392c32',light:'#f3c181',glow:'#ef874c'},eye:{stone:'#171923',light:'#f6d28a',glow:'#c39c43'}};
 export function roomTheme(scene){return {version:ROOM_THEME_VERSION,...(ROOM_THEMES[scene.worldId]||ROOM_THEMES[WORLD_IDS[scene.worldRank]]||ROOM_THEMES.stratum),
   ...(SHOWCASE[scene.roomId]||{}),
-  showcase:['threshold','glass','machine','forge'].includes(scene.roomId)?scene.roomId:'world'};}
+  showcase:['threshold','glass','machine','forge','eye'].includes(scene.roomId)?scene.roomId:'world'};}
 const cache=new Map();
 export function clearRoomGeometryCache(){cache.clear();}
 export function roomGeometryKey(s){return JSON.stringify([ROOM_THEME_VERSION,s.roomId,s.worldId,s.quality||'balanced',
@@ -62,6 +62,7 @@ export function livingRoomGeometry(s){
   // Tall peripheral ribs frame every real room across all seven worlds.
   for(const x of [-4.55,4.55])for(let i=0;i<5;i++){
     const z=-2.2+i*1.1;
+    if(s.roomId==='eye'&&Math.abs(z)<.01&&sides.has(x>0?'east':'west'))continue;
     pushBox(v,x,1.65,z,.30,3.3,.28,tint(stone,1.6));
     pushBox(v,x,2.85,z,.36,.12,.38,light);
     pushBox(v,x,1.6,z,.035,2.3,.31,tint(glow,.8));
@@ -112,6 +113,24 @@ export function livingRoomGeometry(s){
     pushRing(v,0,3.7,0,1.55,tint(glow,.7),q.detail);
     for(const radius of [1,1.5,2.15])pushRing(v,0,.012,0,radius,tint(light,.35),q.detail);
     for(const z of [-2.55,2.55])pushBeam(v,[-4.25,.025,z],[4.25,.025,z],.045,glow);
+  }else if(s.roomId==='eye'){
+    for(const side of [-1,1])for(const z of [-2.2,0,2.2]){
+      if(z===0&&sides.has(side>0?'east':'west'))continue;
+      const x=side*4.65;
+      pushBox(v,x,1.8,z,.4,3.6,.44,tint(stone,1.7));
+      pushBox(v,x,1.9,z,.43,2.5,.055,tint(light,.7));
+      pushBeam(v,[x,3.4,z],[side*2.1,4.65,z],.2,tint(light,.7));
+      pushGem(v,x,3.65,z,.22,.7,light);
+    }
+    for(const radius of [1.3,2.1,2.55])pushRing(v,0,.012,0,radius,tint(light,.28),q.detail);
+    pushRing(v,0,4.5,-.5,3.1,tint(light,.65),q.detail);
+    pushRing(v,0,5.1,-.5,2.3,tint(glow,.7),q.detail);
+    // Obsidian plinths and golden glyph strokes stay outside the playable body.
+    for(const x of [-4.35,4.35])for(let i=0;i<6;i++){
+      const z=-2.2+i*.88;
+      pushBeam(v,[x,.03,z-.15],[x-.12*Math.sign(x),.03,z],.025,light);
+      pushBeam(v,[x-.12*Math.sign(x),.03,z],[x,.03,z+.15],.025,light);
+    }
   }else{
     for(let i=0;i<q.detail/2;i++){
       const a=i/Math.max(1,q.detail/2)*Math.PI*2;
@@ -138,6 +157,7 @@ export function livingDynamicGeometry(v,s){
       pushGem(v,Math.cos(a)*2.1,3.40,Math.sin(a)*2.1,.17,.4,glow);
     }
   }
+  if(s.roomId==='eye')eyeMechanisms(v,s,q,light,glow);
   for(const enemy of s.enemies.slice(0,24))if(enemy.windup>0){
     const [x,,z]=worldAt(enemy.x,enemy.y),r=(enemy.r||18)/100+.13;
     pushRing(v,x,.035,z,r,[1,.55,.25],q.detail);
@@ -182,5 +202,60 @@ export function livingDynamicGeometry(v,s){
   if(s.attackResult?.life>0){const result=s.attackResult,[x,,z]=worldAt(result.x??s.player.x,result.y??s.player.y),
     col=result.type==='hit'?[.7,1,.85]:[.9,.5,.33];
     pushRing(v,x,.07,z,.12+(.5-result.life)*.45,col,s.reduced?6:q.detail);
+  }
+}
+// Presentation only. Canonical observations select the phase, charge and defeat;
+// time merely moves bounded decorative geometry, never an attack or hitbox.
+function eyeMechanisms(v,s,q,light,glow){
+  const boss=s.guardians?.find(g=>g.kind==='warden'),visual=s.guardianVisual||{},second=boss?.stage===2||visual.stage===2,
+    defeated=visual.defeated===true,age=defeated?Math.max(0,(visual.victoryDuration||2.8)-(visual.victory||0)):0,
+    intensity=s.reduced?.65:1,hot=second?[1,.43,.22]:light,
+    charge=boss?.windup>0?1-boss.windup/boss.windupTotal:0,
+    spin=s.reduced?0:s.time*(second?.2:.1)+(defeated?age*.3:0),segments=q.detail*2,eye=[];
+  // A broken Eye stays broken after legitimate victory, including restored saves.
+  for(let i=0;i<segments;i++){
+    if(defeated&&i%5===0)continue;
+    const a=i/segments*Math.PI*2,b=(i+1)/segments*Math.PI*2,shift=defeated?(i%3-1)*Math.min(age,.6)*.22:0;
+    const point=t=>[Math.cos(t)*1.65+shift,4.25+Math.sin(t)*.65+(defeated?shift*.4:0),-1.1];
+    pushBeam(eye,point(a),point(b),.075,tint(hot,intensity));
+    if(i%2===0&&!s.reduced)pushBeam(eye,[Math.cos(a)*1.85,4.25+Math.sin(a)*.8,-1.1],point(a),.028,tint(glow,.65));
+  }
+  const iris=defeated?tint(glow,.35):tint(hot,.8+charge*.2);
+  pushRing(eye,0,4.25,-1.08,.43,iris,q.detail,true);
+  if(!defeated)for(let i=0;i<q.detail;i++){
+    const a=i/q.detail*Math.PI*2;
+    pushBeam(eye,[Math.cos(a)*.18,4.25+Math.sin(a)*.18,-1.03],
+      [Math.cos(a)*.4,4.25+Math.sin(a)*.4,-1.03],.018,[1,.92,.64]);
+    // A second lid gives the silhouette an unmistakable all-seeing gaze.
+    const b=(i+1)/q.detail*Math.PI*2;
+    pushBeam(eye,[Math.cos(a)*1.3,4.25+Math.sin(a)*(.38+charge*.06),-1.07],
+      [Math.cos(b)*1.3,4.25+Math.sin(b)*(.38+charge*.06),-1.07],.025,tint(hot,.7));
+  }
+  pushGem(eye,0,4.25,-1.02,.23,.64,defeated?[.18,.2,.27]:[1,.91,.66]);
+  pushBox(eye,0,4.25,-.8,.055,.48,.04,[.1,.08,.12]);
+  // The all-seeing gaze follows the native player position, remaining readable
+  // around the arena. This rotates art alone, never the camera or collisions.
+  const [px,,pz]=worldAt(s.player.x,s.player.y),gaze=Math.atan2(px,pz+1.1),c=Math.cos(gaze),sn=Math.sin(gaze);
+  for(let i=0;i<eye.length;i+=6){const x=eye[i],z=eye[i+2]+1.1;
+    v.push(c*x+sn*z,eye[i+1],-sn*x+c*z-1.1,eye[i+3],eye[i+4],eye[i+5]);
+  }
+  // Tilted, independently rotating celestial rings remain above standing heads.
+  for(let ring=0;ring<2;ring++)for(let i=0;i<q.detail;i++){
+    const rate=defeated?1+ring*.7:1,a=i/q.detail*Math.PI*2+spin*(ring?-1:1)*rate,
+      b=a+Math.PI*2/q.detail,r=ring?2.15:2.8,
+      point=t=>[Math.cos(t)*r,4.05+ring*.85+Math.sin(t)*.45+(s.reduced?0:(visual.transition||0)*.18),-.5+Math.sin(t)*r*.7];
+    pushBeam(v,point(a),point(b),.055,tint(ring?glow:hot,s.reduced?.5:.8));
+    if(i%2===0){const p=point(a);pushGem(v,p[0],p[1],p[2],.1,.3,tint(hot,.8));}
+  }
+  const count=s.reduced?4:q.particles;
+  for(let i=0;i<count;i++){
+    const a=i*2.3999+spin*.25,r=2.5+(i%3)*.45,
+      y=defeated?2.5+((i*.37+age*.7)%2.8):3.25+Math.sin(a)*.14;
+    pushGem(v,Math.cos(a)*r,y,Math.sin(a)*r*.7,.035,.16,tint(hot,intensity));
+  }
+  // Ground glyphs brighten with the actual windup; attacks have their own lanes.
+  for(const side of [-1,1])for(let i=0;i<3;i++){
+    const x=side*(3.4+i*.22),z=-1.9+i*.28;
+    pushBeam(v,[x,.025,z],[x+side*.12,.025,z+.16],.025,tint(hot,.3+charge*.6));
   }
 }

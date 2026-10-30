@@ -12,7 +12,7 @@ export class XRFeedback {
     } catch { /* Silent browsers retain visual windups and impacts. */ }
   }
   event(event, snapshot, settings, sources = []) {
-    if (settings.haptics && ['attack','power', 'hit', 'chip', 'dodge','morph','collect','damage','blocked','giggle'].includes(event.type)) {
+    if (settings.haptics && ['attack','power', 'hit', 'chip', 'dodge','morph','collect','damage','blocked','giggle','guardian-phase'].includes(event.type)) {
       for (const source of sources) {
         if(event.hand&&source.handedness!==event.hand)continue;
         if (event.type === 'power' && event.player === 1) continue;
@@ -24,7 +24,7 @@ export class XRFeedback {
     }
     const c = this.context;
     if (!settings.sound || !c || c.state !== 'running' || this.voices.size >= 8 ||
-        !['attack', 'power', 'hit', 'chip', 'ko', 'dodge','morph','collect','damage','gate','ambient','miss','blocked','windup','victory','giggle','bounce-note'].includes(event.type)) return;
+        !['attack', 'power', 'hit', 'chip', 'ko', 'dodge','morph','collect','damage','gate','ambient','miss','blocked','windup','victory','giggle','bounce-note','guardian-phase'].includes(event.type)) return;
     try {
       const oscillator = c.createOscillator(), gain = c.createGain();
       const enemy = event.player === 1 || event.defender === 1;

@@ -97,3 +97,37 @@ headset performance/thermal check.
 This lab assists that work. It cannot substitute for real headset use, user
 comfort judgments, or manual bug reproduction. No original game engine,
 backend, cloud save or licensing terms are changed by the lab.
+
+## Rung 3.5 · The Warden Awakens (manual extension)
+
+**Not tested on physical Quest 3.** These checks extend the existing lab; they
+do not auto-mark any of its hardware results. Use `vr/living.html` for this
+showcase. Keep the existing 12-check report and record these encounter notes
+alongside it. A new readiness panel is deferred in favor of the finished boss.
+
+- [ ] Reach the Eye through real campaign gates (or restore your own legitimately
+      earned checkpoint). Confirm the Warden begins at the native 1,800 solo HP.
+- [ ] Look overhead voluntarily: the great Eye, rings and armor have depth in
+      both eyes. No forced view movement, shake, jumping or large gesture.
+- [ ] During the first windup, read three locked paths at floor and bolt height.
+      They must match the three actual moving bolts; leave marked ground circles.
+- [ ] Below half health, observe the changed chamber, five paths, quicker cadence
+      and two distinct hounds. Verify the warnings remain readable while moving.
+- [ ] Try Classic, then Spellcraft with each dominant hand, including native
+      vessel power on the other trigger. Check cooldowns and real HP changes.
+- [ ] Try seated/standing, reduced effects, performance quality, movement speed,
+      snap turn, vignette and optional sound/haptics. Assess sustained comfort
+      and heat/frame behavior; software submission timings are not Quest FPS.
+- [ ] Open the wrist and read native boss HP/phase. It must face you, pause play,
+      and close to restore the combat view. Check recenter and controller/headset
+      interruption; held controls must not fire on resuming tracking.
+- [ ] Defeat the actual Warden. Observe the Eye fracture and rising gold while
+      combat is paused for rewards. Read actual run essence, seal and resonance.
+- [ ] Save at the genuine Eye milestone. Exercise **Finish**; restore that
+      checkpoint and exercise **Continue** into Tideglass. Check original saves
+      and the separate online service remain independent. Do not bank/repeat
+      rewards as a test shortcut.
+- [ ] Exit during a windup and after victory. Return to preview/VR and switch to
+      Duel. Confirm no orphaned effects, tones, input queues or broken stereo.
+
+Screenshots and repeatable software checks: [Rung 3.5 evidence](vr-warden/rung-3.5.md).

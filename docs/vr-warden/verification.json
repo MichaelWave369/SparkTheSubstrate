@@ -1,0 +1,198 @@
+{
+  "schema": "spark.xr.rung3.5.verification.v1",
+  "status": "SOFTWARE_CANDIDATE_PASS",
+  "dateUTC": "2026-10-30T00:46:20.578070+00:00",
+  "baseCommit": "4f615de026756e4b7800ff838008794ce5283506",
+  "controllingAuthority": "User WORK MODE BUILD MISSION: SPARK VR \u2014 THE WARDEN AWAKENS, Rung 3.5, The Demiurge's Eye",
+  "tests": [
+    {
+      "command": "npm test",
+      "result": "PASS",
+      "passed": 459,
+      "failed": 0,
+      "summary": "\u2139 tests 459\n\u2139 suites 0\n\u2139 pass 459\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 6378.629185"
+    },
+    {
+      "command": "node --test tests/vr-*.test.mjs",
+      "result": "PASS",
+      "passed": 91,
+      "failed": 0,
+      "summary": "\u2139 tests 91\n\u2139 suites 0\n\u2139 pass 91\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 3219.93038"
+    },
+    {
+      "command": "node --test tests/vr-warden.test.mjs",
+      "result": "PASS",
+      "passed": 8,
+      "failed": 0,
+      "summary": "\u2139 tests 8\n\u2139 suites 0\n\u2139 pass 8\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 2416.386003"
+    },
+    {
+      "command": "node --test tests/pages-static.test.mjs",
+      "result": "PASS",
+      "passed": 7,
+      "failed": 0,
+      "summary": "\u2139 tests 7\n\u2139 suites 0\n\u2139 pass 7\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 157.792188"
+    },
+    {
+      "command": "node scripts/check-vr-ascension-browser.mjs",
+      "result": "PASS",
+      "browser": "Chromium 153.0.8010.0 / SwiftShader",
+      "tooling": "Isolated Playwright; SPARK_PLAYWRIGHT_MODULE and SPARK_CHROMIUM_PATH set outside repository"
+    },
+    {
+      "command": "node scripts/check-vr-living-browser.mjs",
+      "result": "PASS",
+      "browser": "Chromium 153.0.8010.0 / SwiftShader",
+      "tooling": "Isolated Playwright; SPARK_PLAYWRIGHT_MODULE and SPARK_CHROMIUM_PATH set outside repository"
+    },
+    {
+      "command": "node scripts/check-vr-awakening-browser.mjs",
+      "result": "PASS",
+      "browser": "Chromium 153.0.8010.0 / SwiftShader",
+      "tooling": "Isolated Playwright; SPARK_PLAYWRIGHT_MODULE and SPARK_CHROMIUM_PATH set outside repository"
+    },
+    {
+      "command": "node scripts/check-vr-warden-browser.mjs",
+      "result": "PASS",
+      "browser": "Chromium 153.0.8010.0 / SwiftShader",
+      "tooling": "Isolated Playwright; SPARK_PLAYWRIGHT_MODULE and SPARK_CHROMIUM_PATH set outside repository"
+    },
+    {
+      "command": "node scripts/build-pages.mjs",
+      "result": "PASS",
+      "evidence": "Executed directly and inside Warden browser; served actual staged files at project subpath with all remote requests blocked"
+    },
+    {
+      "command": "for file in public/vr/*.js scripts/check-vr-warden-browser.mjs tests/vr-warden*.mjs; do node --check \"$file\" || exit 1; done",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "protectedFiles": {
+    "public/action-engine.js": {
+      "unchanged": true,
+      "sha256": "4608e6ce0a5c92c0a7cd0e133d01b31b47aaea2132771c293e7077eb805fa4c2"
+    },
+    "public/attack-intent.js": {
+      "unchanged": true,
+      "sha256": "70fe3d777410421e2642c91b139d88afb6058929473c087a4d0700f9c9d41bc3"
+    },
+    "public/duel-engine.js": {
+      "unchanged": true,
+      "sha256": "502697e0166f43989ea4057a3f500d22d9b0f9e3605b2d107e54b8ad81f7ef70"
+    },
+    "public/duel-spatial.js": {
+      "unchanged": true,
+      "sha256": "9d54b9baf210c1a46b6f355a5921d647c76bca034dcef7c5e231ddb8c3d293fb"
+    },
+    "public/sideways-engine.js": {
+      "unchanged": true,
+      "sha256": "80df2855a54b5a93e8ec9201931f9fd7f21426a8dc6c29417963b849c2ed8589"
+    },
+    "public/descent.js": {
+      "unchanged": true,
+      "sha256": "da164c0b5fb2d61037e850c1a42703a7805ed20d558eb442aa2738691ba22738"
+    },
+    "public/vr/spark-vr-model.js": {
+      "unchanged": true,
+      "sha256": "e4f09e5220b8604ba82cf0b6442cff6185e929c15783bc1eef78a8bc8258ff65"
+    },
+    "public/vr/spark-vr-save.js": {
+      "unchanged": true,
+      "sha256": "33517e928286b1e65e9e630124728be6bbab675e1e759ebff3ab2692fc50c3c8"
+    },
+    "public/vr/spark-xr-input.js": {
+      "unchanged": true,
+      "sha256": "399d8121f925c5bd57bfc1602226b3173948c3d630e7411c53b3c1b54ed43049"
+    },
+    "public/vr/spark-xr-runtime.js": {
+      "unchanged": true,
+      "sha256": "2c49015c240a9bb855da5358fea2aa88342868f6ed1c85946ec3212b55a8b839"
+    },
+    "public/vr/spark-living-app.js": {
+      "unchanged": true,
+      "sha256": "79f46b03a57a46b41129d03f622d9606133cfcee8616c61f092e814608142f44"
+    },
+    "public/vr/spark-living-host.js": {
+      "unchanged": true,
+      "sha256": "6ce571ee6bbf654a62f3be54b96c21fe7592792b0c6d27edd766849a35b89a73"
+    },
+    "public/vr/spark-spellcraft-preferences.js": {
+      "unchanged": true,
+      "sha256": "0d0ed48026c086a99b6e1a6ac8fd41717beee62c7edfa0e8f7b4508a044a1292"
+    },
+    "public/vr/spark-more-bounce.js": {
+      "unchanged": true,
+      "sha256": "ef9ac5f1b6361a482e9ad94d7265406fce220469064ba91556ae654eb0cbbb52"
+    },
+    "public/more-bounce-field.js": {
+      "unchanged": true,
+      "sha256": "c001f25cfc7a2820135c3e0192f723926ec57a64e36587401e4cc48a5d6229af"
+    },
+    "scripts/build-pages.mjs": {
+      "unchanged": true,
+      "sha256": "5760a01e942e4d83d97f8e5220a4d901d9148b59c7fe670ee79a00991b1313f2"
+    },
+    "package.json": {
+      "unchanged": true,
+      "sha256": "81e77679352b0b947038af50d406fd5d77ea8083906fbed58311d650a14c2ded"
+    },
+    "pnpm-lock.yaml": {
+      "unchanged": true,
+      "sha256": "095ba6f301ba3997da2c251dfc4b805c220624bdf0921d905eaceee0d1fb29c9"
+    },
+    "LICENSE": {
+      "unchanged": true,
+      "sha256": "24a731247da58720e7245cc29aa815c686206736eb4ec711395466eca295ed82"
+    }
+  },
+  "naturalRoute": {
+    "freshInputOnlyThroughEyeToTideHarbor": true,
+    "fullSevenWorldPlaythrough": false,
+    "bossHP": 1800,
+    "directedBasics": {
+      "serial": 136,
+      "casts": 68,
+      "hits": 68,
+      "damage": 1540.0000000000011
+    },
+    "canonicalContinueFinish": true,
+    "noGameplayStateInjection": true
+  },
+  "controlledFixtures": [
+    "Native enterGate with labeled route prerequisites; untouched 1800-HP Warden creation",
+    "Explicit 900/899 HP boundary fixture for exact engine phases, spread, release timing, damage, speed and hound assertions",
+    "Presentation-only snapshots and injectable presentation clock for immutable-state, cue and expiry tests; no campaign unlock or reward"
+  ],
+  "failureHistory": [
+    {
+      "finding": "Initial hound fixture incorrectly expected run.spawned to count transition summons",
+      "resolution": "Assert the same two native hound IDs persist; canonical engine was not changed"
+    },
+    {
+      "finding": "One Pages regression pass encountered a transient workspace synchronization file in generated staging",
+      "resolution": "Temporary source was already gone on inspection; rebuilt with unchanged canonical builder and repeated suite successfully"
+    },
+    {
+      "finding": "Rendered floor-only warnings were easy to miss while looking at boss; extreme head pitch made the old wrist too close, with initial stereo left-edge clipping",
+      "resolution": "Added same-angle projectile-height guides; bounded viewer-facing wrist position/distance and tested full panel against both synthetic eye frusta"
+    }
+  ],
+  "hardware": {
+    "Quest3": "NOT PERFORMED",
+    "comfort": "UNVERIFIED",
+    "tracking": "UNVERIFIED",
+    "performance": "UNVERIFIED",
+    "stereoPerception": "UNVERIFIED"
+  },
+  "optionalReadinessPanel": "Deferred; existing Field Lab manual checklist extended",
+  "release": {
+    "independentReview": "PENDING",
+    "humanMerge": "PENDING",
+    "automaticMerge": false,
+    "deployed": false
+  }
+}

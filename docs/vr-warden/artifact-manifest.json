@@ -1,0 +1,103 @@
+{
+  "schema": "spark.xr.rung3.5.artifacts.v1",
+  "baseCommit": "4f615de026756e4b7800ff838008794ce5283506",
+  "excludes": "This manifest excludes itself to avoid a recursive digest",
+  "files": {
+    ".github/workflows/immersive-vr.yml": {
+      "bytes": 4421,
+      "sha256": "a960db8aaae72b6f5f673d0880afeb2d8a9ad61be0f8b19819cb838c9167372e"
+    },
+    "ASSETS_AND_ATTRIBUTION.md": {
+      "bytes": 6500,
+      "sha256": "87e84dc2755c217f361bfc7395973bf420a759d7e63662446dbcc528e1e0607e"
+    },
+    "docs/QUEST3_FIELD_LAB.md": {
+      "bytes": 7908,
+      "sha256": "916aaba68af5e309de361d0309127098f2198e9b54a4fdcd65c14519a304b318"
+    },
+    "docs/vr-warden/browser-results.json": {
+      "bytes": 6796,
+      "sha256": "bf833827eae156976e7e772da41385a0da9bf18495b23a21165cc3ce1273b68f"
+    },
+    "docs/vr-warden/eye-fracture.png": {
+      "bytes": 189809,
+      "sha256": "7f0d1e2370559ffc7fd513f34b2cb84873bdf7cd64cc360991b4393ff73b273a"
+    },
+    "docs/vr-warden/eye-milestone.png": {
+      "bytes": 199511,
+      "sha256": "f24be514b00de271507ed9ee045e99977f714b241da949bfca8f75d6f101bd5f"
+    },
+    "docs/vr-warden/regression-browser-results.json": {
+      "bytes": 16349,
+      "sha256": "a6f775502bc80c64104e04c32549c1f65d491d9c3a95cf72774d741e17095f3a"
+    },
+    "docs/vr-warden/rung-3.5.md": {
+      "bytes": 12981,
+      "sha256": "4f7db57971c68d33de4fd47ab7301bd746c6312c44334c125b55595fc45e33d8"
+    },
+    "docs/vr-warden/verification.json": {
+      "bytes": 7922,
+      "sha256": "c4547b73e7490a7f8791381e10fab2991e0302679de9ff022079ca2ba9867738"
+    },
+    "docs/vr-warden/warden-entry.png": {
+      "bytes": 171610,
+      "sha256": "f2d80b154811f8a2846594e43feff4ff6c12fbf9eef8256558e8fddd6b09f149"
+    },
+    "docs/vr-warden/warden-five-bolts.png": {
+      "bytes": 186243,
+      "sha256": "4e2b4913f3f1eb698637543c5710f2e5fb4d903450e243ba0dcbe2b01889ce06"
+    },
+    "docs/vr-warden/warden-five-paths.png": {
+      "bytes": 243790,
+      "sha256": "454cd0ceb21392f2f8f53739e2b74110da3d435778d0d8f16a1c9e45d4160f87"
+    },
+    "docs/vr-warden/warden-stereo-wrist.png": {
+      "bytes": 356335,
+      "sha256": "2dda1dde19667473c069c03787bb1bc59e9a5cdf744902240f71cbdf05b6149c"
+    },
+    "docs/vr-warden/warden-summons.png": {
+      "bytes": 221110,
+      "sha256": "8c0a78c802afdc5b7f86f07184f17bfb68a6175a4c6995b47ac9c5c367df40e6"
+    },
+    "docs/vr-warden/warden-three-paths.png": {
+      "bytes": 238853,
+      "sha256": "499324fb6b96877b337cada7ba2c358660252e411575b9f7a1b13007317133e9"
+    },
+    "docs/vr-warden/warden-victory.png": {
+      "bytes": 181652,
+      "sha256": "315a71ce1d24b4edb52e7c24b9de7d8a59ca0318178ee023fa838e636c2ed7dd"
+    },
+    "public/vr/spark-guardian-presentation.js": {
+      "bytes": 7810,
+      "sha256": "04dfcaea1bd59b7544fce9b017237c26d8c09720d77bd81fb49ca5319f25ca10"
+    },
+    "public/vr/spark-room-themes.js": {
+      "bytes": 15280,
+      "sha256": "b709797f1204ba4e8f881712a1affb0c21edc4f38a5e28ff387c2037c4b19898"
+    },
+    "public/vr/spark-vr-renderer.js": {
+      "bytes": 32670,
+      "sha256": "589008d703be9fb5e0ef83fde96613b34e40ba728a35465c3e776c2314b029e9"
+    },
+    "public/vr/spark-xr-adapters.js": {
+      "bytes": 11878,
+      "sha256": "c56632453598707fdfdf2a9a0b12b8e59d3be74ac34b0c3244412d285855a318"
+    },
+    "public/vr/spark-xr-feedback.js": {
+      "bytes": 4666,
+      "sha256": "f2812bec7dec53a5d3b3d79f8fdc84243ffda099811973bb65da69a291218483"
+    },
+    "scripts/check-vr-warden-browser.mjs": {
+      "bytes": 16024,
+      "sha256": "83a6249e1812c253c7c16fa7a5f5448bee8d187b34a127535732e974b05ee7c6"
+    },
+    "tests/vr-warden-path.mjs": {
+      "bytes": 1078,
+      "sha256": "34912710be1df5a52c1ccdcdc2ba82c414ab6fbad700a7af85e12510c226dfa2"
+    },
+    "tests/vr-warden.test.mjs": {
+      "bytes": 10671,
+      "sha256": "7fafeb31a7c206525d4d06fd58eb1afa93a956f800ce15b729725eafadbe0f11"
+    }
+  }
+}
