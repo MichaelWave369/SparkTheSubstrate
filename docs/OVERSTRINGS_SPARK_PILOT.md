@@ -45,4 +45,4 @@ Review real Quest recordings and determine reliability. Then integrate a same-pa
 ## Verification
 
 Node tests in `tests/vr-overstrings-pilot.test.mjs` cover opt-in, one-shot, replay, foreign actions, synthetic provenance, malformed/stale events, immutable receipts and static app isolation.
-The existing Spark immersive CI and Pages CI run Node tests plus the existing gameplay/browser checks. Quest hardware testing is still manual.
+The existing Spark immersive CI and Pages CI run Node tests plus gameplay/browser checks. The Ascension browser smoke test also serves ESM with the correct .mjs JavaScript MIME type and exercises the local synthetic echo in the actual Spark /vr/ page. Quest hardware testing is still manual.

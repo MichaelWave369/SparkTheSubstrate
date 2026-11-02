@@ -18,7 +18,7 @@ const server=createServer(async(req,res)=>{
     const file=resolve(root,'public','.'+path.replace(/^\/SparkTheSubstrate/,''));
     if(!file.startsWith(resolve(root,'public')+'/'))throw Error('Invalid path');
     const bytes=await readFile(file);
-    res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[extname(file)]||'application/octet-stream'});
+    res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json'})[extname(file)]||'application/octet-stream'});
     res.end(bytes);
   }catch{res.writeHead(404);res.end('Not found');}
 });
@@ -99,6 +99,17 @@ try{
   await page.getByRole('button',{name:'Desktop 3D preview',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#intro-overlay').hidden===true);
   assert.match(await page.locator('#facts').innerText(),/The Threshold/);
+  // OverStrings host SDK smoke test: no real gameplay action, local opt-in only.
+  assert.equal(await page.locator('#overstrings-try-demo').isDisabled(),true);
+  await page.locator('#overstrings-source').selectOption('synthetic');
+  await page.locator('#overstrings-allow-synthetic').check();
+  await page.getByRole('button',{name:'Arm one visual echo',exact:true}).click();
+  await page.getByRole('button',{name:'Trigger synthetic preview',exact:true}).click();
+  assert.equal(await page.locator('#overstrings-echo').isVisible(),true);
+  assert.match(await page.locator('#overstrings-echo-label').innerText(),/synthetic/i);
+  assert.match(await page.locator('#overstrings-status').innerText(),/No spell damage/i);
+  assert.equal(await page.locator('#overstrings-try-demo').isDisabled(),true);
+
   await page.waitForTimeout(120);
   assert.doesNotMatch(await page.locator('#status').innerText(),/unavailable|paused:/i);
   await page.locator('#world').screenshot({path:resolve(output,'descent-desktop.png')});
