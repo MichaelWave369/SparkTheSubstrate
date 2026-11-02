@@ -46,3 +46,48 @@ Review real Quest recordings and determine reliability. Then integrate a same-pa
 
 Node tests in `tests/vr-overstrings-pilot.test.mjs` cover opt-in, one-shot, replay, foreign actions, synthetic provenance, malformed/stale events, immutable receipts and static app isolation.
 The existing Spark immersive CI and Pages CI run Node tests plus gameplay/browser checks. The Ascension browser smoke test also serves ESM with the correct .mjs JavaScript MIME type and exercises the local synthetic echo in the actual Spark /vr/ page. Quest hardware testing is still manual.
+
+## Rung 6: Same-page optical Quest hand probe (review candidate)
+
+- The Spark VR instance-local **sidecar** requests optional `hand-tracking` only if
+  the user chooses WebXR in the OverStrings panel and clicks **Arm one visual echo**
+  before **Enter immersive VR**. Otherwise the original `local-floor` request
+  and controller pipeline remain unchanged. The frozen `spark-xr-runtime.js` file
+  stays byte-identical to its protected baseline; a wrapper around only this
+  Spark instance's XR factory adds the optional feature and a separate
+  read-only XRFrame observer.
+- Real `XRFrame.getJointPose` is read only from `XRInputSource.hand`; missing,
+  emulated or invalid joint data is discarded. The original OverStrings
+  `GestureTracker` classifies simple pinches after 130ms dwell; 200ms of missing
+  optical tracking closes the active gesture. These values are preliminary.
+- A first left or right pinch start, once armed, creates an advisory practice
+  intent under the existing Spark host allowlist and emits **one cosmetic echo**.
+  This is *not* the Rung 3 trained Liquid/Digits matcher and no gameplay spell is cast.
+- No raw joints, optical videos, camera sensors, data uploads, gesture templates,
+  persistent consent, background capture or identity recognition.
+- The classic Touch controller input path and the canonical gameplay engine are
+  unmodified. If Quest switches entirely to optical input, the existing controller
+  input validator may pause the gameplay. This pilot observes optical hand motion
+  separately rather than introducing an unsafe controller emulation layer.
+- The visual echo is on the browser page and may not be visible in the immersive
+  headset. Exit VR to review the page status. The next separate rung can render a
+  real stereoscopic in-headset echo after hardware validation.
+
+### Physical Quest test sequence
+
+1. Open Spark's `/vr/` page in Quest Browser. Select **Quest optical hand tracking**
+   and press **Arm one visual echo**. Keep the synthetic consent checkbox off.
+2. Enter immersive VR. Accept the browser's WebXR session prompt. Confirm that
+   the headset exposes `XRInputSource.hand` by taking off Touch controllers and
+   making your hands visible, according to Quest hand-tracking settings.
+3. Hold a left-hand pinch for about 130ms and release. Repeat with the right hand
+   after re-arming in the browser page. The demo is one-shot, so a second pinch
+   must not produce a second action without explicit rearming.
+4. Exit VR, examine the local `overstrings-optical-status` and echo preview.
+   No tracked hands should produce a clear untracked result, never a fake pass.
+5. Verify Touch controller locomotion, pause, escape and casting work normally;
+   note if the game pauses when controllers are replaced by optical hands.
+6. Test partial occlusion, tracking loss, left-handed use and session interruption.
+   Report false detections and missed pinches before any gameplay integration.
+
+**No actual headset pass is claimed by software-only tests.**

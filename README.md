@@ -20,10 +20,17 @@ HostPreviewAdapter. User consent is disarmed by default, separately enables
 one visual echo, and requires a second opt-in for synthetic desktop examples.
 
 This is a real, local module integration with a visual-only on-page reaction.
+The new opt-in sidecar can read actual XRHand joint poses from the same
+Spark immersive VR session when WebXR is explicitly armed. A stable pinch
+triggers one visual-only echo, not a gameplay cast or a learned motion-phrase match.
+No optical joints are stored, transmitted or guessed. Quest device results
+are pending hardware verification.
 It does **not** connect the standalone OverStrings browser page across tabs
-to Spark, do automatic hand recognition, issue combat casts, alter progress,
+to Spark, execute learned Liquid/Digits phrase matching, issue combat casts, alter progress,
 disable controller input, or draw the overlay into immersive VR headset views.
-The WebXR same-page intent setting is reserved for a later validated provider.
+Optical pinch events come from a same-page opt-in provider; their accuracy
+and hand-switch behavior must still be tested on Quest 3. Hand poses are not
+recorded or treated as permission grants.
 
 [Pilot architecture and test steps](docs/OVERSTRINGS_SPARK_PILOT.md).
 

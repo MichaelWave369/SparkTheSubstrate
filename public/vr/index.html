@@ -126,11 +126,11 @@
         <section class="overstrings-panel" id="overstrings-pilot" aria-label="OverStrings gesture host integration pilot">
           <p class="kicker">OVERSTRINGS × SPARK · HOST PILOT</p>
           <h2>Resonance echo · first integration</h2>
-          <p>Experiment with a safe <strong>visual-only Spark reaction</strong> from the local OverStrings host adapter. This is a real in-page host SDK hookup, but it does not cast, attack, spend energy, alter saves or control the XR simulation.</p>
+          <p>Try a safe <strong>visual-only Spark reaction</strong> from the local OverStrings host adapter. A real Quest XRHand pinch can trigger one echo when explicitly armed, or use synthetic desktop mode. No cast, damage, energy, save, or XR gameplay input changes.</p>
           <div class="overstrings-controls">
             <label>Intent source
               <select id="overstrings-source">
-                <option value="webxr">WebXR · requires future same-page gesture provider</option>
+                <option value="webxr">Quest optical hand tracking · pinch echo preview</option>
                 <option value="synthetic">Synthetic desktop test</option>
               </select>
             </label>
@@ -147,7 +147,10 @@
           <p class="support" role="status" aria-live="polite" id="overstrings-status">
             Disarmed. Choose Synthetic desktop test and opt in to practice without a headset.
           </p>
-          <p class="overstrings-note">The standalone OverStrings page does not send events across tabs into Spark. WebXR input here needs a later same-page integration. CustomEvents are not authenticated. Normal Spark controllers, combat and progression are unchanged.</p>
+          <p id="overstrings-optical-status" class="support" role="status" aria-live="polite">
+            Optical hand tracking not started. For Quest testing, select WebXR, arm one echo, then enter immersive VR. If hand sources are unavailable, nothing is synthesized.
+          </p>
+          <p class="overstrings-note">Live WebXR pinches use real tracked XRHand joint poses and a simple debounced heuristic, not a learned motion phrase. Controllers retain their original inputs; Quest may switch between optical hands and Touch controllers. The echo is a browser-page overlay, not yet visible as stereo content inside the headset. No cross-tab bridge, automatic attacks, or gameplay permissions. CustomEvents are not authenticated.</p>
         </section>
         <section class="navigation-panel" id="navigation-panel"
           aria-label="Canonical room compass" hidden>

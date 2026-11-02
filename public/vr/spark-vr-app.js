@@ -1,6 +1,7 @@
 import {legacyXRBridge} from './spark-vr-legacy-xr.js';
 import {installXRControls} from './spark-xr-controls.js';
 import {mountSparkEchoPilot} from './spark-overstrings-bridge.mjs';
+import {installSparkOpticalXR} from './spark-overstrings-hands.mjs';
 import {
   createVRPreview,stepVRPreview,vrRoomSnapshot,worldAt,
   chooseVRPhase,nextVRForm,vrPhaseChoices,VR_SIM_STEP
@@ -365,13 +366,17 @@ export const sharedXR=legacyXRBridge({canvas,getState:()=>state,setState:value=>
 });
 installXRControls(sharedXR,{legacyDesktop:true});
 // Visual-only host SDK pilot. Never touches canonical input, abilities or saves.
-mountSparkEchoPilot();
+const overstringsPilot=mountSparkEchoPilot();
+installSparkOpticalXR(sharedXR,overstringsPilot);
 async function beginXR(){
   if(sharedXR.pending){show('VR permission request pending · finish or cancel the browser prompt');return false;}
   if(sharedXR.session){show('VR is already active.');return false;}
   noteQuestEvent(questDiagnostics,'xr-start-requested');stopDesktop();renderer?.dispose();renderer=null;
   if(navigationOpen)toggleNavigation(false);
-  const ok=await sharedXR.enter();if(!ok)noteQuestEvent(questDiagnostics,'xr-start-failed');return ok;
+  overstringsPilot?.beforeXREntry();
+  const ok=await sharedXR.enter();
+  overstringsPilot?.afterXREntry(ok);
+  if(!ok)noteQuestEvent(questDiagnostics,'xr-start-failed');return ok;
 }
 async function leaveXR(){await sharedXR.exit();renderer=null;}
 async function checkXR(){
