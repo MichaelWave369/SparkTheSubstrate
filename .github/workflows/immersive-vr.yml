@@ -96,6 +96,9 @@ jobs:
           for f in public/vr/*.js public/duel-spatial.js public/duel-engine.js; do node --check "$f"; done
           node --check public/vr/spark-vr-app.js
           node --check public/vr/spark-overstrings-bridge.mjs
+          node --check public/vr/spark-overstrings-hands.mjs
+          node --check public/vr/vendor/gesture.mjs
+          node --check public/vr/vendor/calibration.mjs
           node --check public/vr/vendor/overstrings-host-sdk.mjs
           node --check public/vr/spark-vr-renderer.js
           node --check public/vr/spark-vr-model.js

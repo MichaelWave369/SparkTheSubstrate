@@ -147,3 +147,11 @@ with the game.
 with an upstream reference in the file header. Both source repositories use
 the MIT license. This copy is limited to a visual-only Spark pilot and
 does not pull runtime scripts from a remote CDN.
+
+### OverStrings optical gesture heuristics (MIT)
+
+`public/vr/vendor/calibration.mjs` and `public/vr/vendor/gesture.mjs` copy the
+original MIT-licensed OverStrings Rung 1/Rung 2 joint recognizer and calibration
+validation. `public/vr/spark-overstrings-hands.mjs` reads XRFrame optical poses
+without a remote script. The original Rust and other OverStrings files stay
+in their own repository. No new artwork or non-MIT dependencies are introduced.
