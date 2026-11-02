@@ -8,6 +8,7 @@
 import {HostPreviewAdapter} from "./vendor/overstrings-host-sdk.mjs";
 import {SparkOpticalHandObserver} from "./spark-overstrings-hands.mjs";
 import {SparkOpticalFieldHud} from "./spark-overstrings-field-hud.mjs";
+import {SparkOpticalFieldReceipt} from "./spark-overstrings-field-receipts.mjs";
 
 export const SPARK_ECHO_SCHEMA="spark.overstrings.echo.v1";
 
@@ -67,6 +68,69 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
   const arm=get("overstrings-arm"),stop=get("overstrings-stop"),
     tryDemo=get("overstrings-try-demo"),status=get("overstrings-status"),
     echo=get("overstrings-echo"),symbol=get("overstrings-echo-symbol");
+  const receiptConsent=get("overstrings-receipt-consent"),
+    receiptStatus=get("overstrings-receipt-status"),
+    copyReceipt=get("overstrings-receipt-copy"),
+    downloadReceipt=get("overstrings-receipt-download"),
+    clearReceipt=get("overstrings-receipt-clear"); 
+  const fieldTrial=new SparkOpticalFieldReceipt({now:()=>win.performance.now()});
+  let nextReceiptUi=-Infinity;
+  function refreshReceipt() {
+    const sample=fieldTrial.summary,complete=sample?.phase==="complete";
+    copyReceipt.disabled=!complete;
+    downloadReceipt.disabled=!complete;
+    clearReceipt.disabled=!sample;
+    for(const button of root.querySelectorAll("[data-overstrings-note]"))
+      button.disabled=!complete;
+    if(!sample) {
+      receiptStatus.textContent="No Quest hand trial recorded. Nothing is saved or uploaded.";
+      return;
+    }
+    const ratio=side=>sample.observed_frame_percent[side]===null?
+      "n/a":sample.observed_frame_percent[side]+"%";
+    receiptStatus.textContent=
+      "Trial: "+sample.phase+" ("+(sample.stop_reason||"armed preview")+")"+
+      "\nSampled frames: "+sample.sampled_frames+
+      "  |  Duration: "+(sample.duration_ms/1000).toFixed(1)+"s"+
+      "\nReported XRHand: L "+sample.reported_hand_frames.left+" ("+ratio("left")+
+      "), R "+sample.reported_hand_frames.right+" ("+ratio("right")+")"+
+      "\nTracking dropouts: L "+sample.hand_tracking_dropouts.left+
+      ", R "+sample.hand_tracking_dropouts.right+
+      "\nPinch starts: L "+sample.detected_pinch_starts.left+
+      ", R "+sample.detected_pinch_starts.right+
+      "\nAccepted echo: L "+sample.accepted_visual_echoes.left+
+      ", R "+sample.accepted_visual_echoes.right+
+      "\nYour notes: correct "+sample.manual_notes.correct_echo+
+      ", missed "+sample.manual_notes.missed_pinch+
+      ", unexpected "+sample.manual_notes.unexpected_echo+
+      ", hard to read "+sample.manual_notes.unreadable_hud+
+      "\nThese are sample counts, NOT verified hardware or recognition accuracy.";
+  }
+  refreshReceipt();
+  for(const button of root.querySelectorAll("[data-overstrings-note]")){
+    button.addEventListener("click",()=>{
+      if(fieldTrial.annotate(button.dataset.overstringsNote))refreshReceipt();
+    });
+  }
+  clearReceipt.addEventListener("click",()=>{fieldTrial.clear();refreshReceipt();});
+  copyReceipt.addEventListener("click",async()=>{
+    try {
+      await win.navigator.clipboard.writeText(fieldTrial.exportJSON());
+      status.textContent="Field receipt copied locally. No network upload.";
+    } catch {
+      status.textContent="Clipboard unavailable in this browser; use Download JSON instead.";
+    }
+  });
+  downloadReceipt.addEventListener("click",()=>{
+    if(fieldTrial.summary?.phase!=="complete")return;
+    const blob=new Blob([fieldTrial.exportJSON()],{type:"application/json"});
+    const url=win.URL.createObjectURL(blob);
+    const link=doc.createElement("a");
+    link.href=url;link.download="spark-overstrings-quest-field-receipt.json";
+    link.click();
+    win.setTimeout(()=>win.URL.revokeObjectURL(url),1000);
+    status.textContent="Local field receipt download initiated. No upload or tracking coordinates.";
+  });
   const onEcho=preview=>{
     if(echo) {
       echo.hidden=false;
@@ -82,16 +146,28 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
   const opticalStatus=get("overstrings-optical-status");
   const observer=new SparkOpticalHandObserver({
     isArmed:()=>bridge.armed&&source.value==="webxr",
+    onSample:({tracked})=>{
+      if(fieldTrial.sample({time:win.performance.now(),tracked}) &&
+         win.performance.now()>=nextReceiptUi) {
+        nextReceiptUi=win.performance.now()+450;refreshReceipt();
+      }
+    },
     onStatus:message=>{
       if(opticalStatus)opticalStatus.textContent=message;
       fieldHud.noteOpticalStatus(message,win.performance.now());
     },
     onGesture:gesture=>{
+      fieldTrial.gesture(gesture);
       if(gesture.gesture==="pinch"&&gesture.phase==="start"&&
          source.value==="webxr"&&bridge.armed) {
         const time=win.performance.now();
         const result=bridge.livePinch(time,gesture.handedness);
-        if(result.accepted)fieldHud.noteEcho(gesture.handedness,time);
+        if(result.accepted){
+          fieldHud.noteEcho(gesture.handedness,time);
+          fieldTrial.echo({handedness:gesture.handedness,source:"webxr"});
+          fieldTrial.end("one_shot_echo",time);
+          refreshReceipt();
+        }
         showResult(result);
       }
     }
@@ -102,7 +178,9 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
     tryDemo.disabled=!bridge.armed||source.value!=="synthetic"||!allowSynthetic.checked;
   }
   function disarm(message="OverStrings host preview disarmed.") {
+    fieldTrial.end("manual_disarm",win.performance.now());
     bridge.disarm();fieldHud.clear();status.textContent=message;sync();
+    refreshReceipt();
   }
   function showResult(result) {
     sync();
@@ -120,7 +198,7 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
     sync();
   });
   stop.addEventListener("click",()=>disarm());
-  for(const control of [source,allowSynthetic,headsetHudToggle]) {
+  for(const control of [source,allowSynthetic,headsetHudToggle,receiptConsent]) {
     control.addEventListener("change",()=>disarm("Input mode changed. Arm again to approve."));
   }
   tryDemo.addEventListener("click",()=>{
@@ -154,9 +232,21 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
       xrEntryPending=false;
       if(!success)disarm("VR entry failed or cancelled. Re-arm optical preview.");
     },
-    sessionStart(){observer.sessionStart();},
-    sessionEnd(){observer.sessionEnd();disarm("XR session ended. Re-arm before another optical gesture.");},
-    visibilityLost(){disarm("XR visibility interrupted. Optical preview disarmed.");},
+    sessionStart(){
+      if(receiptConsent.checked && source.value==="webxr" && bridge.armed)
+        fieldTrial.start({source:"webxr",time:win.performance.now()});
+      observer.sessionStart();
+      refreshReceipt();
+    },
+    sessionEnd(){
+      fieldTrial.end("xr_session_end",win.performance.now());
+      observer.sessionEnd();
+      disarm("XR session ended. Re-arm before another optical gesture.");
+    },
+    visibilityLost(){
+      fieldTrial.end("tracking_interrupted",win.performance.now());
+      disarm("XR visibility interrupted. Optical preview disarmed.");
+    },
     observeXRFrame:payload=>observer.observe(payload),
     hudMessage:(time,scene)=>observer.sessionActive&&source.value==="webxr"?
       fieldHud.messageForScene(scene,time):null
