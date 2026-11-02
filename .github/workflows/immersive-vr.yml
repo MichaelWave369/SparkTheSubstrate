@@ -34,6 +34,7 @@ on:
       - "docs/vr-ascension/**"
       - "public/index.html"
       - "tests/vr-first-slice.test.mjs"
+      - "tests/vr-overstrings-pilot.test.mjs"
       - "tests/vr-full-descent.test.mjs"
       - "tests/vr-navigation-comfort.test.mjs"
       - "tests/vr-quest-field-lab.test.mjs"
@@ -73,6 +74,7 @@ on:
       - "docs/vr-ascension/**"
       - "public/index.html"
       - "tests/vr-first-slice.test.mjs"
+      - "tests/vr-overstrings-pilot.test.mjs"
       - "docs/vr-first-slice.md"
       - ".github/workflows/immersive-vr.yml"
 
@@ -93,6 +95,8 @@ jobs:
         run: |
           for f in public/vr/*.js public/duel-spatial.js public/duel-engine.js; do node --check "$f"; done
           node --check public/vr/spark-vr-app.js
+          node --check public/vr/spark-overstrings-bridge.mjs
+          node --check public/vr/vendor/overstrings-host-sdk.mjs
           node --check public/vr/spark-vr-renderer.js
           node --check public/vr/spark-vr-model.js
           node --check public/vr/spark-vr-math.js
