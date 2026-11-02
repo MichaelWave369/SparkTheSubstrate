@@ -24,6 +24,13 @@ The in-headset status follow-up also decorates a **render-only scene copy**
 with short optical/echo notices, using Spark's existing stereo HUD. This is
 opt-in, yields to native errors, and does not edit the protected renderer.
 Actual Quest comfort/readability remains unverified.
+The Quest field-receipt follow-up has an independent, **off-by-default**
+opt-in for coarse per-hand counts, tracking-loss transitions and pinch/echo
+totals. A user can label missed/unexpected outcomes manually and explicitly
+copy or download a tiny JSON report. No raw poses, timestamps, identity,
+upload, or persistent diagnostic storage. Reported frame coverage is not
+a calibrated accuracy measure. [Field receipt protocol](docs/OVERSTRINGS_SPARK_FIELD_RECEIPTS.md).
+
 The new opt-in sidecar can read actual XRHand joint poses from the same
 Spark immersive VR session when WebXR is explicitly armed. A stable pinch
 triggers one visual-only echo, not a gameplay cast or a learned motion-phrase match.
@@ -31,7 +38,7 @@ No optical joints are stored, transmitted or guessed. Quest device results
 are pending hardware verification.
 It does **not** connect the standalone OverStrings browser page across tabs
 to Spark, execute learned Liquid/Digits phrase matching, issue combat casts, alter progress,
-disable controller input, or draw the overlay into immersive VR headset views.
+disable controller input, or change gameplay input from the optical HUD.
 Optical pinch events come from a same-page opt-in provider; their accuracy
 and hand-switch behavior must still be tested on Quest 3. Hand poses are not
 recorded or treated as permission grants.

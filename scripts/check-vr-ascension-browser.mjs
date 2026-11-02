@@ -109,6 +109,11 @@ try{
   assert.match(await page.locator('#overstrings-echo-label').innerText(),/synthetic/i);
   assert.match(await page.locator('#overstrings-status').innerText(),/No spell damage/i);
   assert.equal(await page.locator('#overstrings-try-demo').isDisabled(),true);
+  // Synthetic demo cannot fabricate a Quest field receipt or enable export.
+  assert.equal(await page.locator('#overstrings-receipt-consent').isChecked(),false);
+  assert.equal(await page.locator('#overstrings-receipt-copy').isDisabled(),true);
+  assert.equal(await page.locator('#overstrings-receipt-download').isDisabled(),true);
+  assert.match(await page.locator('#overstrings-receipt-status').innerText(),/No Quest hand trial/);
 
   await page.waitForTimeout(120);
   assert.doesNotMatch(await page.locator('#status').innerText(),/unavailable|paused:/i);

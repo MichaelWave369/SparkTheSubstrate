@@ -122,3 +122,7 @@ The existing Spark immersive CI and Pages CI run Node tests plus gameplay/browse
 
 CI includes synthetic stereo-scene wrapper tests and normal browser regression.
 No software test can certify the physical Quest display.
+
+## Rung 8: Coarse, consented Quest field receipts
+
+See [Field receipt protocol](OVERSTRINGS_SPARK_FIELD_RECEIPTS.md). New local-only counters quantify reported hand availability, dropout transitions and pinch/echo observations within a bounded, explicitly armed WebXR window. The user manually labels misses/false echoes after the trial. Synthetic demos are excluded, and no raw motion, personal identity or background export is retained. This is evidence collection, not a hardware qualification claim.

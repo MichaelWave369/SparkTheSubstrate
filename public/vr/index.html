@@ -154,6 +154,36 @@
           <p id="overstrings-optical-status" class="support" role="status" aria-live="polite">
             Optical hand tracking not started. For Quest testing, select WebXR, arm one echo, then enter immersive VR. If hand sources are unavailable, nothing is synthesized.
           </p>
+          <section class="overstrings-field-receipts" aria-label="Optional private Quest gesture field receipts">
+            <h3>Quest hand-tracking field receipt</h3>
+            <p>Opt in before arming WebXR. Measure only aggregate hand-presence samples,
+              pinch detections, tracking dropouts and accepted visual echoes. Counts
+              stop after the first accepted echo or when the trial ends. This does
+              <strong>not</strong> measure sensor accuracy or automatic gesture recall.</p>
+            <label class="overstrings-checkbox" for="overstrings-receipt-consent">
+              <input type="checkbox" id="overstrings-receipt-consent">
+              Collect coarse XRHand counters for my next WebXR test (memory only)
+            </label>
+            <pre id="overstrings-receipt-status" class="overstrings-receipt-status"
+              role="status" aria-live="polite">No Quest hand trial recorded. Nothing is saved or uploaded.</pre>
+            <p>After leaving VR, annotate what you personally observed. The app cannot
+              determine a missed attempt or false echo from tracking data alone.</p>
+            <div class="field-actions" role="group" aria-label="Manual Quest test observations">
+              <button type="button" data-overstrings-note="correct_echo" disabled>Correct echo</button>
+              <button type="button" data-overstrings-note="missed_pinch" disabled>Missed pinch</button>
+              <button type="button" data-overstrings-note="unexpected_echo" disabled>Unexpected echo</button>
+              <button type="button" data-overstrings-note="unreadable_hud" disabled>Hard-to-read HUD</button>
+            </div>
+            <div class="field-actions" role="group" aria-label="Local field report controls">
+              <button type="button" id="overstrings-receipt-copy" disabled>Copy aggregate JSON</button>
+              <button type="button" id="overstrings-receipt-download" disabled>Download aggregate JSON</button>
+              <button type="button" id="overstrings-receipt-clear" disabled>Clear field report</button>
+            </div>
+            <p class="overstrings-note">No tracking coordinates or raw gesture frames enter this report.
+              Nothing persists after page reload unless you explicitly export it.
+              Beginning another opted-in trial replaces the previous report.
+              Synthetic demonstrations never create Quest field evidence.</p>
+          </section>
           <p class="overstrings-note">Live WebXR pinches use real tracked XRHand joint poses and a simple debounced heuristic, not a learned motion phrase. Controllers retain their original inputs; Quest may switch between optical hands and Touch controllers. When enabled, short optical-status and echo notices are also presented using Spark's existing in-headset stereo alert HUD; headset readability is unverified. No cross-tab bridge, automatic attacks, or gameplay permissions. CustomEvents are not authenticated.</p>
         </section>
         <section class="navigation-panel" id="navigation-panel"

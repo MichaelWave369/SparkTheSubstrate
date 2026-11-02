@@ -28,8 +28,8 @@ export function readOpticalHands(frame,space,sources) {
   return result;
 }
 export class SparkOpticalHandObserver {
-  constructor({onGesture=()=>{},onStatus=()=>{},isArmed=()=>false}={}) {
-    this.onGesture=onGesture;this.onStatus=onStatus;this.isArmed=isArmed;
+  constructor({onGesture=()=>{},onStatus=()=>{},onSample=()=>{},isArmed=()=>false}={}) {
+    this.onGesture=onGesture;this.onStatus=onStatus;this.onSample=onSample;this.isArmed=isArmed;
     this.tracker=new GestureTracker({dwellMs:130,lostMs:200});
     this.reset();
   }
@@ -56,6 +56,13 @@ export class SparkOpticalHandObserver {
       return {tracked:0,events:[]};
     const hands=readOpticalHands(frame,space,sources);
     this.frames++;
+    // Aggregate booleans only. The listener never receives joint coordinates.
+    try {
+      this.onSample({
+        time,source:"webxr",
+        tracked:{left:!!hands.left,right:!!hands.right}
+      });
+    } catch {/* optional diagnostics must not block optical observation */}
     const events=[];
     for(const side of SIDES) {
       for(const evt of this.tracker.update(side,hands[side],time,"webxr")) {
