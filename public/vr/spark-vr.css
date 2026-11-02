@@ -103,3 +103,27 @@ footer{font-size:.65rem;letter-spacing:.16em;color:#718e96;margin:17px 0}
 .field-actions button:hover{background:#f7dfae}
 @media(max-width:690px){.field-checks{grid-template-columns:1fr}
   .field-lab{padding:16px 13px}}
+
+/* OverStrings MIT SDK pilot. Cosmetic echo only; no game-state side effects. */
+.overstrings-panel{background:linear-gradient(145deg,#1b253d,#122a2b);border:1px solid #679e98;
+  border-radius:8px;padding:21px 22px;margin:18px 0}
+.overstrings-panel h2{color:#e9d49c;font:800 clamp(1.25rem,2vw,1.65rem) system-ui,sans-serif;margin:6px 0}
+.overstrings-panel p{color:#b9d6d3;line-height:1.6;font-size:.86rem}
+.overstrings-controls{display:grid;grid-template-columns:1fr;gap:14px;margin:14px 0}
+.overstrings-controls label{display:grid;gap:7px;font-size:.84rem;color:#d7e9e4}
+.overstrings-controls select{max-width:100%;background:#0d2531;color:#e7f6f1;border:1px solid #84a6a3;
+  padding:10px;border-radius:4px;font:inherit}
+.overstrings-controls .overstrings-checkbox{display:flex;align-items:center;gap:10px}
+.overstrings-checkbox input{accent-color:#9ddaca;width:19px;height:19px}
+.overstrings-panel button:disabled{opacity:.45;cursor:not-allowed}
+.overstrings-panel .overstrings-note{color:#a1bbb9;font-size:.76rem;margin-bottom:0}
+.overstrings-echo{position:absolute;z-index:4;inset:auto 8% 13% auto;pointer-events:none;
+  min-width:min(250px,70%);max-width:70%;border:1px solid #c3eac0;border-radius:12px;
+  padding:13px;background:linear-gradient(140deg,#163e3ecf,#22324cde);box-shadow:0 0 38px #6ce5cf77;
+  display:grid;justify-items:center;text-align:center;gap:5px;animation:overstrings-echo-in .65s ease-out}
+.overstrings-echo[hidden]{display:none}
+.overstrings-echo span{font-size:38px;color:#ffe5a8;line-height:1}
+.overstrings-echo strong{color:#e7ffdd;font-size:.93rem}
+.overstrings-echo small{font-size:.68rem;color:#bcddd8}
+@keyframes overstrings-echo-in{from{opacity:.2;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.overstrings-echo{animation:none}}

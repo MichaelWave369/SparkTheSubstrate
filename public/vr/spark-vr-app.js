@@ -1,5 +1,6 @@
 import {legacyXRBridge} from './spark-vr-legacy-xr.js';
 import {installXRControls} from './spark-xr-controls.js';
+import {mountSparkEchoPilot} from './spark-overstrings-bridge.mjs';
 import {
   createVRPreview,stepVRPreview,vrRoomSnapshot,worldAt,
   chooseVRPhase,nextVRForm,vrPhaseChoices,VR_SIM_STEP
@@ -363,6 +364,8 @@ export const sharedXR=legacyXRBridge({canvas,getState:()=>state,setState:value=>
   onSession:(event,kind)=>{if(event==='start')beginQuestDiagnostics(questDiagnostics,kind);else{saveProgress(true);endQuestDiagnostics(questDiagnostics);}renderFieldMetrics(true);}
 });
 installXRControls(sharedXR,{legacyDesktop:true});
+// Visual-only host SDK pilot. Never touches canonical input, abilities or saves.
+mountSparkEchoPilot();
 async function beginXR(){
   if(sharedXR.pending){show('VR permission request pending · finish or cancel the browser prompt');return false;}
   if(sharedXR.session){show('VR is already active.');return false;}
