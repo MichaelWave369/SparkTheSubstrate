@@ -24,6 +24,14 @@ The in-headset status follow-up also decorates a **render-only scene copy**
 with short optical/echo notices, using Spark's existing stereo HUD. This is
 opt-in, yields to native errors, and does not edit the protected renderer.
 Actual Quest comfort/readability remains unverified.
+The Rung 9 optical-input health follow-up counts **browser-reported reason categories**
+for each hand in the same opt-in receipt: no hand source, unavailable joint API,
+missing required joints, emulated required poses, unavailable frame/space and
+valid hand observations. These are **not verified root causes or hardware
+accuracy measurements**. A Quest field test now shows whether the browser
+is delivering any usable wrist and fingertip poses before we consider actual
+gesture-controlled combat. [Field receipt interpretation](docs/OVERSTRINGS_SPARK_FIELD_RECEIPTS.md).
+
 The Quest field-receipt follow-up has an independent, **off-by-default**
 opt-in for coarse per-hand counts, tracking-loss transitions and pinch/echo
 totals. A user can label missed/unexpected outcomes manually and explicitly
