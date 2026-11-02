@@ -226,11 +226,14 @@ export class SparkXRRuntime {
       const api = this.getXR();
       if (!api?.requestSession) throw Error('WebXR unavailable · use desktop preview or Quest Browser over HTTPS');
       void this.feedback.unlock();
-      session = await api.requestSession('immersive-vr', {optionalFeatures: ['local-floor']});
+      session = await api.requestSession('immersive-vr', {
+        optionalFeatures:this.handObserver?.wantsHandTracking?.() ?
+          ['local-floor','hand-tracking']:['local-floor']
+      });
       if(this.generation!==generation){try{await session.end();}catch{}return false;}
       this.stopDesktop(); this.session = session; this.mode = 'xr';
       this.listen(session, 'end', () => { if (this.session === session) this.cleanup(); });
-      this.listen(session, 'visibilitychange', () => { if (session.visibilityState !== 'visible') this.pause(true, 'Headset visibility interrupted'); });
+      this.listen(session, 'visibilitychange', () => { if (session.visibilityState !== 'visible') {this.handObserver?.visibilityLost?.(); this.pause(true, 'Headset visibility interrupted');} });
       this.listen(session, 'inputsourceschange', () => this.pause(true, 'Controllers changed · release triggers before resuming'));
       const renderer = this.ensureRenderer();
       await renderer.gl.makeXRCompatible?.();
@@ -244,7 +247,7 @@ export class SparkXRRuntime {
       if (this.session !== session) return false;
       this.space=space;
       this.listen(this.space, 'reset', () => this.recenter());
-      this.input.recenter();this.entryWarmup=true;this.pause(this.calibrating,this.calibrating?'Calibration · campaign paused':'');this.onMode(this.mode);this.onSession('start', kind);
+      this.input.recenter();this.entryWarmup=true;this.handObserver?.sessionStart?.();this.pause(this.calibrating,this.calibrating?'Calibration · campaign paused':'');this.onMode(this.mode);this.onSession('start', kind);
       this.frameId = session.requestAnimationFrame((t, f) => this.xrFrame(t, f));
       return true;
     } catch (error) {
@@ -258,6 +261,11 @@ export class SparkXRRuntime {
     const session = this.session; if (!session || this.mode !== 'xr') return;
     try {
       if (session.visibilityState !== 'visible') this.pause(true, 'Headset visibility interrupted');
+      // Optical XRHand is observation-only: it cannot mutate controller input or simulation.
+      try {this.handObserver?.observeXRFrame?.({
+        frame,space:this.space,sources:session.inputSources,time:now,
+        visible:session.visibilityState==='visible'
+      });} catch { /* an optional preview must never terminate Spark's XR loop */ }
       const sample = readXRFrame(frame, this.space, session.inputSources);sample.visible=session.visibilityState==='visible';
       this.panelViews=sample.viewer?.views?.map(v=>({projection:v.projectionMatrix,inverse:v.transform.inverse.matrix}))||[];
       const {input, scene} = this.advance(now, sample);
@@ -323,6 +331,7 @@ export class SparkXRRuntime {
     this.canvas?.removeEventListener?.('webglcontextlost', this.contextLost);
     this.renderer?.dispose(); this.renderer = null;
     this.adapter.onSessionEnd?.();
+    if(wasXR)this.handObserver?.sessionEnd?.();
     if (wasXR) this.onSession('end'); this.onMode(this.mode);
   }
   async dispose() { await this.exit(); this.feedback.dispose(); this.adapter.dispose?.(); }
