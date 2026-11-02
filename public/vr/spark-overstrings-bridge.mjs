@@ -94,6 +94,10 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
       "  |  Duration: "+(sample.duration_ms/1000).toFixed(1)+"s"+
       "\nReported XRHand: L "+sample.reported_hand_frames.left+" ("+ratio("left")+
       "), R "+sample.reported_hand_frames.right+" ("+ratio("right")+")"+
+      "\nOptical source states (sample counts, not proven causes):"+
+      ["valid","no_hand_source","no_joint_api","missing_required_joints","emulated_required_pose","unavailable_frame"].map(code=>
+        "\n  "+code+": L "+sample.reported_source_states.left[code]+
+        ", R "+sample.reported_source_states.right[code]).join("")+
       "\nTracking dropouts: L "+sample.hand_tracking_dropouts.left+
       ", R "+sample.hand_tracking_dropouts.right+
       "\nPinch starts: L "+sample.detected_pinch_starts.left+
@@ -146,8 +150,8 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
   const opticalStatus=get("overstrings-optical-status");
   const observer=new SparkOpticalHandObserver({
     isArmed:()=>bridge.armed&&source.value==="webxr",
-    onSample:({tracked})=>{
-      if(fieldTrial.sample({time:win.performance.now(),tracked}) &&
+    onSample:({tracked,statuses})=>{
+      if(fieldTrial.sample({time:win.performance.now(),tracked,statuses}) &&
          win.performance.now()>=nextReceiptUi) {
         nextReceiptUi=win.performance.now()+450;refreshReceipt();
       }

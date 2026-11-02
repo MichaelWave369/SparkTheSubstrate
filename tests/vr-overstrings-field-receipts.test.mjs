@@ -87,3 +87,47 @@ test("code is independent of game state and has no storage or network",()=>{
  const code=readFileSync(fileURLToPath(new URL("../public/vr/spark-overstrings-field-receipts.mjs",import.meta.url)),"utf8");
  assert.doesNotMatch(code,/fetch\(|localStorage|sessionStorage|postMessage|indexedDB|gamepad|player\.health|adapter\.step/);
 });
+
+test("source-state buckets distinguish missing sources, partial joints and emulated required pose",()=>{
+  const r=new SparkOpticalFieldReceipt({now:()=>1000});
+  r.start({time:100});
+  const cases=[
+    {time:110,tracked:{left:false,right:false},statuses:{left:"no_hand_source",right:"no_hand_source"}},
+    {time:120,tracked:{left:false,right:false},statuses:{left:"no_joint_api",right:"no_hand_source"}},
+    {time:130,tracked:{left:false,right:false},statuses:{left:"missing_required_joints",right:"emulated_required_pose"}},
+    {time:140,tracked:{left:true,right:false},statuses:{left:"valid",right:"unavailable_frame"}}
+  ];
+  for(const sample of cases)assert.equal(r.sample(sample),true);
+  r.end("manual_disarm",200);
+  const s=r.summary;
+  assert.equal(s.reported_source_states.left.no_hand_source,1);
+  assert.equal(s.reported_source_states.left.no_joint_api,1);
+  assert.equal(s.reported_source_states.left.missing_required_joints,1);
+  assert.equal(s.reported_source_states.left.valid,1);
+  assert.equal(s.reported_source_states.right.no_hand_source,2);
+  assert.equal(s.reported_source_states.right.emulated_required_pose,1);
+  assert.equal(s.reported_source_states.right.unavailable_frame,1);
+  assert.equal(s.reported_hand_frames.left,1);
+  assert.equal(s.reported_hand_frames.right,0);
+  assert.equal(s.observed_frame_percent.left,25);
+  assert.equal(Object.values(s.reported_source_states.left).reduce((a,b)=>a+b,0),s.sampled_frames);
+  assert.equal(JSON.stringify(s).includes('"transform"'),false);
+});
+test("malformed or contradictory status reasons reject entire callback",()=>{
+  const r=new SparkOpticalFieldReceipt({now:()=>1000});
+  r.start({time:100});
+  for(const statuses of [
+    {left:"valid",right:"valid"},
+    {left:"bogus",right:"no_hand_source"},
+    {left:"valid",right:0},
+    {left:"no_hand_source"},
+    [],
+    "valid"
+  ]) {
+    assert.equal(r.sample({time:120,tracked:{left:false,right:false},statuses}),false);
+  }
+  assert.equal(r.summary.sampled_frames,0);
+  assert.equal(r.sample({time:130,tracked:{left:false,right:false}}),true,
+    "backward-compatible fixture without statuses stays unknown, not fabricated");
+  assert.equal(r.summary.reported_source_states.left.unknown_untracked,1);
+});
