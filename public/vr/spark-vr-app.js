@@ -369,7 +369,7 @@ installXRControls(sharedXR,{legacyDesktop:true});
 // Visual-only host SDK pilot. Never touches canonical input, abilities or saves.
 const overstringsPilot=mountSparkEchoPilot();
 installSparkOpticalXR(sharedXR,overstringsPilot);
-// Reuse Spark\'s stereo alert HUD without editing its protected renderer.
+// Reuse Spark's stereo alert HUD without editing its protected renderer.
 installSparkOpticalFieldHud(sharedXR,overstringsPilot);
 async function beginXR(){
   if(sharedXR.pending){show('VR permission request pending · finish or cancel the browser prompt');return false;}
