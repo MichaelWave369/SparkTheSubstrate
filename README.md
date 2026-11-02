@@ -20,7 +20,7 @@ HostPreviewAdapter. User consent is disarmed by default, separately enables
 one visual echo, and requires a second opt-in for synthetic desktop examples.
 
 This is a real, local module integration with a visual-only on-page reaction.
-The new optical follow-up can read actual XRHand joint poses from the same
+The new opt-in sidecar can read actual XRHand joint poses from the same
 Spark immersive VR session when WebXR is explicitly armed. A stable pinch
 triggers one visual-only echo, not a gameplay cast or a learned motion-phrase match.
 No optical joints are stored, transmitted or guessed. Quest device results

@@ -49,10 +49,13 @@ The existing Spark immersive CI and Pages CI run Node tests plus gameplay/browse
 
 ## Rung 6: Same-page optical Quest hand probe (review candidate)
 
-- The Spark VR `SparkXRRuntime` now requests optional `hand-tracking` only if
+- The Spark VR instance-local **sidecar** requests optional `hand-tracking` only if
   the user chooses WebXR in the OverStrings panel and clicks **Arm one visual echo**
   before **Enter immersive VR**. Otherwise the original `local-floor` request
-  and controller pipeline remain unchanged.
+  and controller pipeline remain unchanged. The frozen `spark-xr-runtime.js` file
+  stays byte-identical to its protected baseline; a wrapper around only this
+  Spark instance's XR factory adds the optional feature and a separate
+  read-only XRFrame observer.
 - Real `XRFrame.getJointPose` is read only from `XRInputSource.hand`; missing,
   emulated or invalid joint data is discarded. The original OverStrings
   `GestureTracker` classifies simple pinches after 130ms dwell; 200ms of missing
