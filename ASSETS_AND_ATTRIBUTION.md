@@ -139,3 +139,11 @@ comparison captures spawn and act through the canonical simulation. These are
 neither generated promotional mockups nor photographs taken inside a Quest.
 Chromium/Playwright tooling is isolated development tooling and is not shipped
 with the game.
+
+### OverStrings host integration (first-party MIT)
+
+`public/vr/vendor/overstrings-host-sdk.mjs` is copied from
+`MichaelWave369/OverStrings`, commit `d327cacaca827777c887e6d6a5766012779fc617`,
+with an upstream reference in the file header. Both source repositories use
+the MIT license. This copy is limited to a visual-only Spark pilot and
+does not pull runtime scripts from a remote CDN.

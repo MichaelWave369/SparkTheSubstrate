@@ -67,7 +67,12 @@
         <div class="viewport-wrap">
           <canvas id="world" width="1280" height="720"
             aria-label="Interactive 3D Spark prototype. Start desktop preview or enter WebXR."></canvas>
-          <div class="viewport-top">
+            <div id="overstrings-echo" class="overstrings-echo" hidden aria-live="polite" aria-label="Non-destructive OverStrings resonance echo">
+            <span id="overstrings-echo-symbol" aria-hidden="true">✧</span>
+            <strong id="overstrings-echo-label">Resonance echo</strong>
+            <small>Visual preview only · no gameplay action</small>
+          </div>
+        <div class="viewport-top">
             <div class="lab-chip"><i></i> SOLO DESCENT / SEVEN WORLDS</div>
             <div class="health"><span>VESSEL INTEGRITY</span><div><i id="health"></i></div></div>
           </div>
@@ -117,6 +122,32 @@
               </select>
             </label>
           </div>
+        </section>
+        <section class="overstrings-panel" id="overstrings-pilot" aria-label="OverStrings gesture host integration pilot">
+          <p class="kicker">OVERSTRINGS × SPARK · HOST PILOT</p>
+          <h2>Resonance echo · first integration</h2>
+          <p>Experiment with a safe <strong>visual-only Spark reaction</strong> from the local OverStrings host adapter. This is a real in-page host SDK hookup, but it does not cast, attack, spend energy, alter saves or control the XR simulation.</p>
+          <div class="overstrings-controls">
+            <label>Intent source
+              <select id="overstrings-source">
+                <option value="webxr">WebXR · requires future same-page gesture provider</option>
+                <option value="synthetic">Synthetic desktop test</option>
+              </select>
+            </label>
+            <label class="overstrings-checkbox">
+              <input type="checkbox" id="overstrings-allow-synthetic">
+              Explicitly allow synthetic sandbox input
+            </label>
+          </div>
+          <div class="field-actions">
+            <button type="button" id="overstrings-arm">Arm one visual echo</button>
+            <button type="button" id="overstrings-stop" disabled>Disarm</button>
+            <button type="button" id="overstrings-try-demo" disabled>Trigger synthetic preview</button>
+          </div>
+          <p class="support" role="status" aria-live="polite" id="overstrings-status">
+            Disarmed. Choose Synthetic desktop test and opt in to practice without a headset.
+          </p>
+          <p class="overstrings-note">The standalone OverStrings page does not send events across tabs into Spark. WebXR input here needs a later same-page integration. CustomEvents are not authenticated. Normal Spark controllers, combat and progression are unchanged.</p>
         </section>
         <section class="navigation-panel" id="navigation-panel"
           aria-label="Canonical room compass" hidden>

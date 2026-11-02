@@ -12,6 +12,21 @@ The Pages edition supports local-save solo gameplay. Online co-op and
 Cloudflare-backed backup remain exclusive to the separately hosted app.
 See [GitHub Pages documentation](docs/GITHUB_PAGES_FREE_FLAGSHIP.md).
 
+## OverStrings × Spark host pilot (review candidate)
+
+The standalone Spark immersive VR page gains a **non-destructive Resonance echo**
+practice panel powered by a vendored, MIT-licensed copy of the OverStrings
+HostPreviewAdapter. User consent is disarmed by default, separately enables
+one visual echo, and requires a second opt-in for synthetic desktop examples.
+
+This is a real, local module integration with a visual-only on-page reaction.
+It does **not** connect the standalone OverStrings browser page across tabs
+to Spark, do automatic hand recognition, issue combat casts, alter progress,
+disable controller input, or draw the overlay into immersive VR headset views.
+The WebXR same-page intent setting is reserved for a later validated provider.
+
+[Pilot architecture and test steps](docs/OVERSTRINGS_SPARK_PILOT.md).
+
 ## Immersive VR · full solo Descent campaign traversal candidate
 
 Spark's standalone [immersive WebXR experience](public/vr/index.html)
