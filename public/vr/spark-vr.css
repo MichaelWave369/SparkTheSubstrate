@@ -127,3 +127,16 @@ footer{font-size:.65rem;letter-spacing:.16em;color:#718e96;margin:17px 0}
 .overstrings-echo small{font-size:.68rem;color:#bcddd8}
 @keyframes overstrings-echo-in{from{opacity:.2;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.overstrings-echo{animation:none}}
+
+/* Aggregate-only optical-hand field receipts. No charting of biometric paths. */
+.overstrings-field-receipts{margin:20px 0 8px;padding:17px;border:1px solid #467872;
+  border-radius:8px;background:rgba(6,28,33,.65)}
+.overstrings-field-receipts h3{font:700 1.05rem system-ui,sans-serif;margin:0 0 8px;color:#d8f2d8}
+.overstrings-field-receipts p{color:#bcd9d7;line-height:1.6;font-size:.85rem}
+.overstrings-field-receipts .overstrings-checkbox{display:flex;align-items:center;gap:10px;
+  font-weight:650;margin:12px 0;color:#dbf0e6}
+.overstrings-receipt-status{white-space:pre-wrap;overflow-wrap:anywhere;
+  border:1px solid #3c6967;border-radius:7px;padding:13px;
+  background:#08191f;color:#cbe6e4;font:13px/1.55 ui-monospace,monospace}
+.overstrings-field-receipts .field-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.overstrings-field-receipts .field-actions button{max-width:100%}
