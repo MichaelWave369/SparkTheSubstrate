@@ -7,6 +7,7 @@
  */
 import {HostPreviewAdapter} from "./vendor/overstrings-host-sdk.mjs";
 import {SparkOpticalHandObserver} from "./spark-overstrings-hands.mjs";
+import {SparkOpticalFieldHud} from "./spark-overstrings-field-hud.mjs";
 
 export const SPARK_ECHO_SCHEMA="spark.overstrings.echo.v1";
 
@@ -61,7 +62,8 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
   const root=doc?.getElementById?.("overstrings-pilot");
   if(!root)return null; // Other Spark entry routes remain untouched.
   const get=id=>doc.getElementById(id);
-  const source=get("overstrings-source"),allowSynthetic=get("overstrings-allow-synthetic");
+  const source=get("overstrings-source"),allowSynthetic=get("overstrings-allow-synthetic"),
+    headsetHudToggle=get("overstrings-headset-hud");
   const arm=get("overstrings-arm"),stop=get("overstrings-stop"),
     tryDemo=get("overstrings-try-demo"),status=get("overstrings-status"),
     echo=get("overstrings-echo"),symbol=get("overstrings-echo-symbol");
@@ -75,15 +77,23 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
       ". No spell damage, gameplay event or controller change.";
   };
   const bridge=createSparkEchoBridge({onEcho});
+  const fieldHud=new SparkOpticalFieldHud({now:()=>win.performance.now(),enabled:false});
   let xrEntryPending=false;
   const opticalStatus=get("overstrings-optical-status");
   const observer=new SparkOpticalHandObserver({
     isArmed:()=>bridge.armed&&source.value==="webxr",
-    onStatus:message=>{if(opticalStatus)opticalStatus.textContent=message;},
+    onStatus:message=>{
+      if(opticalStatus)opticalStatus.textContent=message;
+      fieldHud.noteOpticalStatus(message,win.performance.now());
+    },
     onGesture:gesture=>{
       if(gesture.gesture==="pinch"&&gesture.phase==="start"&&
-         source.value==="webxr"&&bridge.armed)
-        showResult(bridge.livePinch(win.performance.now(),gesture.handedness));
+         source.value==="webxr"&&bridge.armed) {
+        const time=win.performance.now();
+        const result=bridge.livePinch(time,gesture.handedness);
+        if(result.accepted)fieldHud.noteEcho(gesture.handedness,time);
+        showResult(result);
+      }
     }
   });
   function sync(){
@@ -92,7 +102,7 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
     tryDemo.disabled=!bridge.armed||source.value!=="synthetic"||!allowSynthetic.checked;
   }
   function disarm(message="OverStrings host preview disarmed.") {
-    bridge.disarm();status.textContent=message;sync();
+    bridge.disarm();fieldHud.clear();status.textContent=message;sync();
   }
   function showResult(result) {
     sync();
@@ -110,7 +120,7 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
     sync();
   });
   stop.addEventListener("click",()=>disarm());
-  for(const control of [source,allowSynthetic]) {
+  for(const control of [source,allowSynthetic,headsetHudToggle]) {
     control.addEventListener("change",()=>disarm("Input mode changed. Arm again to approve."));
   }
   tryDemo.addEventListener("click",()=>{
@@ -136,7 +146,10 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
     arm:bridge.arm,disarm:bridge.disarm,receive:bridge.receive,
     get armed(){return bridge.armed;},
     wantsHandTracking:()=>bridge.armed&&source.value==="webxr",
-    beforeXREntry(){xrEntryPending=bridge.armed&&source.value==="webxr";},
+    beforeXREntry(){
+      xrEntryPending=bridge.armed&&source.value==="webxr";
+      fieldHud.setEnabled(xrEntryPending&&headsetHudToggle.checked);
+    },
     afterXREntry(success) {
       xrEntryPending=false;
       if(!success)disarm("VR entry failed or cancelled. Re-arm optical preview.");
@@ -144,6 +157,8 @@ export function mountSparkEchoPilot(doc=globalThis.document,win=globalThis.windo
     sessionStart(){observer.sessionStart();},
     sessionEnd(){observer.sessionEnd();disarm("XR session ended. Re-arm before another optical gesture.");},
     visibilityLost(){disarm("XR visibility interrupted. Optical preview disarmed.");},
-    observeXRFrame:payload=>observer.observe(payload)
+    observeXRFrame:payload=>observer.observe(payload),
+    hudMessage:(time,scene)=>observer.sessionActive&&source.value==="webxr"?
+      fieldHud.messageForScene(scene,time):null
   });
 }
