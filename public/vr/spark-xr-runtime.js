@@ -11,6 +11,12 @@ import {XR_PANEL_PAGES,panelPageFor,xrPanelModel,xrPanelPose,hitXRPanel} from '.
 import {XRRealityDiagnostics} from './spark-xr-status.js';
 
 export const XR_RUNTIME_VERSION = 'spark.xr.runtime.v1';
+/** Optical hand tracking is never requested unless the user armed it. */
+export function requestedXRFeatures(observer=null) {
+  return observer?.wantsHandTracking?.()===true?
+    ['local-floor','hand-tracking']:['local-floor'];
+}
+
 const STEP = 1 / 60;
 export function xrWorldRoot(scene, input) {
   if (!input.head) return worldRoot4(0, 0);
@@ -227,8 +233,7 @@ export class SparkXRRuntime {
       if (!api?.requestSession) throw Error('WebXR unavailable · use desktop preview or Quest Browser over HTTPS');
       void this.feedback.unlock();
       session = await api.requestSession('immersive-vr', {
-        optionalFeatures:this.handObserver?.wantsHandTracking?.() ?
-          ['local-floor','hand-tracking']:['local-floor']
+        optionalFeatures:requestedXRFeatures(this.handObserver)
       });
       if(this.generation!==generation){try{await session.end();}catch{}return false;}
       this.stopDesktop(); this.session = session; this.mode = 'xr';

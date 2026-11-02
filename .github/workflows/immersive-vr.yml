@@ -35,6 +35,7 @@ on:
       - "public/index.html"
       - "tests/vr-first-slice.test.mjs"
       - "tests/vr-overstrings-pilot.test.mjs"
+      - "tests/vr-overstrings-optical.test.mjs"
       - "tests/vr-full-descent.test.mjs"
       - "tests/vr-navigation-comfort.test.mjs"
       - "tests/vr-quest-field-lab.test.mjs"
@@ -75,6 +76,7 @@ on:
       - "public/index.html"
       - "tests/vr-first-slice.test.mjs"
       - "tests/vr-overstrings-pilot.test.mjs"
+      - "tests/vr-overstrings-optical.test.mjs"
       - "docs/vr-first-slice.md"
       - ".github/workflows/immersive-vr.yml"
 
