@@ -39,8 +39,14 @@ export class SparkOpticalHandObserver {
     this.report("XR session started; waiting for optical XRHand joints. Controller game input remains separate.");
   }
   sessionEnd(){
+    const last=this.lastStatus;
     this.reset();
-    this.onStatus("XR session ended; optical gesture preview stopped.");
+    // Keep only the final textual observation on the page for field testing,
+    // never joint coordinates, trajectories, or a falsely claimed hardware pass.
+    const real=last && !last.startsWith("XR session started");
+    this.onStatus(real ?
+      "XR ended. Last optical observation: "+last :
+      "XR ended. No optical hand observation confirmed.");
   }
   report(message) {
     if(message!==this.lastStatus) {this.lastStatus=message;this.onStatus(message);}

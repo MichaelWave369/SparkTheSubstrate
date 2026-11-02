@@ -55,6 +55,7 @@ test("stable real-format left and right pinch produce bounded start events only"
   assert.equal(observer.observe({frame,space,sources,time:500}).tracked,0);
   observer.sessionEnd();
   assert.ok(messages.some(m=>m.includes("optical")||m.includes("Optical")));
+  assert.match(messages.at(-1),/Last optical observation/);
 });
 test("tracking loss does not synthesize optical poses or generate extra starts",()=>{
   let count=0;
