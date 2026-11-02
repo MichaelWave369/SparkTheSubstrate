@@ -72,3 +72,44 @@ labels require a completed capture and clearing removes the report.
 
 The browser UI test should confirm synthetic preview never enables export.
 The protected runtime and renderer hash tests must remain unchanged.
+
+## Rung 9: Optical source-state diagnostics
+
+The same opt-in, aggregate-only report now includes
+`reported_source_states` with a separate bounded count by side.
+These categories describe what **each sampled WebXR callback reported**, not
+whether the Quest's actual sensors are faulty.
+
+| Code | Meaning in the WebXR observation | Next physical check |
+|---|---|---|
+| `valid` | Required wrist, thumb-tip and index-finger-tip positions were reported, finite and not marked emulated | Proceed to compare deliberate pinches and misses |
+| `no_hand_source` | No per-side `XRInputSource.hand` was supplied for that callback | Confirm hand tracking is enabled on the headset and the browser supports it; check controller-to-hand switching |
+| `no_joint_api` | A hand source lacked a callable `hand.get` API | Record Quest Browser version; this could be an API/support difference |
+| `missing_required_joints` | A hand source existed but one or more required joints did not yield a finite pose | Check hand visibility, occlusion and the headset's tracking conditions |
+| `emulated_required_pose` | A required joint was flagged `emulatedPosition` and excluded | Treat as unavailable for this optical-only exercise |
+| `unavailable_frame` | The WebXR frame, joint getter or reference space was unavailable for that callback | Inspect the XR session setup/visibility lifecycle |
+| `unknown_untracked` | A legacy/manual test supplied booleans without the new reason categories | Not a physical root cause; no such code is emitted by the upgraded Quest observer |
+
+Every accepted sample contributes exactly one category per side; sum of each
+hand's category counts equals sampled callbacks. These values only appear in
+the optional receipt and are not retained unless the tester manually exports
+the report. The previous v1 report fields and meaning are preserved, with
+one new optional additive `reported_source_states` field.
+
+**Limitations:** The browser can misreport, omit or emulate poses. The
+diagnostics are not optical sensor verification, precision/recall, an assurance
+of full hand geometry, or evidence that a physical pinch occurred. No raw
+joint coordinate data leaves the optical observer or enters the receipt.
+An accepted visual echo still requires explicit one-shot consent; no real
+Spark spell is triggered.
+
+### Failure triage on Quest
+
+Start a field receipt, arm one WebXR echo, enter immersive mode and expose
+each hand in turn. After leaving VR, inspect the reason counts. If all samples
+say no hand source, investigate headset/browser hand input and controller
+switching *before* tuning gesture thresholds. If the required joints are
+mostly missing, try avoiding occlusion and comparing lighting. If the
+hand frames are valid but pinch counts stay zero, gather a deliberate
+repeated-pinch field observation and evaluate the heuristic separately.
+Do not label these categories as confirmed hardware defects.

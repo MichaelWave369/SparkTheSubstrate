@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {JOINT_NAMES} from "../public/vr/vendor/gesture.mjs";
-import {SparkOpticalHandObserver,readOpticalHands,requestedXRFeatures,installSparkOpticalXR} from "../public/vr/spark-overstrings-hands.mjs";
+import {SparkOpticalHandObserver,readOpticalHands,diagnoseOpticalHands,OPTICAL_SOURCE_STATES,requestedXRFeatures,installSparkOpticalXR} from "../public/vr/spark-overstrings-hands.mjs";
 import {createSparkEchoBridge} from "../public/vr/spark-overstrings-bridge.mjs";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
@@ -131,4 +131,41 @@ test("opted-in sidecar requests hand-tracking only and observes XRFrame",async()
  runtime.space={};session.callbacks.shift()(140,opticalFrame());
  assert.equal(started,1);assert.equal(observed,1);
  listeners.end();assert.equal(ended,1);
+});
+
+test("real WebXR source states distinguish missing hand sources from missing joints",()=>{
+  const space={},valid=opticalFrame(),left=opticalSource("left");
+  assert.equal(OPTICAL_SOURCE_STATES.includes("valid"),true);
+  assert.deepEqual(diagnoseOpticalHands(valid,space,[]).statuses,{
+    left:"no_hand_source",right:"no_hand_source"
+  });
+  assert.equal(diagnoseOpticalHands({},space,[left]).statuses.left,"unavailable_frame");
+  assert.equal(diagnoseOpticalHands(valid,null,[left]).statuses.left,"unavailable_frame");
+  const noAPI={handedness:"left",hand:{}};
+  assert.equal(diagnoseOpticalHands(valid,space,[noAPI]).statuses.left,"no_joint_api");
+  assert.equal(diagnoseOpticalHands(valid,space,[opticalSource("left",["thumb-tip"])]).statuses.left,
+    "missing_required_joints");
+  assert.equal(diagnoseOpticalHands(opticalFrame({emulated:true}),space,[left]).statuses.left,
+    "emulated_required_pose");
+  const active=diagnoseOpticalHands(valid,space,[left]);
+  assert.equal(active.statuses.left,"valid");
+  assert.equal(active.statuses.right,"no_hand_source");
+  assert.ok(active.hands.left.wrist);
+  assert.equal(active.hands.right,null);
+});
+test("observer reports only per-side status enums, never joint data, to receipt listener",()=>{
+  const samples=[];
+  const observer=new SparkOpticalHandObserver({
+    isArmed:()=>true,onSample:x=>samples.push(x)
+  });
+  observer.sessionStart();
+  observer.observe({
+    frame:opticalFrame(),space:{},sources:[opticalSource("left")],time:100
+  });
+  assert.equal(samples.length,1);
+  assert.deepEqual(samples[0].statuses,{left:"valid",right:"no_hand_source"});
+  assert.deepEqual(samples[0].tracked,{left:true,right:false});
+  assert.deepEqual(Object.keys(samples[0]).sort(),["source","statuses","time","tracked"]);
+  assert.equal(JSON.stringify(samples[0]).includes("thumb-tip"),false);
+  assert.equal(JSON.stringify(samples[0]).includes("wrist"),false);
 });

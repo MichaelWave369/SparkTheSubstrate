@@ -9,23 +9,51 @@ const point=pose=>{
   return p && [p.x,p.y,p.z].every(Number.isFinite) &&
     [p.x,p.y,p.z].every(v=>Math.abs(v)<100) ? {x:p.x,y:p.y,z:p.z}:null;
 };
-export function readOpticalHands(frame,space,sources) {
-  const result={left:null,right:null};
-  if(!frame||typeof frame.getJointPose!=="function"||!space)return result;
+export const OPTICAL_SOURCE_STATES=Object.freeze([
+  "valid","no_hand_source","no_joint_api","missing_required_joints",
+  "emulated_required_pose","unavailable_frame"
+]);
+const REQUIRED_JOINTS=Object.freeze(["wrist","thumb-tip","index-finger-tip"]);
+
+/**
+ * Diagnose ONLY per-side availability categories. The returned hands remain
+ * private inside the gesture observer. Callers see only statuses and booleans,
+ * never positions. Each status describes what this WebXR callback reported,
+ * NOT an independently verified root cause or hardware accuracy.
+ */
+export function diagnoseOpticalHands(frame,space,sources) {
+  const hands={left:null,right:null},statuses={left:"no_hand_source",right:"no_hand_source"};
+  if(!frame||typeof frame.getJointPose!=="function"||!space) {
+    statuses.left="unavailable_frame";statuses.right="unavailable_frame";
+    return {hands,statuses};
+  }
   for(const source of Array.from(sources||[])) {
-    const hand=source?.hand,side=source?.handedness;
-    if(!SIDES.includes(side)||result[side]||!hand||typeof hand.get!=="function")continue;
+    const side=source?.handedness;
+    if(!SIDES.includes(side)||hands[side]||!source?.hand)continue;
+    const hand=source.hand;
+    if(typeof hand.get!=="function") {statuses[side]="no_joint_api";continue;}
     const joints={};
+    let emulatedRequired=false;
     for(const name of JOINT_NAMES) {
       let pose=null;
       try {const joint=hand.get(name);if(joint)pose=frame.getJointPose(joint,space);}
-      catch {/* Tracking dropout is not a synthetic pose. */}
-      if(pose?.emulatedPosition===true)continue;
+      catch {/* An occluded or unavailable pose stays missing. */}
+      if(pose?.emulatedPosition===true) {
+        if(REQUIRED_JOINTS.includes(name))emulatedRequired=true;
+        continue;
+      }
       const p=point(pose);if(p)joints[name]=p;
     }
-    if(joints.wrist&&joints["thumb-tip"]&&joints["index-finger-tip"])result[side]=joints;
+    if(REQUIRED_JOINTS.every(name=>!!joints[name])) {
+      hands[side]=joints;statuses[side]="valid";
+    } else {
+      statuses[side]=emulatedRequired?"emulated_required_pose":"missing_required_joints";
+    }
   }
-  return result;
+  return {hands,statuses};
+}
+export function readOpticalHands(frame,space,sources) {
+  return diagnoseOpticalHands(frame,space,sources).hands;
 }
 export class SparkOpticalHandObserver {
   constructor({onGesture=()=>{},onStatus=()=>{},onSample=()=>{},isArmed=()=>false}={}) {
@@ -54,13 +82,15 @@ export class SparkOpticalHandObserver {
   observe({frame,space,sources,time,visible=true}={}) {
     if(!this.sessionActive||!this.isArmed()||visible===false||!Number.isFinite(time))
       return {tracked:0,events:[]};
-    const hands=readOpticalHands(frame,space,sources);
+    const {hands,statuses}=diagnoseOpticalHands(frame,space,sources);
     this.frames++;
-    // Aggregate booleans only. The listener never receives joint coordinates.
+    // Only per-side status codes and aggregate booleans leave this observer.
+    // Raw joints remain inside this method and its gesture tracker.
     try {
       this.onSample({
         time,source:"webxr",
-        tracked:{left:!!hands.left,right:!!hands.right}
+        tracked:{left:!!hands.left,right:!!hands.right},
+        statuses
       });
     } catch {/* optional diagnostics must not block optical observation */}
     const events=[];
