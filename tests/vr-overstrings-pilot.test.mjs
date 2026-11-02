@@ -64,6 +64,9 @@ test("interface is explicitly opt-in and isolated from canonical gameplay inputs
   assert.match(html,/id="overstrings-allow-synthetic"/);
   assert.match(html,/id="overstrings-try-demo"/);
   assert.match(app,/mountSparkEchoPilot/);
+  const vendor=read("../public/vr/vendor/overstrings-host-sdk.mjs");
+  assert.match(vendor,/from "\.\/action-gateway\.mjs"/);
+  assert.match(read("../public/vr/vendor/action-gateway.mjs"),/export const ACTIONS/);
   assert.doesNotMatch(bridge,/stepVRPreview|state\.run|adapter\.cast|\.powerCooldown|localStorage|fetch\(/);
   assert.doesNotMatch(bridge,/postMessage\(|sessionStorage|sendBeacon/);
 });
