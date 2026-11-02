@@ -91,3 +91,34 @@ The existing Spark immersive CI and Pages CI run Node tests plus gameplay/browse
    Report false detections and missed pinches before any gameplay integration.
 
 **No actual headset pass is claimed by software-only tests.**
+
+## Rung 7: Brief stereo Quest optical feedback (PR candidate)
+- A sidecar now **reuses Spark's existing in-headset alert panel**, in both eye views,
+  to show a short optical-hand status and a one-shot accepted pinch echo.
+  The protected XR runtime and WebGL renderer source files are unchanged.
+- The scene is **shallow-copied for rendering only**. Combat, movement, controller
+  bindings, pauses, saves and native Spark status/error messages are never modified.
+- The field HUD appears only after the user explicitly arms WebXR optical testing
+  and keeps **Show brief optical/echo notices** enabled. There is no persistence.
+- Notices last up to 1.6 seconds, yield to Spark error/diagnostic alerts,
+  and are suppressed during pause or calibration.
+- This makes optical feedback potentially visible inside the headset rather than
+  relying solely on the companion 2D browser overlay. Actual text placement,
+  legibility and comfort have **not** been verified on Quest hardware.
+
+### Physical acceptance
+1. Open the Spark /vr/ page in Quest Browser; select WebXR and arm once.
+   Leave the stereo notices checkbox enabled.
+2. Enter immersive VR. Look for a short "OVERSTRINGS / SEARCHING FOR HANDS"
+   notice (if the session supplies the normal stereo HUD).
+3. With optical hands reported by the browser, confirm a short left/right status.
+   Hold a left or right pinch for ~130ms. Expect ONE visual-only "PINCH · ECHO".
+4. Confirm no repeated echo without rearming and no optical or synthetic spoofing.
+5. While testing, verify Spark's pause, calibration and native recovery warnings
+   override the optional OverStrings message.
+6. Disable the checkbox and retry to confirm no optional stereo notices appear.
+7. If a Quest switches to optical hands and the game pauses for controller loss,
+   report it; this prototype does not emulate Touch controllers or bypass safety.
+
+CI includes synthetic stereo-scene wrapper tests and normal browser regression.
+No software test can certify the physical Quest display.

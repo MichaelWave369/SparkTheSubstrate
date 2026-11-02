@@ -36,6 +36,7 @@ on:
       - "tests/vr-first-slice.test.mjs"
       - "tests/vr-overstrings-pilot.test.mjs"
       - "tests/vr-overstrings-optical.test.mjs"
+      - "tests/vr-overstrings-hud.test.mjs"
       - "tests/vr-full-descent.test.mjs"
       - "tests/vr-navigation-comfort.test.mjs"
       - "tests/vr-quest-field-lab.test.mjs"
@@ -99,6 +100,7 @@ jobs:
           node --check public/vr/spark-vr-app.js
           node --check public/vr/spark-overstrings-bridge.mjs
           node --check public/vr/spark-overstrings-hands.mjs
+          node --check public/vr/spark-overstrings-field-hud.mjs
           node --check public/vr/vendor/gesture.mjs
           node --check public/vr/vendor/calibration.mjs
           node --check public/vr/vendor/overstrings-host-sdk.mjs

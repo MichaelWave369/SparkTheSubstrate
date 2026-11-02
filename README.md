@@ -20,6 +20,10 @@ HostPreviewAdapter. User consent is disarmed by default, separately enables
 one visual echo, and requires a second opt-in for synthetic desktop examples.
 
 This is a real, local module integration with a visual-only on-page reaction.
+The in-headset status follow-up also decorates a **render-only scene copy**
+with short optical/echo notices, using Spark's existing stereo HUD. This is
+opt-in, yields to native errors, and does not edit the protected renderer.
+Actual Quest comfort/readability remains unverified.
 The new opt-in sidecar can read actual XRHand joint poses from the same
 Spark immersive VR session when WebXR is explicitly armed. A stable pinch
 triggers one visual-only echo, not a gameplay cast or a learned motion-phrase match.

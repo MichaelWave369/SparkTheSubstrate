@@ -2,6 +2,7 @@ import {legacyXRBridge} from './spark-vr-legacy-xr.js';
 import {installXRControls} from './spark-xr-controls.js';
 import {mountSparkEchoPilot} from './spark-overstrings-bridge.mjs';
 import {installSparkOpticalXR} from './spark-overstrings-hands.mjs';
+import {installSparkOpticalFieldHud} from './spark-overstrings-field-hud.mjs';
 import {
   createVRPreview,stepVRPreview,vrRoomSnapshot,worldAt,
   chooseVRPhase,nextVRForm,vrPhaseChoices,VR_SIM_STEP
@@ -368,6 +369,8 @@ installXRControls(sharedXR,{legacyDesktop:true});
 // Visual-only host SDK pilot. Never touches canonical input, abilities or saves.
 const overstringsPilot=mountSparkEchoPilot();
 installSparkOpticalXR(sharedXR,overstringsPilot);
+// Reuse Spark's stereo alert HUD without editing its protected renderer.
+installSparkOpticalFieldHud(sharedXR,overstringsPilot);
 async function beginXR(){
   if(sharedXR.pending){show('VR permission request pending · finish or cancel the browser prompt');return false;}
   if(sharedXR.session){show('VR is already active.');return false;}
