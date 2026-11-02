@@ -65,3 +65,47 @@ export class SparkOpticalHandObserver {
     return {tracked,events};
   }
 }
+
+/**
+ * Same-app opt-in WebXR sidecar. Wraps Spark's instance-local getXR factory,
+ * never the protected runtime or the global navigator.xr object. MIT.
+ */
+export function requestedXRFeatures(features=[],enabled=false) {
+  const base=Array.isArray(features)?features:[];
+  return enabled?[...new Set([...base,"hand-tracking"])]:[...base];
+}
+export function installSparkOpticalXR(runtime,pilot) {
+  if(!runtime||typeof runtime.getXR!=="function"||!pilot)
+    throw new TypeError("Expected XR runtime and gesture preview");
+  const original=runtime.getXR.bind(runtime);
+  runtime.getXR=()=>{
+    const xr=original();
+    if(!xr||typeof xr.requestSession!=="function"||pilot.wantsHandTracking?.()!==true)
+      return xr;
+    return {requestSession:async(mode,options={})=>{
+      const session=await xr.requestSession(mode,{
+        ...options,optionalFeatures:requestedXRFeatures(options.optionalFeatures,true)
+      });
+      let active=true,started=false;
+      session.addEventListener?.("end",()=>{
+        active=false;if(started)pilot.sessionEnd?.();
+      },{once:true});
+      session.addEventListener?.("visibilitychange",()=>{
+        if(session.visibilityState!=="visible")pilot.visibilityLost?.();
+      });
+      function observe(time,frame) {
+        if(!active)return;
+        try {
+          if(!started&&runtime.space) {started=true;pilot.sessionStart?.();}
+          if(started&&session.visibilityState==="visible"&&frame)
+            pilot.observeXRFrame?.({time,frame,space:runtime.space,
+              sources:session.inputSources,visible:true});
+        } catch {/* optional observer cannot terminate Spark's render loop */}
+        if(active)session.requestAnimationFrame(observe);
+      }
+      session.requestAnimationFrame(observe);
+      return session;
+    }};
+  };
+  return ()=>{runtime.getXR=original;};
+}

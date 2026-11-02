@@ -1,9 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {JOINT_NAMES} from "../public/vr/vendor/gesture.mjs";
-import {SparkOpticalHandObserver,readOpticalHands} from "../public/vr/spark-overstrings-hands.mjs";
+import {SparkOpticalHandObserver,readOpticalHands,requestedXRFeatures,installSparkOpticalXR} from "../public/vr/spark-overstrings-hands.mjs";
 import {createSparkEchoBridge} from "../public/vr/spark-overstrings-bridge.mjs";
-import {requestedXRFeatures} from "../public/vr/spark-xr-runtime.js";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 
@@ -85,9 +84,9 @@ test("one real-format pinch only yields cosmetic Spark echo when armed",()=>{
   assert.equal(bridge.livePinch(NaN,"left").reason,"invalid_live_pinch");
 });
 test("XR request feature is off by default, on only for explicit observer opt-in",()=>{
-  assert.deepEqual(requestedXRFeatures(),["local-floor"]);
-  assert.deepEqual(requestedXRFeatures({wantsHandTracking:()=>false}),["local-floor"]);
-  assert.deepEqual(requestedXRFeatures({wantsHandTracking:()=>true}),["local-floor","hand-tracking"]);
+  assert.deepEqual(requestedXRFeatures(["local-floor"]),["local-floor"]);
+  assert.deepEqual(requestedXRFeatures(["local-floor"],false),["local-floor"]);
+  assert.deepEqual(requestedXRFeatures(["local-floor"],true),["local-floor","hand-tracking"]);
 });
 test("Quest integration is isolated from controller input and has no network/storage path",()=>{
   const read=path=>readFileSync(fileURLToPath(new URL(path,import.meta.url)),"utf8");
@@ -95,10 +94,40 @@ test("Quest integration is isolated from controller input and has no network/sto
   const runtime=read("../public/vr/spark-xr-runtime.js");
   const app=read("../public/vr/spark-vr-app.js");
   const html=read("../public/vr/index.html");
-  assert.match(runtime,/handObserver\?\.observeXRFrame/);
-  assert.match(runtime,/requestedXRFeatures\(this\.handObserver\)/);
-  assert.match(app,/sharedXR\.handObserver=overstringsPilot/);
+  assert.doesNotMatch(runtime,/handObserver|hand-tracking/);
+  assert.match(hands,/installSparkOpticalXR/);
+  assert.match(hands,/getJointPose/);
+  assert.match(app,/installSparkOpticalXR\(sharedXR,overstringsPilot\)/);
   assert.match(html,/overstrings-optical-status/);
   assert.doesNotMatch(hands,/fetch\(|localStorage|sessionStorage|postMessage|stepVRPreview/);
-  assert.doesNotMatch(hands,/getUserMedia|camera|gamepad|input\.cast/);
+  assert.doesNotMatch(hands,/getUserMedia\s*\(|navigator\.mediaDevices|\.gamepad\b|input\.cast/);
+});
+
+test("sidecar preserves normal WebXR without an opt-in",async()=>{
+ let args=null;
+ const session={requestAnimationFrame(){},addEventListener(){}};
+ const xr={requestSession:async(mode,options)=>{args=options;return session;}};
+ const runtime={getXR:()=>xr,space:null};
+ const restore=installSparkOpticalXR(runtime,{wantsHandTracking:()=>false});
+ assert.equal(runtime.getXR(),xr);
+ assert.equal(await runtime.getXR().requestSession("immersive-vr",{optionalFeatures:["local-floor"]}),session);
+ assert.deepEqual(args.optionalFeatures,["local-floor"]);
+ restore();
+});
+test("opted-in sidecar requests hand-tracking only and observes XRFrame",async()=>{
+ let args=null,started=0,ended=0,observed=0;
+ const listeners={},session={visibilityState:"visible",inputSources:[opticalSource()],
+   callbacks:[],requestAnimationFrame(fn){this.callbacks.push(fn);return this.callbacks.length;},
+   addEventListener(name,fn){listeners[name]=fn;}};
+ const xr={requestSession:async(mode,opts)=>{args=opts;return session;}};
+ const runtime={getXR:()=>xr,space:null};
+ const pilot={wantsHandTracking:()=>true,sessionStart:()=>started++,
+   sessionEnd:()=>ended++,observeXRFrame:()=>observed++};
+ installSparkOpticalXR(runtime,pilot);
+ assert.equal(await runtime.getXR().requestSession("immersive-vr",{optionalFeatures:["local-floor"]}),session);
+ assert.deepEqual(args.optionalFeatures,["local-floor","hand-tracking"]);
+ session.callbacks.shift()(0,opticalFrame());assert.equal(observed,0);
+ runtime.space={};session.callbacks.shift()(140,opticalFrame());
+ assert.equal(started,1);assert.equal(observed,1);
+ listeners.end();assert.equal(ended,1);
 });
